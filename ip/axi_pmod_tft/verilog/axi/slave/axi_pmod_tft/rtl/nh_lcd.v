@@ -21,7 +21,6 @@ module nh_lcd #(
   input       [7:0]               i_cmd_data,
   output      [7:0]               o_cmd_data,
   output                          o_cmd_finished,
-  input                           i_backlight_enable,
   input                           i_write_override,
   input                           i_chip_select,
   input       [31:0]              i_num_pixels,
@@ -36,15 +35,13 @@ module nh_lcd #(
   input       [DATAS_WIDTH - 1:0] i_fifo_data,
 
   //Physical Signals
-  output                          o_backlight_enable,
   output                          o_register_data_sel,
   output                          o_write_n,
   output                          o_read_n,
   inout       [7:0]               io_data,
   output                          o_cs_n,
   output                          o_reset_n,
-  input                           i_tearing_effect,
-  output                          o_display_on
+  input                           i_tearing_effect
 );
 
 //Local Parameters
@@ -123,8 +120,6 @@ nh_lcd_data_writer #(
 );
 
 //Asynchronous Logic
-assign  o_backlight_enable  = i_backlight_enable;
-assign  o_display_on        = i_enable;
 assign  o_reset_n           = ~i_reset_display;
 assign  o_cs_n              = ~i_chip_select;
 assign  w_data_in           = io_data;

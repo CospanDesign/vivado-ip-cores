@@ -31,7 +31,7 @@ SOFTWARE.
 `define CONTROL_ENABLE            0
 `define CONTROL_ENABLE_INTERRUPT  1
 `define CONTROL_COMMAND_MODE      2
-`define CONTROL_BACKLIGHT_ENABLE  3
+
 `define CONTROL_RESET_DISPLAY     4
 `define CONTROL_COMMAND_WRITE     5
 `define CONTROL_COMMAND_READ      6
@@ -49,24 +49,48 @@ module axi_pmod_tft #(
   parameter           STROBE_WIDTH        = (DATA_WIDTH / 8),
   parameter           INVERT_AXI_RESET    = 1,
   parameter           INVERT_VIDEO_RESET  = 1,
+  parameter           IMAGE_WIDTH         = 480,
+  parameter           IMAGE_HEIGHT        = 272,
   parameter           BUFFER_SIZE         = 9
 )(
   input                               clk,
   input                               rst,
 
-  output      [31:0]                  debug,
-
-
-  output                              o_backlight_enable,
   output                              o_register_data_sel,
   output                              o_write_n,
   output                              o_read_n,
-  inout       [7:0]                   io_data,
+//  inout       [7:0]                   io_data,
   output                              o_cs_n,
   output                              o_reset_n,
   input                               i_tearing_effect,
-  output                              o_display_on,
 
+  //PMOD Data
+  output                              o_pmod_out_tft_data1,
+  output                              o_pmod_out_tft_data2,
+  output                              o_pmod_out_tft_data3,
+  output                              o_pmod_out_tft_data4,
+  output                              o_pmod_out_tft_data7,
+  output                              o_pmod_out_tft_data8,
+  output                              o_pmod_out_tft_data9,
+  output                              o_pmod_out_tft_data10,
+
+  output                              o_pmod_tri_tft_data1,
+  output                              o_pmod_tri_tft_data2,
+  output                              o_pmod_tri_tft_data3,
+  output                              o_pmod_tri_tft_data4,
+  output                              o_pmod_tri_tft_data7,
+  output                              o_pmod_tri_tft_data8,
+  output                              o_pmod_tri_tft_data9,
+  output                              o_pmod_tri_tft_data10,
+
+  input                               i_pmod_in_tft_data1,
+  input                               i_pmod_in_tft_data2,
+  input                               i_pmod_in_tft_data3,
+  input                               i_pmod_in_tft_data4,
+  input                               i_pmod_in_tft_data7,
+  input                               i_pmod_in_tft_data8,
+  input                               i_pmod_in_tft_data9,
+  input                               i_pmod_in_tft_data10,
 
   //AXI Lite Interface
 
@@ -127,7 +151,6 @@ wire                        w_enable;
 wire                        w_enable_interrupt;
 wire                        w_reset_display;
 wire                        w_command_mode;
-wire                        w_backlight_enable;
 wire                        w_cmd_write_stb;
 wire                        w_cmd_read_stb;
 wire                        w_cmd_parameter;
@@ -165,6 +188,14 @@ reg [DATA_WIDTH - 1: 0]     r_reg_out_data;
 //Handle Inversion
 wire                        w_axi_rst;
 wire                        w_video_rst;
+wire  [31:0]                w_debug;
+
+
+wire  [7:0]                 w_tft_data;
+
+wire  [7:0]                 w_out_tft_data;
+wire  [7:0]                 w_in_tft_data;
+
 
 
 
@@ -243,7 +274,7 @@ nh_lcd #(
   .rst                 (rst                 ),
   .clk                 (clk                 ),
 
-  .debug               (debug               ),
+  .debug               (w_debug             ),
 
 
   .i_enable            (w_enable            ),
@@ -256,7 +287,6 @@ nh_lcd #(
   .i_cmd_data          (r_cmd_data_out      ),
   .o_cmd_data          (w_cmd_data_in       ),
   .o_cmd_finished      (w_cmd_finished      ),
-  .i_backlight_enable  (w_backlight_enable  ),
   .i_write_override    (w_write_override    ),
   .i_chip_select       (w_chip_select       ),
   .i_num_pixels        (r_num_pixels        ),
@@ -270,22 +300,19 @@ nh_lcd #(
   .i_fifo_data         (wfifo_data          ),
 
 
-  .o_backlight_enable  (o_backlight_enable  ),
   .o_register_data_sel (o_register_data_sel ),
   .o_write_n           (o_write_n           ),
   .o_read_n            (o_read_n            ),
-  .io_data             (io_data             ),
+  .io_data             (w_tft_data          ),
   .o_cs_n              (o_cs_n              ),
   .o_reset_n           (o_reset_n           ),
-  .i_tearing_effect    (i_tearing_effect    ),
-  .o_display_on        (o_display_on        )
+  .i_tearing_effect    (i_tearing_effect    )
 );
 
 //Asynchronous Logic
 assign        w_enable                = control[`CONTROL_ENABLE];
 assign        w_enable_interrupt      = control[`CONTROL_ENABLE_INTERRUPT];
 assign        w_command_mode          = control[`CONTROL_COMMAND_MODE];
-assign        w_backlight_enable      = control[`CONTROL_BACKLIGHT_ENABLE];
 assign        w_reset_display         = control[`CONTROL_RESET_DISPLAY];
 assign        w_cmd_write_stb         = control[`CONTROL_COMMAND_WRITE];
 assign        w_cmd_read_stb          = control[`CONTROL_COMMAND_READ];
@@ -299,6 +326,37 @@ assign        status[31:0]            = 0;
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
 assign        w_video_rst             = (INVERT_VIDEO_RESET) ? ~i_video_rst : i_video_rst;
 
+assign        w_out_tft_data          = w_tft_data;
+assign        w_tft_data              = (!o_read_n) ? w_in_tft_data: 8'hZZ;
+
+//Attach the PMODs (All the line scrambling happens here
+assign        o_pmod_out_tft_data1    = w_out_tft_data[4];
+assign        o_pmod_out_tft_data2    = w_out_tft_data[2];
+assign        o_pmod_out_tft_data3    = w_out_tft_data[0];
+assign        o_pmod_out_tft_data4    = w_out_tft_data[6];
+assign        o_pmod_out_tft_data7    = w_out_tft_data[3];
+assign        o_pmod_out_tft_data8    = w_out_tft_data[1];
+assign        o_pmod_out_tft_data9    = w_out_tft_data[5];
+assign        o_pmod_out_tft_data10   = w_out_tft_data[7];
+
+assign        o_pmod_tri_tft_data1    = !o_read_n;
+assign        o_pmod_tri_tft_data2    = !o_read_n;
+assign        o_pmod_tri_tft_data3    = !o_read_n;
+assign        o_pmod_tri_tft_data4    = !o_read_n;
+assign        o_pmod_tri_tft_data7    = !o_read_n;
+assign        o_pmod_tri_tft_data8    = !o_read_n;
+assign        o_pmod_tri_tft_data9    = !o_read_n;
+assign        o_pmod_tri_tft_data10   = !o_read_n;
+
+assign        w_in_tft_data[4]        =  i_pmod_in_tft_data1;
+assign        w_in_tft_data[2]        =  i_pmod_in_tft_data2;
+assign        w_in_tft_data[0]        =  i_pmod_in_tft_data3;
+assign        w_in_tft_data[6]        =  i_pmod_in_tft_data4;
+assign        w_in_tft_data[3]        =  i_pmod_in_tft_data7;
+assign        w_in_tft_data[1]        =  i_pmod_in_tft_data8;
+assign        w_in_tft_data[5]        =  i_pmod_in_tft_data9;
+assign        w_in_tft_data[7]        =  i_pmod_in_tft_data10;
+
 //blocks
 always @ (posedge clk) begin
   //De-assert Strobes
@@ -310,6 +368,7 @@ always @ (posedge clk) begin
     control                               <=  0;
     r_reg_out_data                        <=  0;
     r_cmd_data_out                        <=  0;
+    r_num_pixels                          <=  IMAGE_WIDTH * IMAGE_HEIGHT;
   end
   else begin
 
