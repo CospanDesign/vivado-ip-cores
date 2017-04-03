@@ -366,14 +366,14 @@ assign        o_pmod_out_tft_data9    = w_tft_data_out[5];
 assign        o_pmod_out_tft_data4    = w_tft_data_out[6];
 assign        o_pmod_out_tft_data10   = w_tft_data_out[7];
 
-assign        o_pmod_tri_tft_data1    = !o_read_n;
-assign        o_pmod_tri_tft_data2    = !o_read_n;
-assign        o_pmod_tri_tft_data3    = !o_read_n;
-assign        o_pmod_tri_tft_data4    = !o_read_n;
-assign        o_pmod_tri_tft_data7    = !o_read_n;
-assign        o_pmod_tri_tft_data8    = !o_read_n;
-assign        o_pmod_tri_tft_data9    = !o_read_n;
-assign        o_pmod_tri_tft_data10   = !o_read_n;
+assign        o_pmod_tri_tft_data1    = o_read_n;
+assign        o_pmod_tri_tft_data2    = o_read_n;
+assign        o_pmod_tri_tft_data3    = o_read_n;
+assign        o_pmod_tri_tft_data4    = o_read_n;
+assign        o_pmod_tri_tft_data7    = o_read_n;
+assign        o_pmod_tri_tft_data8    = o_read_n;
+assign        o_pmod_tri_tft_data9    = o_read_n;
+assign        o_pmod_tri_tft_data10   = o_read_n;
 
 assign        w_tft_data_in[0]        =  i_pmod_in_tft_data3;
 assign        w_tft_data_in[1]        =  i_pmod_in_tft_data8;
@@ -443,6 +443,7 @@ always @ (posedge clk) begin
           r_reg_out_data                  <= r_num_pixels;
         end
         REG_VERSION: begin
+          r_reg_out_data                  <= 32'h00;
           r_reg_out_data[`MAJOR_RANGE]    <= `MAJOR_VERSION;
           r_reg_out_data[`MINOR_RANGE]    <= `MINOR_VERSION;
           r_reg_out_data[`REVISION_RANGE] <= `REVISION;
