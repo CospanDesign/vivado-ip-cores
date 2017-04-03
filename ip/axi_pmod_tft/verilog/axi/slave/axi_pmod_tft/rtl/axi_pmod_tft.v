@@ -26,6 +26,10 @@ SOFTWARE.
 
 `define DEFAULT_MEMORY_TIMEOUT  300
 
+`define MAJOR_VERSION             1
+`define MINOR_VERSION             0
+`define REVISION                  0
+
 `include "nh_lcd_defines.v"
 
 `define CONTROL_ENABLE            0
@@ -40,7 +44,34 @@ SOFTWARE.
 `define CONTROL_CHIP_SELECT       9
 `define CONTROL_ENABLE_TEARING    10
 
+`define MAJOR_RANGE               31:28
+`define MINOR_RANGE               27:20
+`define REVISION_RANGE            19:16
+
+
 //status bit definition
+
+/*
+ * Rev A Notes:
+ *  Pinmap
+ *
+ *  CS_N:       PMOD 1
+ *  DATA_REG:   PMOD 2
+ *  READ_N:     PMOD 3
+ *  WRITE_N:    PMOD 4
+ *  RESET_N:    PMOD 7
+ *  TEAR_EF:    PMOD 10
+ *
+ *  DATA0:      PMOD 3
+ *  DATA1:      PMOD 8
+ *  DATA2:      PMOD 2
+ *  DATA3:      PMOD 1
+ *  DATA4:      PMOD 7
+ *  DATA5:      PMOD 9
+ *  DATA6:      PMOD 4
+ *  DATA7:      PMOD 10
+ */
+
 
 module axi_pmod_tft #(
   parameter           ADDR_WIDTH          = 5,
@@ -139,6 +170,7 @@ localparam                  REG_CONTROL        = 0;
 localparam                  REG_STATUS         = 1;
 localparam                  REG_COMMAND_DATA   = 2;
 localparam                  REG_PIXEL_COUNT    = 3;
+localparam                  REG_VERSION        = 4;
 
 //Reg/Wire
 
@@ -191,12 +223,8 @@ wire                        w_video_rst;
 wire  [31:0]                w_debug;
 
 
-wire  [7:0]                 w_tft_data;
-
-wire  [7:0]                 w_out_tft_data;
-wire  [7:0]                 w_in_tft_data;
-
-
+wire  [7:0]                 w_tft_data_out;
+wire  [7:0]                 w_tft_data_in;
 
 
 //Submodules
@@ -303,7 +331,9 @@ nh_lcd #(
   .o_register_data_sel (o_register_data_sel ),
   .o_write_n           (o_write_n           ),
   .o_read_n            (o_read_n            ),
-  .io_data             (w_tft_data          ),
+  //.io_data             (w_tft_data          ),
+  .o_data              (w_tft_data_out      ),
+  .i_data              (w_tft_data_in       ),
   .o_cs_n              (o_cs_n              ),
   .o_reset_n           (o_reset_n           ),
   .i_tearing_effect    (i_tearing_effect    )
@@ -326,18 +356,15 @@ assign        status[31:0]            = 0;
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
 assign        w_video_rst             = (INVERT_VIDEO_RESET) ? ~i_video_rst : i_video_rst;
 
-assign        w_out_tft_data          = w_tft_data;
-assign        w_tft_data              = (!o_read_n) ? w_in_tft_data: 8'hZZ;
-
 //Attach the PMODs (All the line scrambling happens here
-assign        o_pmod_out_tft_data1    = w_out_tft_data[4];
-assign        o_pmod_out_tft_data2    = w_out_tft_data[2];
-assign        o_pmod_out_tft_data3    = w_out_tft_data[0];
-assign        o_pmod_out_tft_data4    = w_out_tft_data[6];
-assign        o_pmod_out_tft_data7    = w_out_tft_data[3];
-assign        o_pmod_out_tft_data8    = w_out_tft_data[1];
-assign        o_pmod_out_tft_data9    = w_out_tft_data[5];
-assign        o_pmod_out_tft_data10   = w_out_tft_data[7];
+assign        o_pmod_out_tft_data3    = w_tft_data_out[0];
+assign        o_pmod_out_tft_data8    = w_tft_data_out[1];
+assign        o_pmod_out_tft_data2    = w_tft_data_out[2];
+assign        o_pmod_out_tft_data1    = w_tft_data_out[3];
+assign        o_pmod_out_tft_data7    = w_tft_data_out[4];
+assign        o_pmod_out_tft_data9    = w_tft_data_out[5];
+assign        o_pmod_out_tft_data4    = w_tft_data_out[6];
+assign        o_pmod_out_tft_data10   = w_tft_data_out[7];
 
 assign        o_pmod_tri_tft_data1    = !o_read_n;
 assign        o_pmod_tri_tft_data2    = !o_read_n;
@@ -348,14 +375,14 @@ assign        o_pmod_tri_tft_data8    = !o_read_n;
 assign        o_pmod_tri_tft_data9    = !o_read_n;
 assign        o_pmod_tri_tft_data10   = !o_read_n;
 
-assign        w_in_tft_data[4]        =  i_pmod_in_tft_data1;
-assign        w_in_tft_data[2]        =  i_pmod_in_tft_data2;
-assign        w_in_tft_data[0]        =  i_pmod_in_tft_data3;
-assign        w_in_tft_data[6]        =  i_pmod_in_tft_data4;
-assign        w_in_tft_data[3]        =  i_pmod_in_tft_data7;
-assign        w_in_tft_data[1]        =  i_pmod_in_tft_data8;
-assign        w_in_tft_data[5]        =  i_pmod_in_tft_data9;
-assign        w_in_tft_data[7]        =  i_pmod_in_tft_data10;
+assign        w_tft_data_in[0]        =  i_pmod_in_tft_data3;
+assign        w_tft_data_in[1]        =  i_pmod_in_tft_data8;
+assign        w_tft_data_in[2]        =  i_pmod_in_tft_data2;
+assign        w_tft_data_in[3]        =  i_pmod_in_tft_data1;
+assign        w_tft_data_in[4]        =  i_pmod_in_tft_data7;
+assign        w_tft_data_in[5]        =  i_pmod_in_tft_data9;
+assign        w_tft_data_in[6]        =  i_pmod_in_tft_data4;
+assign        w_tft_data_in[7]        =  i_pmod_in_tft_data10;
 
 //blocks
 always @ (posedge clk) begin
@@ -395,7 +422,7 @@ always @ (posedge clk) begin
         default: begin
         end
       endcase
-      if (w_reg_address > REG_PIXEL_COUNT) begin
+      if (w_reg_address > REG_VERSION) begin
         r_reg_invalid_addr                <= 1;
       end
       r_reg_in_ack_stb                    <= 1;
@@ -415,11 +442,16 @@ always @ (posedge clk) begin
         REG_PIXEL_COUNT: begin
           r_reg_out_data                  <= r_num_pixels;
         end
+        REG_VERSION: begin
+          r_reg_out_data[`MAJOR_RANGE]    <= `MAJOR_VERSION;
+          r_reg_out_data[`MINOR_RANGE]    <= `MINOR_VERSION;
+          r_reg_out_data[`REVISION_RANGE] <= `REVISION;
+        end
         default: begin
           r_reg_out_data                  <= 32'h00;
         end
       endcase
-      if (w_reg_address > REG_PIXEL_COUNT) begin
+      if (w_reg_address > REG_VERSION) begin
         r_reg_invalid_addr                <= 1;
       end
       r_reg_out_rdy_stb                   <= 1;
