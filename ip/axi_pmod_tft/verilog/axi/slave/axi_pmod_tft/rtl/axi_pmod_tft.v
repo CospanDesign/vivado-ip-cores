@@ -207,7 +207,7 @@ axi_lite_slave #(
 
 ) axi_lite_reg_interface (
   .clk                (clk                  ),
-  .rst                (rst                  ),
+  .rst                (w_axi_rst            ),
 
 
   .i_awvalid          (i_awvalid            ),
@@ -249,7 +249,7 @@ axi_lite_slave #(
 adapter_rgb_2_ppfifo #(
   .DATA_WIDTH         (RGB_WIDTH            )
 ) ar2p (
-  .rst                (i_video_rst          ),
+  .rst                (w_video_rst          ),
   .clk                (i_video_clk          ),
 
   .i_rgb              (i_video_rgb          ),
@@ -271,7 +271,7 @@ adapter_rgb_2_ppfifo #(
 nh_lcd #(
   .BUFFER_SIZE         (BUFFER_SIZE         )
 ) lcd (
-  .rst                 (rst                 ),
+  .rst                 (w_axi_rst           ),
   .clk                 (clk                 ),
 
   .debug               (w_debug             ),
@@ -364,7 +364,7 @@ always @ (posedge clk) begin
   r_reg_out_rdy_stb                       <=  0;
   r_reg_invalid_addr                      <=  0;
 
-  if (rst) begin
+  if (w_axi_rst) begin
     control                               <=  0;
     r_reg_out_data                        <=  0;
     r_cmd_data_out                        <=  0;
