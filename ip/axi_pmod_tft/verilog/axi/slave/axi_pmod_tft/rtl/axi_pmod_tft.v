@@ -35,7 +35,6 @@ SOFTWARE.
 `define CONTROL_ENABLE            0
 `define CONTROL_ENABLE_INTERRUPT  1
 `define CONTROL_COMMAND_MODE      2
-
 `define CONTROL_RESET_DISPLAY     4
 `define CONTROL_COMMAND_WRITE     5
 `define CONTROL_COMMAND_READ      6
@@ -182,7 +181,7 @@ wire        [31:0]          status;
 wire                        w_enable;
 wire                        w_enable_interrupt;
 wire                        w_reset_display;
-wire                        w_command_mode;
+wire                        w_cmd_mode;
 wire                        w_cmd_write_stb;
 wire                        w_cmd_read_stb;
 wire                        w_cmd_parameter;
@@ -225,6 +224,7 @@ wire  [31:0]                w_debug;
 
 wire  [7:0]                 w_tft_data_out;
 wire  [7:0]                 w_tft_data_in;
+wire                        w_read_en;
 
 
 //Submodules
@@ -308,7 +308,7 @@ nh_lcd #(
   .i_enable            (w_enable            ),
   .i_enable_tearing    (w_enable_tearing    ),
   .i_reset_display     (w_reset_display     ),
-  .i_data_command_mode (~w_command_mode     ),
+  .i_cmd_mode          (w_cmd_mode          ),
   .i_cmd_parameter     (w_cmd_parameter     ),
   .i_cmd_write_stb     (w_cmd_write_stb     ),
   .i_cmd_read_stb      (w_cmd_read_stb      ),
@@ -332,6 +332,7 @@ nh_lcd #(
   .o_write_n           (o_write_n           ),
   .o_read_n            (o_read_n            ),
   //.io_data             (w_tft_data          ),
+  .o_read_en           (w_read_en           ),
   .o_data              (w_tft_data_out      ),
   .i_data              (w_tft_data_in       ),
   .o_cs_n              (o_cs_n              ),
@@ -342,7 +343,7 @@ nh_lcd #(
 //Asynchronous Logic
 assign        w_enable                = control[`CONTROL_ENABLE];
 assign        w_enable_interrupt      = control[`CONTROL_ENABLE_INTERRUPT];
-assign        w_command_mode          = control[`CONTROL_COMMAND_MODE];
+assign        w_cmd_mode              = control[`CONTROL_COMMAND_MODE];
 assign        w_reset_display         = control[`CONTROL_RESET_DISPLAY];
 assign        w_cmd_write_stb         = control[`CONTROL_COMMAND_WRITE];
 assign        w_cmd_read_stb          = control[`CONTROL_COMMAND_READ];
@@ -366,14 +367,14 @@ assign        o_pmod_out_tft_data9    = w_tft_data_out[5];
 assign        o_pmod_out_tft_data4    = w_tft_data_out[6];
 assign        o_pmod_out_tft_data10   = w_tft_data_out[7];
 
-assign        o_pmod_tri_tft_data1    = !o_read_n;
-assign        o_pmod_tri_tft_data2    = !o_read_n;
-assign        o_pmod_tri_tft_data3    = !o_read_n;
-assign        o_pmod_tri_tft_data4    = !o_read_n;
-assign        o_pmod_tri_tft_data7    = !o_read_n;
-assign        o_pmod_tri_tft_data8    = !o_read_n;
-assign        o_pmod_tri_tft_data9    = !o_read_n;
-assign        o_pmod_tri_tft_data10   = !o_read_n;
+assign        o_pmod_tri_tft_data1    = !w_read_en;
+assign        o_pmod_tri_tft_data2    = !w_read_en;
+assign        o_pmod_tri_tft_data3    = !w_read_en;
+assign        o_pmod_tri_tft_data4    = !w_read_en;
+assign        o_pmod_tri_tft_data7    = !w_read_en;
+assign        o_pmod_tri_tft_data8    = !w_read_en;
+assign        o_pmod_tri_tft_data9    = !w_read_en;
+assign        o_pmod_tri_tft_data10   = !w_read_en;
 
 assign        w_tft_data_in[0]        =  i_pmod_in_tft_data3;
 assign        w_tft_data_in[1]        =  i_pmod_in_tft_data8;
