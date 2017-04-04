@@ -157,7 +157,9 @@ module axi_pmod_tft #(
   input                               i_video_rst,
   input       [RGB_WIDTH - 1:0]       i_video_rgb,
   input                               i_video_h_sync,
+  input                               i_video_h_blank,
   input                               i_video_v_sync,
+  input                               i_video_v_blank,
   input                               i_video_data_en
 
 );
@@ -282,7 +284,9 @@ adapter_rgb_2_ppfifo #(
 
   .i_rgb              (i_video_rgb          ),
   .i_h_sync           (i_video_h_sync       ),
+  .i_h_blank          (i_video_h_blank      ),
   .i_v_sync           (i_video_v_sync       ),
+  .i_v_blank          (i_video_v_blank      ),
   .i_data_en          (i_video_data_en      ),
 
   //Ping Pong FIFO Interface
@@ -303,6 +307,8 @@ nh_lcd #(
   .clk                 (clk                 ),
 
   .debug               (w_debug             ),
+
+  .i_v_blank           (i_video_v_blank     ),
 
 
   .i_enable            (w_enable            ),
