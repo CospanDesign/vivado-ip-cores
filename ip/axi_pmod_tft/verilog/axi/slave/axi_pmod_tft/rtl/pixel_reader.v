@@ -59,6 +59,21 @@ reg               [7:0]     r_next_blue;
 reg               [23:0]    r_read_count;
 //submodules
 //asynchronous logic
+/*
+always @ (*) begin
+  if (rst) begin
+    o_red                 =  8'h0;
+    o_green               =  8'h0;
+    o_blue                =  8'h0;
+  end
+  else begin
+    o_red                 =  i_read_data[23:16];
+    o_green               =  i_read_data[15:8];
+    o_blue                =  i_read_data[7:0];
+
+  end
+end
+*/
 //synchronous logic
 
 always @ (posedge clk) begin
@@ -84,15 +99,17 @@ always @ (posedge clk) begin
     end
 
 
-    if (!o_pixel_rdy && o_read_act) begin
+    //if (!o_pixel_rdy && o_read_act) begin
+    if (!o_pixel_rdy) begin
       //If the output is not ready and the FIFO is open, get pixel data
       o_red                     <=  i_read_data[23:16];
       o_green                   <=  i_read_data[15:8];
       o_blue                    <=  i_read_data[7:0];
-      r_read_count              <=  r_read_count + 1;
-      o_read_stb                <=  1;
-
-      o_pixel_rdy               <=  1;
+      if (r_read_count < i_read_size) begin
+        r_read_count            <=  r_read_count + 1;
+        o_read_stb              <=  1;
+        o_pixel_rdy             <=  1;
+      end
     end
     else if (o_pixel_rdy && i_pixel_stb) begin
       o_pixel_rdy               <=  0;

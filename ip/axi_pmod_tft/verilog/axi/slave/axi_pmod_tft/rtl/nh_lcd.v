@@ -8,8 +8,6 @@ module nh_lcd #(
 
   output      [31:0]              debug,
 
-  input                           i_v_blank,
-
   //Control Signals
   input                           i_enable,
   input                           i_reset_display,
@@ -101,8 +99,6 @@ nh_lcd_data_writer #(
   .i_enable             (i_enable             ),
   .i_enable_tearing     (i_enable_tearing     ),
   .i_num_pixels         (i_num_pixels         ),
-
-  .i_v_blank            (i_v_blank            ),
 
   .i_fifo_clk           (i_fifo_clk           ),
   .i_fifo_rst           (i_fifo_rst           ),

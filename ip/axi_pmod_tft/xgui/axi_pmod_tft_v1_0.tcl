@@ -6,9 +6,14 @@ proc init_gui { IPINST } {
   set_property tooltip {Configuration} ${Page_0}
   set INVERT_AXI_RESET [ipgui::add_param $IPINST -name "INVERT_AXI_RESET" -parent ${Page_0}]
   set_property tooltip {If set the AXI bus is active low} ${INVERT_AXI_RESET}
-  set INVERT_VIDEO_RESET [ipgui::add_param $IPINST -name "INVERT_VIDEO_RESET" -parent ${Page_0}]
-  set_property tooltip {Invert video reset signal, if set the reset is active low} ${INVERT_VIDEO_RESET}
+  set INVERT_AXIS_RESET [ipgui::add_param $IPINST -name "INVERT_AXIS_RESET" -parent ${Page_0}]
+  set_property tooltip {True = AXI Stream Reset Low, False = AXI Stream Reset High} ${INVERT_AXIS_RESET}
+  ipgui::add_static_text $IPINST -name "Configure the Polarity of the Reset" -parent ${Page_0} -text {Checked: reset line is active low
+Unchecked: reset line is active high
+}
 
+  set BUFFER_SIZE [ipgui::add_param $IPINST -name "BUFFER_SIZE"]
+  set_property tooltip {This sets the size of the internal FIFO, 10 is fine} ${BUFFER_SIZE}
 
 }
 
@@ -18,6 +23,15 @@ proc update_PARAM_VALUE.ADDR_WIDTH { PARAM_VALUE.ADDR_WIDTH } {
 
 proc validate_PARAM_VALUE.ADDR_WIDTH { PARAM_VALUE.ADDR_WIDTH } {
 	# Procedure called to validate ADDR_WIDTH
+	return true
+}
+
+proc update_PARAM_VALUE.AXIS_WIDTH { PARAM_VALUE.AXIS_WIDTH } {
+	# Procedure called to update AXIS_WIDTH when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.AXIS_WIDTH { PARAM_VALUE.AXIS_WIDTH } {
+	# Procedure called to validate AXIS_WIDTH
 	return true
 }
 
@@ -57,30 +71,21 @@ proc validate_PARAM_VALUE.IMAGE_WIDTH { PARAM_VALUE.IMAGE_WIDTH } {
 	return true
 }
 
+proc update_PARAM_VALUE.INVERT_AXIS_RESET { PARAM_VALUE.INVERT_AXIS_RESET } {
+	# Procedure called to update INVERT_AXIS_RESET when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.INVERT_AXIS_RESET { PARAM_VALUE.INVERT_AXIS_RESET } {
+	# Procedure called to validate INVERT_AXIS_RESET
+	return true
+}
+
 proc update_PARAM_VALUE.INVERT_AXI_RESET { PARAM_VALUE.INVERT_AXI_RESET } {
 	# Procedure called to update INVERT_AXI_RESET when any of the dependent parameters in the arguments change
 }
 
 proc validate_PARAM_VALUE.INVERT_AXI_RESET { PARAM_VALUE.INVERT_AXI_RESET } {
 	# Procedure called to validate INVERT_AXI_RESET
-	return true
-}
-
-proc update_PARAM_VALUE.INVERT_VIDEO_RESET { PARAM_VALUE.INVERT_VIDEO_RESET } {
-	# Procedure called to update INVERT_VIDEO_RESET when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.INVERT_VIDEO_RESET { PARAM_VALUE.INVERT_VIDEO_RESET } {
-	# Procedure called to validate INVERT_VIDEO_RESET
-	return true
-}
-
-proc update_PARAM_VALUE.RGB_WIDTH { PARAM_VALUE.RGB_WIDTH } {
-	# Procedure called to update RGB_WIDTH when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.RGB_WIDTH { PARAM_VALUE.RGB_WIDTH } {
-	# Procedure called to validate RGB_WIDTH
 	return true
 }
 
@@ -123,19 +128,9 @@ proc update_MODELPARAM_VALUE.BUFFER_SIZE { MODELPARAM_VALUE.BUFFER_SIZE PARAM_VA
 	set_property value [get_property value ${PARAM_VALUE.BUFFER_SIZE}] ${MODELPARAM_VALUE.BUFFER_SIZE}
 }
 
-proc update_MODELPARAM_VALUE.RGB_WIDTH { MODELPARAM_VALUE.RGB_WIDTH PARAM_VALUE.RGB_WIDTH } {
-	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.RGB_WIDTH}] ${MODELPARAM_VALUE.RGB_WIDTH}
-}
-
 proc update_MODELPARAM_VALUE.INVERT_AXI_RESET { MODELPARAM_VALUE.INVERT_AXI_RESET PARAM_VALUE.INVERT_AXI_RESET } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.INVERT_AXI_RESET}] ${MODELPARAM_VALUE.INVERT_AXI_RESET}
-}
-
-proc update_MODELPARAM_VALUE.INVERT_VIDEO_RESET { MODELPARAM_VALUE.INVERT_VIDEO_RESET PARAM_VALUE.INVERT_VIDEO_RESET } {
-	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.INVERT_VIDEO_RESET}] ${MODELPARAM_VALUE.INVERT_VIDEO_RESET}
 }
 
 proc update_MODELPARAM_VALUE.IMAGE_WIDTH { MODELPARAM_VALUE.IMAGE_WIDTH PARAM_VALUE.IMAGE_WIDTH } {
@@ -146,5 +141,15 @@ proc update_MODELPARAM_VALUE.IMAGE_WIDTH { MODELPARAM_VALUE.IMAGE_WIDTH PARAM_VA
 proc update_MODELPARAM_VALUE.IMAGE_HEIGHT { MODELPARAM_VALUE.IMAGE_HEIGHT PARAM_VALUE.IMAGE_HEIGHT } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.IMAGE_HEIGHT}] ${MODELPARAM_VALUE.IMAGE_HEIGHT}
+}
+
+proc update_MODELPARAM_VALUE.AXIS_WIDTH { MODELPARAM_VALUE.AXIS_WIDTH PARAM_VALUE.AXIS_WIDTH } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.AXIS_WIDTH}] ${MODELPARAM_VALUE.AXIS_WIDTH}
+}
+
+proc update_MODELPARAM_VALUE.INVERT_AXIS_RESET { MODELPARAM_VALUE.INVERT_AXIS_RESET PARAM_VALUE.INVERT_AXIS_RESET } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.INVERT_AXIS_RESET}] ${MODELPARAM_VALUE.INVERT_AXIS_RESET}
 }
 
