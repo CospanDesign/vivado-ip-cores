@@ -41,7 +41,11 @@ module nh_lcd #(
   output      [7:0]               o_data,
   output                          o_cs_n,
   output                          o_reset_n,
-  input                           i_tearing_effect
+  input                           i_tearing_effect,
+
+  input                           i_tp_red,
+  input                           i_tp_green,
+  input                           i_tp_blue
 );
 
 //Local Parameters
@@ -114,7 +118,12 @@ nh_lcd_data_writer #(
   .o_write              (w_data_write         ),
   .o_read               (w_data_read          ),
   .o_data_out_en        (w_data_data_out_en   ),
-  .i_tearing_effect     (i_tearing_effect     )
+  .i_tearing_effect     (i_tearing_effect     ),
+
+  //Test Generator
+  .i_tp_red             (i_tp_red             ),
+  .i_tp_blue            (i_tp_blue            ),
+  .i_tp_green           (i_tp_green           )
 );
 
 //Asynchronous Logic

@@ -31,7 +31,11 @@ module nh_lcd_data_writer#(
   output                          o_write,
   output                          o_read,
   output                          o_data_out_en,
-  input                           i_tearing_effect
+  input                           i_tearing_effect,
+
+  input                           i_tp_red,
+  input                           i_tp_green,
+  input                           i_tp_blue
 );
 
 //Local Parameters
@@ -113,7 +117,14 @@ pixel_reader pr(
 
   //Pixel state machine interface, when 'rdy' is high, pixel is ready
   .o_pixel_rdy      (w_pixel_rdy      ),
-  .i_pixel_stb      (r_pixel_stb      )
+  .i_pixel_stb      (r_pixel_stb      ),
+
+  //Test Generator
+  .i_tp_red         (i_tp_red         ),
+  .i_tp_blue        (i_tp_blue        ),
+  .i_tp_green       (i_tp_green       ),
+  .i_num_pixels     (i_num_pixels     )
+
 );
 
 //Asynchronous Logic

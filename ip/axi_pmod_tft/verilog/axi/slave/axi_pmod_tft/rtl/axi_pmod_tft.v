@@ -42,6 +42,9 @@ SOFTWARE.
 `define CONTROL_WRITE_OVERRIDE    8
 `define CONTROL_CHIP_SELECT       9
 `define CONTROL_ENABLE_TEARING    10
+`define CONTROL_TP_RED            12
+`define CONTROL_TP_GREEN          13
+`define CONTROL_TP_BLUE           14
 
 `define MAJOR_RANGE               31:28
 `define MINOR_RANGE               27:20
@@ -225,6 +228,10 @@ wire  [7:0]                 w_tft_data_out;
 wire  [7:0]                 w_tft_data_in;
 wire                        w_read_en;
 
+wire                        w_tp_red;
+wire                        w_tp_blue;
+wire                        w_tp_green;
+
 
 //Submodules
 //Convert AXI Slave signals to a simple register/address strobe
@@ -334,7 +341,13 @@ nh_lcd #(
   .i_data              (w_tft_data_in       ),
   .o_cs_n              (o_cs_n              ),
   .o_reset_n           (o_reset_n           ),
-  .i_tearing_effect    (i_tearing_effect    )
+  .i_tearing_effect    (i_tearing_effect    ),
+
+  //Test Pattern Interface
+  .i_tp_red            (w_tp_red            ),
+  .i_tp_blue           (w_tp_blue           ),
+  .i_tp_green          (w_tp_green          )
+
 );
 
 //Asynchronous Logic
@@ -348,6 +361,10 @@ assign        w_cmd_parameter         = control[`CONTROL_COMMAND_PARAMETER];
 assign        w_write_override        = control[`CONTROL_WRITE_OVERRIDE];
 assign        w_chip_select           = control[`CONTROL_CHIP_SELECT];
 assign        w_enable_tearing        = control[`CONTROL_ENABLE_TEARING];
+assign        w_tp_red                = control[`CONTROL_TP_RED];
+assign        w_tp_green              = control[`CONTROL_TP_GREEN];
+assign        w_tp_blue               = control[`CONTROL_TP_BLUE];
+
 
 assign        status[31:0]            = 0;
 
@@ -404,6 +421,18 @@ always @ (posedge clk) begin
     if (w_cmd_read_stb) begin
       control[`CONTROL_COMMAND_READ]      <=  0;
     end
+    if (w_tp_red) begin
+      control[`CONTROL_TP_RED]            <=  0;
+    end
+    if (w_tp_green) begin
+      control[`CONTROL_TP_GREEN]          <=  0;
+    end
+    if (w_tp_blue) begin
+      control[`CONTROL_TP_BLUE]           <=  0;
+    end
+
+
+
 
     if (w_reg_in_rdy) begin
       //From master
