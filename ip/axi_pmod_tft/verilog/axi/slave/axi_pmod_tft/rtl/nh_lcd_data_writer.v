@@ -212,6 +212,7 @@ always @ (posedge clk) begin
               if (i_tearing_effect) begin
                 //We are at the beginning of a Frame, need to start writing to the
                 //first address
+                r_pixel_stb     <=  1;
                 r_cmd_mode      <=  0;
                 r_write         <=  1;
                 state           <=  WRITE_ADDRESS;

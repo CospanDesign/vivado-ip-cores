@@ -88,6 +88,7 @@ end
 
 always @ (posedge clk) begin
   o_read_stb                <=  0;
+  o_pixel_rdy               <=  0;
   if (rst) begin
     o_read_act              <=  0;
 
@@ -98,8 +99,6 @@ always @ (posedge clk) begin
     r_next_red              <=  0;
     r_next_green            <=  0;
     r_next_blue             <=  0;
-    o_pixel_rdy             <=  0;
-
     r_tp_enable             <=  0;
   end
   else begin
@@ -128,21 +127,7 @@ always @ (posedge clk) begin
 
 
     //if (!o_pixel_rdy && o_read_act) begin
-    if (r_tp_enable) begin
-      if (r_read_count < i_num_pixels) begin
-        o_pixel_rdy             <=  1;
-        if (i_pixel_stb) begin
-          r_read_count          <=  r_read_count + 1;
-        end
-      end
-      else begin
-        o_pixel_rdy             <=  0;
-        r_tp_enable             <=  0;
-        o_red                   <=  0;
-        o_green                 <=  0;
-        o_blue                  <=  0;
-      end
-    end
+/*
     else begin
       if (!o_pixel_rdy) begin
         //If the output is not ready and the FIFO is open, get pixel data
@@ -162,6 +147,24 @@ always @ (posedge clk) begin
 
     if (o_read_act && (r_read_count >= i_read_size)) begin
       o_read_act                <=  0;
+    end
+*/
+
+
+    if (o_read_act) begin
+      o_pixel_rdy               <=  1;
+      if (i_pixel_stb) begin
+        o_red                   <=  i_read_data[23:16];
+        o_green                 <=  i_read_data[15:8];
+        o_blue                  <=  i_read_data[7:0];
+        if (r_read_count < i_read_size) begin
+          r_read_count          <=  r_read_count + 1;
+          o_read_stb            <=  1;
+        end
+        else begin
+          o_read_act            <=  0;
+        end
+      end
     end
   end
 end
