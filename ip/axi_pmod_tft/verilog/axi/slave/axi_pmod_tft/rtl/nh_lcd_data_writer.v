@@ -204,7 +204,7 @@ always @ (posedge clk) begin
         if (i_enable) begin
           if (w_pixel_rdy) begin
             if (r_pixel_cnt >= i_num_pixels) begin
-                r_pixel_cnt   <=  0;
+                state           <=  WAIT_FOR_TEAR_FIN;
             end
             else if (r_pixel_cnt == 0) begin
               //Start a transaction
@@ -269,6 +269,7 @@ always @ (posedge clk) begin
       WAIT_FOR_TEAR_FIN: begin
         if (!i_tearing_effect) begin
           state             <=  IDLE;
+          r_pixel_cnt       <=  0;
         end
       end
     endcase
