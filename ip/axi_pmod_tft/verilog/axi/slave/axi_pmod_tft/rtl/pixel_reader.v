@@ -52,8 +52,7 @@ module pixel_reader (
   //Test Generator
   input                     i_tp_red,
   input                     i_tp_blue,
-  input                     i_tp_green,
-  input           [31:0]    i_num_pixels
+  input                     i_tp_green
 
 );
 //local parameters
@@ -161,14 +160,14 @@ always @ (posedge clk) begin
 
     if (o_read_act) begin
       o_pixel_rdy               <=  1;
-      if (i_pixel_stb) begin
-        if (r_read_count < i_read_size) begin
+      if (r_read_count < i_read_size) begin
+        if (i_pixel_stb) begin
           r_read_count          <=  r_read_count + 1;
           o_read_stb            <=  1;
         end
-        else begin
-          o_read_act            <=  0;
-        end
+      end
+      else begin
+        o_read_act              <=  0;
       end
     end
 

@@ -122,8 +122,7 @@ pixel_reader pr(
   //Test Generator
   .i_tp_red         (i_tp_red         ),
   .i_tp_blue        (i_tp_blue        ),
-  .i_tp_green       (i_tp_green       ),
-  .i_num_pixels     (i_num_pixels     )
+  .i_tp_green       (i_tp_green       )
 
 );
 
@@ -249,7 +248,7 @@ always @ (posedge clk) begin
       WRITE_BLUE_START: begin
         r_write             <=  1;
         o_data_out          <=  w_blue;
-        if (w_pixel_rdy) begin
+        if (w_pixel_rdy && (r_pixel_cnt < i_num_pixels)) begin
           r_pixel_cnt       <=  r_pixel_cnt + 1;
           r_pixel_stb       <=  1;
           state             <=  WRITE_BLUE;
