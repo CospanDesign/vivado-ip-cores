@@ -150,13 +150,18 @@ always @ (posedge clk) begin
     end
 */
 
+    if (o_pixel_rdy) begin
+      if (i_pixel_stb) begin
+        o_pixel_rdy             <=  0;
+        o_red                   <=  i_read_data[23:16];
+        o_green                 <=  i_read_data[15:8];
+        o_blue                  <=  i_read_data[7:0];
+      end
+    end
 
     if (o_read_act) begin
       o_pixel_rdy               <=  1;
       if (i_pixel_stb) begin
-        o_red                   <=  i_read_data[23:16];
-        o_green                 <=  i_read_data[15:8];
-        o_blue                  <=  i_read_data[7:0];
         if (r_read_count < i_read_size) begin
           r_read_count          <=  r_read_count + 1;
           o_read_stb            <=  1;
@@ -166,6 +171,7 @@ always @ (posedge clk) begin
         end
       end
     end
+
   end
 end
 
