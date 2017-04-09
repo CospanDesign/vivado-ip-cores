@@ -47,6 +47,7 @@ localparam  WRITE_GREEN_START   = 4'h4;
 localparam  WRITE_GREEN         = 4'h5;
 localparam  WRITE_BLUE_START    = 4'h6;
 localparam  WRITE_BLUE          = 4'h7;
+localparam  WAIT_FOR_TEAR_FIN   = 4'h8;
 
 //Registers/Wires
 reg           [3:0]   state;
@@ -254,11 +255,21 @@ always @ (posedge clk) begin
           state             <=  WRITE_BLUE;
         end
         else begin
-          state             <=  IDLE;
+          if (r_pixel_cnt >= i_num_pixels) begin
+            state           <=  WAIT_FOR_TEAR_FIN;
+          end
+          else begin
+            state           <=  IDLE;
+          end
         end
       end
       WRITE_BLUE: begin
           state             <=  WRITE_RED_START;
+      end
+      WAIT_FOR_TEAR_FIN: begin
+        if (!i_tearing_effect) begin
+          state             <=  IDLE;
+        end
       end
     endcase
   end
