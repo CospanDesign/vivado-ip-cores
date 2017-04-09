@@ -142,6 +142,7 @@ assign  debug[16:13]    = state;
 assign  debug[21]       = o_data_out_en;
 assign  debug[31:22]    = 10'b0;
 
+/*
 always @ (*) begin
   if (rst) begin
     o_data_out  = 8'h0;
@@ -178,6 +179,7 @@ always @ (*) begin
     endcase
   end
 end
+*/
 
 //Synchronous Logic
 always @ (posedge clk) begin
@@ -190,6 +192,7 @@ always @ (posedge clk) begin
 
     //Control of Physical lines
     r_pixel_cnt         <=  0;
+    o_data_out          <=  `CMD_START_MEM_WRITE;
   end
   else begin
     //Strobes
@@ -197,6 +200,7 @@ always @ (posedge clk) begin
     //Get a ping pong FIFO
     case (state)
       IDLE: begin
+        o_data_out      <=  `CMD_START_MEM_WRITE;
         if (i_enable) begin
           if (w_pixel_rdy) begin
             if (r_pixel_cnt >= i_num_pixels) begin
@@ -228,6 +232,7 @@ always @ (posedge clk) begin
       WRITE_RED_START: begin
         r_write             <=  1;
         state               <=  WRITE_RED;
+        o_data_out          <=  w_red;
       end
       WRITE_RED: begin
         state               <=  WRITE_GREEN_START;
@@ -235,12 +240,14 @@ always @ (posedge clk) begin
       WRITE_GREEN_START: begin
         r_write             <=  1;
         state               <=  WRITE_GREEN;
+        o_data_out          <=  w_green;
       end
       WRITE_GREEN: begin
         state               <=  WRITE_BLUE_START;
       end
       WRITE_BLUE_START: begin
         r_write             <=  1;
+        o_data_out          <=  w_blue;
         if (w_pixel_rdy) begin
           r_pixel_cnt       <=  r_pixel_cnt + 1;
           r_pixel_stb       <=  1;
