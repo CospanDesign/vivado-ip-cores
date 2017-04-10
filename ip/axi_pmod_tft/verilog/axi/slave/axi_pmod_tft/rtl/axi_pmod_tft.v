@@ -369,7 +369,6 @@ assign        w_tp_red                = control[`CONTROL_TP_RED];
 assign        w_tp_green              = control[`CONTROL_TP_GREEN];
 assign        w_tp_blue               = control[`CONTROL_TP_BLUE];
 
-
 assign        status[31:0]            = 0;
 
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
