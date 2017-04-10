@@ -261,7 +261,7 @@ always @ (posedge clk) begin
         o_data_out          <=  w_blue;
         if (r_last) begin
           r_line_count      <=  r_line_count + 1;
-          if (r_line_count >= i_image_height) begin
+          if (r_line_count >= i_image_height - 1) begin
             state           <=  WAIT_FOR_TEAR_FIN;
           end
           else begin
