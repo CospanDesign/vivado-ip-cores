@@ -72,6 +72,9 @@ reg                   r_write;
 reg                   r_cmd_mode;
 reg                   r_wait_for_tear;
 
+wire                  w_last;
+reg                   r_last;
+
 //Tear control
 
 
@@ -124,7 +127,8 @@ pixel_reader pr(
   //Test Generator
   .i_tp_red         (i_tp_red         ),
   .i_tp_blue        (i_tp_blue        ),
-  .i_tp_green       (i_tp_green       )
+  .i_tp_green       (i_tp_green       ),
+  .o_last           (w_last           )
 
 );
 
@@ -194,6 +198,7 @@ always @ (posedge clk) begin
     //Control of Physical lines
     r_pixel_cnt         <=  0;
     o_data_out          <=  `CMD_START_MEM_WRITE;
+    r_last              <=  1;
   end
   else begin
     //Strobes
@@ -204,46 +209,36 @@ always @ (posedge clk) begin
         o_data_out      <=  `CMD_START_MEM_WRITE;
         if (i_enable) begin
 
-
-
           if (w_pixel_rdy) begin
-            if (r_pixel_cnt >= i_num_pixels) begin
-                state           <=  WAIT_FOR_TEAR_FIN;
-            end
-            else if (r_pixel_cnt == 0) begin
+            if (r_last) begin
               //Start a transaction
               //we are at the start of an image transaction
               if (i_tearing_effect) begin
                 //We are at the beginning of a Frame, need to start writing to the
                 //first address
-                r_pixel_stb     <=  1;
-                r_cmd_mode      <=  0;
-                r_write         <=  1;
-                state           <=  WRITE_ADDRESS;
+                r_pixel_stb       <=  1;
+                r_cmd_mode        <=  0;
+                r_write           <=  1;
+                state             <=  WRITE_ADDRESS;
+                r_last            <=  w_last;
               end
             end
             else begin
                 //Give it a clock to read the data
-                state           <=  WRITE_ADDRESS;
-                r_pixel_cnt     <=  r_pixel_cnt + 1;
-                r_pixel_stb     <=  1;
+                state             <=  WRITE_ADDRESS;
+                r_pixel_stb       <=  1;
+                r_last            <=  w_last;
+                
             end
           end
         end
         else begin
-            r_pixel_cnt       <= 0;
+          r_last                  <=  1;
         end
       end
       WRITE_ADDRESS: begin
         state               <=  WRITE_RED_START;
       end
-/*
-      WAIT_FOR_DATA: begin
-        if (w_pixel_rdy) begin
-          r_pixel_stb       <=  1;
-        end
-*/
-
       WRITE_RED_START: begin
         r_write             <=  1;
         state               <=  WRITE_RED;
@@ -263,18 +258,16 @@ always @ (posedge clk) begin
       WRITE_BLUE_START: begin
         r_write             <=  1;
         o_data_out          <=  w_blue;
-        if (w_pixel_rdy && (r_pixel_cnt < i_num_pixels)) begin
-          r_pixel_cnt       <=  r_pixel_cnt + 1;
+        if (r_last) begin
+          state             <=  WAIT_FOR_TEAR_FIN;
+        end
+        else if (w_pixel_rdy) begin
           r_pixel_stb       <=  1;
+          r_last            <=  w_last;
           state             <=  WRITE_BLUE;
         end
         else begin
-          if (r_pixel_cnt >= i_num_pixels) begin
-            state           <=  WAIT_FOR_TEAR_FIN;
-          end
-          else begin
-            state           <=  IDLE;
-          end
+          state             <=  IDLE;
         end
       end
       WRITE_BLUE: begin
@@ -283,7 +276,6 @@ always @ (posedge clk) begin
       WAIT_FOR_TEAR_FIN: begin
         if (!i_tearing_effect) begin
           state             <=  IDLE;
-          r_pixel_cnt       <=  0;
         end
       end
     endcase
