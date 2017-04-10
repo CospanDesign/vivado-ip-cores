@@ -38,7 +38,7 @@ module pixel_reader (
   input                     i_read_rdy,
   output  reg               o_read_act,
   input           [23:0]    i_read_size,
-  input           [23:0]    i_read_data,
+  input           [24:0]    i_read_data,
   output  reg               o_read_stb,
 
   //Output Pixels
@@ -52,8 +52,9 @@ module pixel_reader (
   //Test Generator
   input                     i_tp_red,
   input                     i_tp_blue,
-  input                     i_tp_green
+  input                     i_tp_green,
 
+  output                    o_last
 );
 //local parameters
 //registes/wires
@@ -82,6 +83,8 @@ always @ (*) begin
   end
 end
 */
+
+assign  o_last               =  i_read_data[24];
 
 //synchronous logic
 

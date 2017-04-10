@@ -204,7 +204,7 @@ wire        [23:0]          wfifo_size;
 wire        [1:0]           wfifo_ready;
 wire        [1:0]           wfifo_activate;
 wire                        wfifo_strobe;
-wire        [23:0]          wfifo_data;
+wire        [AXIS_WIDTH:0]  wfifo_data;
 
 //Simple User Interface
 wire [ADDR_WIDTH - 1: 0]    w_reg_address;
@@ -280,7 +280,7 @@ axi_lite_slave #(
 );
 
 //Take in an AXI video stream and output the data into a PPFIFO
-adapter_axi_stream_2_ppfifo #(
+adapter_axi_stream_2_ppfifo_wl #(
   .DATA_WIDTH         (AXIS_WIDTH           )
 ) as2p (
   .rst                (w_axis_rst           ),
@@ -302,7 +302,8 @@ adapter_axi_stream_2_ppfifo #(
 );
 
 nh_lcd #(
-  .BUFFER_SIZE         (BUFFER_SIZE         )
+  .BUFFER_SIZE         (BUFFER_SIZE         ),
+  .DATAS_WIDTH         (AXIS_WIDTH          )
 ) lcd (
   .rst                 (w_axi_rst           ),
   .clk                 (clk                 ),

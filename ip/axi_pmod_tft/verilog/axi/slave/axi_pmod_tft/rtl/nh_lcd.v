@@ -30,7 +30,7 @@ module nh_lcd #(
   input       [1:0]               i_fifo_act,
   input                           i_fifo_stb,
   output      [23:0]              o_fifo_size,
-  input       [DATAS_WIDTH - 1:0] i_fifo_data,
+  input       [DATAS_WIDTH:0]     i_fifo_data,
 
   //Physical Signals
   output                          o_read_en,

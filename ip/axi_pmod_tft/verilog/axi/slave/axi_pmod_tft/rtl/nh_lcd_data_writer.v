@@ -22,7 +22,7 @@ module nh_lcd_data_writer#(
   input       [1:0]               i_fifo_act,
   input                           i_fifo_stb,
   output      [23:0]              o_fifo_size,
-  input       [DATAS_WIDTH - 1:0] i_fifo_data,
+  input       [DATAS_WIDTH:0]     i_fifo_data,
 
   //Physical Signals
   output                          o_cmd_mode,
@@ -60,7 +60,7 @@ wire                  w_read_stb;
 wire                  w_read_rdy;
 wire                  w_read_act;
 wire          [23:0]  w_read_size;
-wire          [23:0]  w_read_data;
+wire          [24:0]  w_read_data;
 
 reg           [31:0]  r_pixel_cnt;
 reg                   r_pixel_stb;
@@ -70,6 +70,7 @@ wire                  w_pixel_rdy;
 //Tear Mode select
 reg                   r_write;
 reg                   r_cmd_mode;
+reg                   r_wait_for_tear;
 
 //Tear control
 
@@ -77,7 +78,7 @@ reg                   r_cmd_mode;
 //Submodules
 //generate a Ping Pong FIFO to cross the clock domain
 ppfifo #(
-  .DATA_WIDTH       (DATAS_WIDTH      ),
+  .DATA_WIDTH       (DATAS_WIDTH + 1  ),
   .ADDRESS_WIDTH    (BUFFER_SIZE      )
 )ping_pong (
 
@@ -202,6 +203,9 @@ always @ (posedge clk) begin
       IDLE: begin
         o_data_out      <=  `CMD_START_MEM_WRITE;
         if (i_enable) begin
+
+
+
           if (w_pixel_rdy) begin
             if (r_pixel_cnt >= i_num_pixels) begin
                 state           <=  WAIT_FOR_TEAR_FIN;
@@ -219,7 +223,10 @@ always @ (posedge clk) begin
               end
             end
             else begin
-                state           <=  WRITE_RED_START;
+                //Give it a clock to read the data
+                state           <=  WRITE_ADDRESS;
+                r_pixel_cnt     <=  r_pixel_cnt + 1;
+                r_pixel_stb     <=  1;
             end
           end
         end
@@ -230,6 +237,13 @@ always @ (posedge clk) begin
       WRITE_ADDRESS: begin
         state               <=  WRITE_RED_START;
       end
+/*
+      WAIT_FOR_DATA: begin
+        if (w_pixel_rdy) begin
+          r_pixel_stb       <=  1;
+        end
+*/
+
       WRITE_RED_START: begin
         r_write             <=  1;
         state               <=  WRITE_RED;
