@@ -571,7 +571,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>d07a7555</spirit:value>
+            <spirit:value>08a337cc</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -587,7 +587,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>24bef4f8</spirit:value>
+            <spirit:value>fc67b661</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1466,10 +1466,6 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>verilog/axi/slave/axi_pmod_tft/rtl/pixel_reader.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
         <spirit:name>verilog/axi/slave/axi_pmod_tft/rtl/nh_lcd_command.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
@@ -1511,10 +1507,6 @@
       <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
       <spirit:file>
         <spirit:name>verilog/generic/ppfifo.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>verilog/axi/slave/axi_pmod_tft/rtl/pixel_reader.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
@@ -1659,8 +1651,8 @@
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:vendorDisplayName>Cospan Design</xilinx:vendorDisplayName>
       <xilinx:vendorURL>http://www.cospandesign.com</xilinx:vendorURL>
-      <xilinx:coreRevision>64</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2017-04-10T16:54:36Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>65</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2017-04-10T18:09:28Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="user.org:user:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
         <xilinx:tag xilinx:name="cd.com:user:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
@@ -1673,7 +1665,7 @@
       <xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="db68d0d4"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="f7cd80a9"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="3d323cd9"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="9424caa3"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="7fc341b1"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="9cfdee59"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="9d96cd86"/>

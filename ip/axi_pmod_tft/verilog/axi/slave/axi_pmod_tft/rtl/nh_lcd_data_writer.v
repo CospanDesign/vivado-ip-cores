@@ -14,7 +14,6 @@ module nh_lcd_data_writer#(
   input       [31:0]              i_image_width,
   input       [31:0]              i_image_height,
   input                           i_enable_tearing,
-  input                           i_unpack_pixels,
 
   //FIFO Signals
   input                           i_fifo_clk,
@@ -54,14 +53,15 @@ localparam  WAIT_FOR_TEAR_FIN   = 4'h9;
 //Registers/Wires
 reg           [3:0]   state;
 
-wire          [7:0]   w_red;
-wire          [7:0]   w_green;
-wire          [7:0]   w_blue;
+reg           [7:0]   r_red;
+reg           [7:0]   r_green;
+reg           [7:0]   r_blue;
 
 wire                  w_read_stb;
 wire                  w_read_rdy;
-wire                  w_read_act;
+reg                   r_read_act;
 wire          [23:0]  w_read_size;
+reg           [23:0]  r_read_count;
 wire          [24:0]  w_read_data;
 
 reg           [31:0]  r_line_count;
@@ -74,7 +74,6 @@ reg                   r_write;
 reg                   r_cmd_mode;
 reg                   r_wait_for_tear;
 
-wire                  w_last;
 reg                   r_last;
 
 //Tear control
@@ -103,35 +102,9 @@ ppfifo #(
   .read_clock      (clk               ),
   .read_strobe     (w_read_stb        ),
   .read_ready      (w_read_rdy        ),
-  .read_activate   (w_read_act        ),
+  .read_activate   (r_read_act        ),
   .read_count      (w_read_size       ),
   .read_data       (w_read_data       )
-);
-
-pixel_reader pr(
-  .clk              (clk              ),
-  .rst              (rst              ),
-
-  .o_read_stb       (w_read_stb       ),
-  .i_read_rdy       (w_read_rdy       ),
-  .o_read_act       (w_read_act       ),
-  .i_read_size      (w_read_size      ),
-  .i_read_data      (w_read_data      ),
-
-  .o_red            (w_red            ),
-  .o_green          (w_green          ),
-  .o_blue           (w_blue           ),
-
-  //Pixel state machine interface, when 'rdy' is high, pixel is ready
-  .o_pixel_rdy      (w_pixel_rdy      ),
-  .i_pixel_stb      (r_pixel_stb      ),
-
-  //Test Generator
-  .i_tp_red         (i_tp_red         ),
-  .i_tp_blue        (i_tp_blue        ),
-  .i_tp_green       (i_tp_green       ),
-  .o_last           (w_last           )
-
 );
 
 //Asynchronous Logic
@@ -148,6 +121,44 @@ assign  debug[3]        = o_read;
 assign  debug[16:13]    = state;
 assign  debug[21]       = o_data_out_en;
 assign  debug[31:22]    = 10'b0;
+assign  w_pixel_rdy     = r_read_act;
+assign  w_read_stb      = r_pixel_stb;
+
+//assign  r_red           = w_read_data[23:16];
+//assign  r_green         = w_read_data[15: 8];
+//assign  r_blue          = w_read_data[ 7: 0];
+//assign  r_last          = w_read_data[24];
+
+always @ (posedge clk) begin
+  if (rst) begin
+    r_read_count        <=  0;
+    r_red               <=  0; 
+    r_green             <=  0; 
+    r_blue              <=  0; 
+    r_last              <=  0; 
+    r_read_act          <=  0;
+  end
+  else begin
+    if (w_read_rdy && !r_read_act) begin
+      r_read_act        <=  1;
+      r_read_count      <=  0;
+    end
+    else if (r_read_act) begin
+      if (r_read_count < w_read_size) begin
+        if (w_read_stb) begin 
+          r_read_count  <=  r_read_count + 1;
+          r_red         <= w_read_data[23:16];
+          r_green       <= w_read_data[15: 8];
+          r_blue        <= w_read_data[ 7: 0];
+          r_last        <= w_read_data[24];
+        end
+      end
+      else begin
+        r_read_act      <=  0;
+      end
+    end
+  end
+end
 
 //Synchronous Logic
 always @ (posedge clk) begin
@@ -161,7 +172,6 @@ always @ (posedge clk) begin
     //Control of Physical lines
     r_line_count        <=  0;
     o_data_out          <=  `CMD_START_MEM_WRITE;
-    r_last              <=  0;
   end
   else begin
     //Strobes
@@ -183,14 +193,12 @@ always @ (posedge clk) begin
                 r_cmd_mode        <=  0;
                 r_write           <=  1;
                 state             <=  WRITE_ADDRESS;
-                r_last            <=  w_last;
               end
             end
             else if (r_line_count > 0) begin
                 //Give it a clock to read the data
                 state             <=  WRITE_ADDRESS;
                 r_pixel_stb       <=  1;
-                r_last            <=  w_last;
             end
           end
         end
@@ -204,7 +212,7 @@ always @ (posedge clk) begin
       WRITE_RED_START: begin
         r_write             <=  1;
         state               <=  WRITE_RED;
-        o_data_out          <=  w_red;
+        o_data_out          <=  r_red;
       end
       WRITE_RED: begin
         state               <=  WRITE_GREEN_START;
@@ -212,14 +220,14 @@ always @ (posedge clk) begin
       WRITE_GREEN_START: begin
         r_write             <=  1;
         state               <=  WRITE_GREEN;
-        o_data_out          <=  w_green;
+        o_data_out          <=  r_green;
       end
       WRITE_GREEN: begin
         state               <=  WRITE_BLUE_START;
       end
       WRITE_BLUE_START: begin
         r_write             <=  1;
-        o_data_out          <=  w_blue;
+        o_data_out          <=  r_blue;
         if (r_last) begin
           //Finished a line
           if (r_line_count < (i_image_height - 1)) begin
@@ -232,7 +240,6 @@ always @ (posedge clk) begin
         end
         else if (w_pixel_rdy) begin
           r_pixel_stb       <=  1;
-          r_last            <=  w_last;
           state             <=  WRITE_BLUE;
         end
         else begin
