@@ -11,7 +11,8 @@ module nh_lcd_data_writer#(
 
   //Control
   input                           i_enable,
-  input       [31:0]              i_num_pixels,
+  input       [31:0]              i_image_width,
+  input       [31:0]              i_image_height,
   input                           i_enable_tearing,
   input                           i_unpack_pixels,
 
@@ -62,7 +63,7 @@ wire                  w_read_act;
 wire          [23:0]  w_read_size;
 wire          [24:0]  w_read_data;
 
-reg           [31:0]  r_pixel_cnt;
+reg           [31:0]  r_line_count;
 reg                   r_pixel_stb;
 wire                  w_pixel_rdy;
 
@@ -196,7 +197,7 @@ always @ (posedge clk) begin
     state               <=  IDLE;
 
     //Control of Physical lines
-    r_pixel_cnt         <=  0;
+    r_line_count        <=  0;
     o_data_out          <=  `CMD_START_MEM_WRITE;
     r_last              <=  1;
   end
@@ -210,12 +211,13 @@ always @ (posedge clk) begin
         if (i_enable) begin
 
           if (w_pixel_rdy) begin
-            if (r_last) begin
+            if (r_last && (r_line_count == 0)) begin
               //Start a transaction
               //we are at the start of an image transaction
               if (i_tearing_effect) begin
                 //We are at the beginning of a Frame, need to start writing to the
                 //first address
+                r_line_count      <=  0;
                 r_pixel_stb       <=  1;
                 r_cmd_mode        <=  0;
                 r_write           <=  1;
@@ -223,12 +225,11 @@ always @ (posedge clk) begin
                 r_last            <=  w_last;
               end
             end
-            else begin
+            else if (r_line_count > 0) begin
                 //Give it a clock to read the data
                 state             <=  WRITE_ADDRESS;
                 r_pixel_stb       <=  1;
                 r_last            <=  w_last;
-                
             end
           end
         end
@@ -259,7 +260,13 @@ always @ (posedge clk) begin
         r_write             <=  1;
         o_data_out          <=  w_blue;
         if (r_last) begin
-          state             <=  WAIT_FOR_TEAR_FIN;
+          r_line_count      <=  r_line_count + 1;
+          if (r_line_count >= i_image_height) begin
+            state           <=  WAIT_FOR_TEAR_FIN;
+          end
+          else begin
+            state           <=  IDLE;
+          end
         end
         else if (w_pixel_rdy) begin
           r_pixel_stb       <=  1;
@@ -275,6 +282,7 @@ always @ (posedge clk) begin
       end
       WAIT_FOR_TEAR_FIN: begin
         if (!i_tearing_effect) begin
+          r_line_count      <=  0;
           state             <=  IDLE;
         end
       end

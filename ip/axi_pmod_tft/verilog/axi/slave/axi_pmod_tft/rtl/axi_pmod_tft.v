@@ -170,8 +170,10 @@ module axi_pmod_tft #(
 localparam                  REG_CONTROL        = 0;
 localparam                  REG_STATUS         = 1;
 localparam                  REG_COMMAND_DATA   = 2;
-localparam                  REG_PIXEL_COUNT    = 3;
-localparam                  REG_VERSION        = 4;
+//localparam                  REG_IMAGE_WIDTH    = 3;
+localparam                  REG_IMAGE_WIDTH    = 3;
+localparam                  REG_IMAGE_HEIGHT   = 4;
+localparam                  REG_VERSION        = 5;
 
 //Reg/Wire
 
@@ -195,7 +197,8 @@ wire                        w_cmd_finished;
 reg         [7:0]           r_cmd_data_out;
 wire        [7:0]           w_cmd_data_in;
 
-reg         [31:0]          r_num_pixels;
+reg         [31:0]          r_image_width;
+reg         [31:0]          r_image_height;
 
 //status
 
@@ -322,7 +325,8 @@ nh_lcd #(
   .o_cmd_finished      (w_cmd_finished      ),
   .i_write_override    (w_write_override    ),
   .i_chip_select       (w_chip_select       ),
-  .i_num_pixels        (r_num_pixels        ),
+  .i_image_width       (r_image_width       ),
+  .i_image_height      (r_image_height      ),
 
   .i_fifo_clk          (wfifo_clk           ),
   .i_fifo_rst          (w_axis_rst          ),
@@ -411,7 +415,8 @@ always @ (posedge clk) begin
     control                               <=  0;
     r_reg_out_data                        <=  0;
     r_cmd_data_out                        <=  0;
-    r_num_pixels                          <=  IMAGE_WIDTH * IMAGE_HEIGHT;
+    r_image_width                         <=  IMAGE_WIDTH;
+    r_image_height                        <=  IMAGE_HEIGHT;
   end
   else begin
 
@@ -444,8 +449,11 @@ always @ (posedge clk) begin
         REG_COMMAND_DATA: begin
           r_cmd_data_out                  <= w_reg_in_data[7:0];
         end
-        REG_PIXEL_COUNT: begin
-          r_num_pixels                    <= w_reg_in_data;
+        REG_IMAGE_WIDTH: begin
+          r_image_width                   <= w_reg_in_data;
+        end
+        REG_IMAGE_HEIGHT: begin
+          r_image_height                  <= w_reg_in_data;
         end
         default: begin
         end
@@ -467,8 +475,11 @@ always @ (posedge clk) begin
         REG_COMMAND_DATA: begin
           r_reg_out_data                  <= w_cmd_data_in;
         end
-        REG_PIXEL_COUNT: begin
-          r_reg_out_data                  <= r_num_pixels;
+        REG_IMAGE_WIDTH: begin
+          r_reg_out_data                  <= r_image_width;
+        end
+        REG_IMAGE_HEIGHT: begin
+          r_reg_out_data                  <= r_image_height;
         end
         REG_VERSION: begin
           r_reg_out_data                  <= 32'h00;
