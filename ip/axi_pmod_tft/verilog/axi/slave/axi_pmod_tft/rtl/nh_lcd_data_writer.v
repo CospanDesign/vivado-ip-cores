@@ -42,13 +42,14 @@ module nh_lcd_data_writer#(
 //Local Parameters
 localparam  IDLE                = 4'h0;
 localparam  WRITE_ADDRESS       = 4'h1;
-localparam  WRITE_RED_START     = 4'h2;
-localparam  WRITE_RED           = 4'h3;
-localparam  WRITE_GREEN_START   = 4'h4;
-localparam  WRITE_GREEN         = 4'h5;
-localparam  WRITE_BLUE_START    = 4'h6;
-localparam  WRITE_BLUE          = 4'h7;
-localparam  WAIT_FOR_TEAR_FIN   = 4'h8;
+localparam  WRITE_ADDRESS_DELAY = 4'h2;
+localparam  WRITE_RED_START     = 4'h3;
+localparam  WRITE_RED           = 4'h4;
+localparam  WRITE_GREEN_START   = 4'h5;
+localparam  WRITE_GREEN         = 4'h6;
+localparam  WRITE_BLUE_START    = 4'h7;
+localparam  WRITE_BLUE          = 4'h8;
+localparam  WAIT_FOR_TEAR_FIN   = 4'h9;
 
 //Registers/Wires
 reg           [3:0]   state;
@@ -148,45 +149,6 @@ assign  debug[16:13]    = state;
 assign  debug[21]       = o_data_out_en;
 assign  debug[31:22]    = 10'b0;
 
-/*
-always @ (*) begin
-  if (rst) begin
-    o_data_out  = 8'h0;
-  end
-  else begin
-    case (state)
-      IDLE: begin
-        o_data_out = `CMD_START_MEM_WRITE;
-      end
-      WRITE_ADDRESS: begin
-        o_data_out = `CMD_START_MEM_WRITE;
-      end
-      WRITE_RED_START: begin
-        o_data_out = w_red;
-      end
-      WRITE_RED: begin
-        o_data_out = w_red;
-      end
-      WRITE_GREEN_START: begin
-        o_data_out = w_green;
-      end
-      WRITE_GREEN: begin
-        o_data_out = w_green;
-      end
-      WRITE_BLUE_START: begin
-        o_data_out = w_blue;
-      end
-      WRITE_BLUE: begin
-        o_data_out = w_blue;
-      end
-      default: begin
-        o_data_out = 8'h0;
-      end
-    endcase
-  end
-end
-*/
-
 //Synchronous Logic
 always @ (posedge clk) begin
   //De-assert strobes
@@ -199,7 +161,7 @@ always @ (posedge clk) begin
     //Control of Physical lines
     r_line_count        <=  0;
     o_data_out          <=  `CMD_START_MEM_WRITE;
-    r_last              <=  1;
+    r_last              <=  0;
   end
   else begin
     //Strobes
@@ -211,13 +173,12 @@ always @ (posedge clk) begin
         if (i_enable) begin
 
           if (w_pixel_rdy) begin
-            if (r_last && (r_line_count == 0)) begin
+            if (r_line_count == 0) begin
               //Start a transaction
               //we are at the start of an image transaction
               if (i_tearing_effect) begin
                 //We are at the beginning of a Frame, need to start writing to the
                 //first address
-                r_line_count      <=  0;
                 r_pixel_stb       <=  1;
                 r_cmd_mode        <=  0;
                 r_write           <=  1;
@@ -233,11 +194,11 @@ always @ (posedge clk) begin
             end
           end
         end
-        else begin
-          r_last                  <=  1;
-        end
       end
       WRITE_ADDRESS: begin
+        state               <=  WRITE_ADDRESS_DELAY;
+      end
+      WRITE_ADDRESS_DELAY: begin
         state               <=  WRITE_RED_START;
       end
       WRITE_RED_START: begin
@@ -260,12 +221,13 @@ always @ (posedge clk) begin
         r_write             <=  1;
         o_data_out          <=  w_blue;
         if (r_last) begin
-          r_line_count      <=  r_line_count + 1;
-          if (r_line_count >= i_image_height - 1) begin
-            state           <=  WAIT_FOR_TEAR_FIN;
+          //Finished a line
+          if (r_line_count < (i_image_height - 1)) begin
+            r_line_count    <=  r_line_count + 1;
+            state           <=  IDLE;
           end
           else begin
-            state           <=  IDLE;
+            state           <=  WAIT_FOR_TEAR_FIN;
           end
         end
         else if (w_pixel_rdy) begin

@@ -170,7 +170,6 @@ module axi_pmod_tft #(
 localparam                  REG_CONTROL        = 0;
 localparam                  REG_STATUS         = 1;
 localparam                  REG_COMMAND_DATA   = 2;
-//localparam                  REG_IMAGE_WIDTH    = 3;
 localparam                  REG_IMAGE_WIDTH    = 3;
 localparam                  REG_IMAGE_HEIGHT   = 4;
 localparam                  REG_VERSION        = 5;

@@ -106,7 +106,7 @@ always @ (posedge clk) begin
             o_ppfifo_data[DATA_WIDTH - 1: 0]  <=  i_axi_data;
             o_ppfifo_data[DATA_WIDTH]         <=  i_axi_last;
 
-            r_count         <=  r_count + 1;
+            r_count                           <=  r_count + 1;
           end
         end
         //Conditions to release the FIFO or stop a transaction
