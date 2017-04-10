@@ -285,7 +285,7 @@ axi_lite_slave #(
 adapter_axi_stream_2_ppfifo_wl #(
   .DATA_WIDTH         (AXIS_WIDTH           )
 ) as2p (
-  .rst                (w_axis_rst           ),
+  .rst                (w_axis_rst || ~w_enable ),
 
   //AXI Stream Input
   .i_axi_clk          (i_axis_clk           ),
@@ -307,7 +307,7 @@ nh_lcd #(
   .BUFFER_SIZE         (BUFFER_SIZE         ),
   .DATAS_WIDTH         (AXIS_WIDTH          )
 ) lcd (
-  .rst                 (w_axi_rst           ),
+  .rst                 (w_axi_rst || ~w_enable ),
   .clk                 (clk                 ),
 
   .debug               (w_debug             ),
