@@ -65,6 +65,7 @@ localparam      RELEASE     = 2;
 wire                        clk;  //Convenience Signal
 reg           [3:0]         state;
 reg           [23:0]        r_count;
+reg                         r_last;
 //submodules
 //asynchronous logic
 
@@ -72,11 +73,12 @@ reg           [23:0]        r_count;
 //Users do not need to figure out how to hook up the clocks
 assign  o_ppfifo_clk    = i_axi_clk;
 assign  clk             = i_axi_clk;
-assign  o_axi_ready     = (o_ppfifo_act > 0) && (r_count < i_ppfifo_size);
+assign  o_axi_ready     = (o_ppfifo_act > 0) && (r_count < i_ppfifo_size) && !r_last;
 //synchronous logic
 
 always @ (posedge clk) begin
   o_ppfifo_stb                                <=  0;
+  r_last                                      <=  0;
 
   if (rst) begin
     r_count                                   <=  0;
@@ -85,7 +87,7 @@ always @ (posedge clk) begin
     state                                     <=  IDLE;
   end
   else begin
-    if ((i_ppfifo_rdy > 0) && (o_ppfifo_act == 0) && !i_axi_last) begin
+    if ((i_ppfifo_rdy > 0) && (o_ppfifo_act == 0)) begin
       r_count                                 <=  0;
       if (i_ppfifo_rdy[0]) begin
         o_ppfifo_act[0]                       <=  1;
@@ -96,7 +98,10 @@ always @ (posedge clk) begin
     end
     else begin
       if (o_ppfifo_act) begin
-        if (r_count < i_ppfifo_size) begin
+        if (r_last) begin
+          o_ppfifo_act                        <=  0;
+        end
+        else if (r_count < i_ppfifo_size) begin
           if (i_axi_valid && o_axi_ready) begin
             o_ppfifo_stb                      <=  1;
             o_ppfifo_data[DATA_WIDTH - 1: 0]  <=  i_axi_data;

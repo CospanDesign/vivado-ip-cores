@@ -571,7 +571,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>436a9727</spirit:value>
+            <spirit:value>eb6e72cb</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -587,7 +587,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>38b501ae</spirit:value>
+            <spirit:value>e6b06155</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1499,7 +1499,7 @@
       <spirit:file>
         <spirit:name>verilog/axi/slave/axi_pmod_tft/rtl/adapter_axi_stream_2_ppfifo_wl.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_f0f92f1e</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_4b92452b</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -1651,8 +1651,8 @@
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:vendorDisplayName>Cospan Design</xilinx:vendorDisplayName>
       <xilinx:vendorURL>http://www.cospandesign.com</xilinx:vendorURL>
-      <xilinx:coreRevision>68</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2017-04-11T02:47:20Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>69</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2017-04-11T03:51:41Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="user.org:user:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
         <xilinx:tag xilinx:name="cd.com:user:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
@@ -1665,7 +1665,7 @@
       <xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="db68d0d4"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="f7cd80a9"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="c8989ff7"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="1c12b1c5"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="7fc341b1"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="9cfdee59"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="9d96cd86"/>
