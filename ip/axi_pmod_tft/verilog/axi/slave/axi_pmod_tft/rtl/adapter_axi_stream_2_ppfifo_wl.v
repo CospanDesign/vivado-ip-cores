@@ -43,7 +43,6 @@ module adapter_axi_stream_2_ppfifo_wl #(
 
   //AXI Stream Input
   input                             i_axi_clk,
-  //output  reg                       o_axi_ready,
   output                            o_axi_ready,
   input       [DATA_WIDTH - 1:0]    i_axi_data,
   input       [STROBE_WIDTH - 1:0]  i_axi_keep,
@@ -78,7 +77,6 @@ assign  o_axi_ready     = (o_ppfifo_act > 0) && (r_count < i_ppfifo_size);
 
 always @ (posedge clk) begin
   o_ppfifo_stb                                <=  0;
-//  o_axi_ready                                 <=  0;
 
   if (rst) begin
     r_count                                   <=  0;
@@ -87,7 +85,7 @@ always @ (posedge clk) begin
     state                                     <=  IDLE;
   end
   else begin
-    if ((i_ppfifo_rdy > 0) && (o_ppfifo_act == 0)) begin
+    if ((i_ppfifo_rdy > 0) && (o_ppfifo_act == 0) && !i_axi_last) begin
       r_count                                 <=  0;
       if (i_ppfifo_rdy[0]) begin
         o_ppfifo_act[0]                       <=  1;
@@ -99,7 +97,6 @@ always @ (posedge clk) begin
     else begin
       if (o_ppfifo_act) begin
         if (r_count < i_ppfifo_size) begin
-          //o_axi_ready                         <=  1;
           if (i_axi_valid && o_axi_ready) begin
             o_ppfifo_stb                      <=  1;
             o_ppfifo_data[DATA_WIDTH - 1: 0]  <=  i_axi_data;
@@ -114,48 +111,5 @@ always @ (posedge clk) begin
     end
   end
 end
-/*
-    case (state)
-      IDLE: begin
-        o_ppfifo_act                          <=  0;
-        if ((i_ppfifo_rdy > 0) && (o_ppfifo_act == 0)) begin
-          r_count                             <=  0;
-          if (i_ppfifo_rdy[0]) begin
-            o_ppfifo_act[0]                   <=  1;
-          end
-          else begin
-            o_ppfifo_act[1]                   <=  1;
-          end
-          state                               <=  READY;
-        end
-      end
-      READY: begin
-        if (r_count < i_ppfifo_size) begin
-          if (i_axi_valid) begin
-            o_ppfifo_stb                      <=  1;
-            o_ppfifo_data[DATA_WIDTH - 1: 0]  <=  i_axi_data;
-            o_ppfifo_data[DATA_WIDTH]         <=  i_axi_last;
-            r_count                           <=  r_count + 1;
-          end
-        end
-        //Conditions to release the FIFO or stop a transaction
-        else begin
-          state                               <=  RELEASE;
-        end
-        if (i_axi_last) begin
-          state                               <=  RELEASE;
-        end
-      end
-      RELEASE: begin
-        o_ppfifo_act                          <=  0;
-        state                                 <=  IDLE;
-      end
-      default: begin
-      end
-    endcase
-  end
-end
-
-*/
 
 endmodule
