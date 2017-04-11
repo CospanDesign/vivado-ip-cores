@@ -89,10 +89,11 @@ module axi_pmod_tft #(
   input                               clk,
   input                               rst,
 
+  output                              o_fsync,
+
   output                              o_register_data_sel,
   output                              o_write_n,
   output                              o_read_n,
-//  inout       [7:0]                   io_data,
   output                              o_cs_n,
   output                              o_reset_n,
   input                               i_tearing_effect,
@@ -401,6 +402,8 @@ assign        w_tft_data_in[4]        =  i_pmod_in_tft_data7;
 assign        w_tft_data_in[5]        =  i_pmod_in_tft_data9;
 assign        w_tft_data_in[6]        =  i_pmod_in_tft_data4;
 assign        w_tft_data_in[7]        =  i_pmod_in_tft_data10;
+
+assign        o_fsync                 = ~i_tearing_effect;
 
 //blocks
 always @ (posedge clk) begin
