@@ -65,6 +65,7 @@ module adapter_axi_stream_2_ppfifo_wl #(
 localparam      WAIT_FOR_TEAR_EFFECT  = 0;
 localparam      WAIT_FOR_FRAME        = 1;
 localparam      READ_FRAME            = 2;
+localparam      WAIT_FOR_END_TEAR     = 3;
 
 //registes/wires
 wire                        clk;  //Convenience Signal
@@ -128,7 +129,7 @@ always @ (posedge clk) begin
           if (r_last) begin
             o_ppfifo_act                      <=  0;
             if (r_pixel_count >= i_pixel_count) begin
-              state                           <=  WAIT_FOR_TEAR_EFFECT;
+              state                           <=  WAIT_FOR_END_TEAR;
             end
           end
           else if (r_count < i_ppfifo_size) begin
@@ -144,6 +145,11 @@ always @ (posedge clk) begin
           else begin
             o_ppfifo_act                        <=  0;
           end
+        end
+      end
+      WAIT_FOR_END_TEAR: begin
+        if (!i_tear_effect) begin
+          state                                 <=  WAIT_FOR_TEAR_EFFECT;
         end
       end
     endcase
