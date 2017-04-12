@@ -41,6 +41,10 @@ module adapter_axi_stream_2_ppfifo_wl #(
 )(
   input                             rst,
 
+  input                             i_tear_effect,
+  input                             i_fsync,
+  input       [31:0]                i_pixel_count,
+
   //AXI Stream Input
   input                             i_axi_clk,
   output                            o_axi_ready,
@@ -58,14 +62,18 @@ module adapter_axi_stream_2_ppfifo_wl #(
   output  reg [DATA_WIDTH:0]        o_ppfifo_data
 );
 //local parameters
-localparam      IDLE        = 0;
-localparam      READY       = 1;
-localparam      RELEASE     = 2;
+localparam      WAIT_FOR_TEAR_EFFECT  = 0;
+localparam      WAIT_FOR_FRAME        = 1;
+localparam      READ_FRAME            = 2;
+
 //registes/wires
 wire                        clk;  //Convenience Signal
 reg           [3:0]         state;
 reg           [23:0]        r_count;
 reg                         r_last;
+reg           [31:0]        r_pixel_count;
+reg                         r_prev_tear;
+reg                         r_pos_edge_tear;
 //submodules
 //asynchronous logic
 
@@ -73,7 +81,10 @@ reg                         r_last;
 //Users do not need to figure out how to hook up the clocks
 assign  o_ppfifo_clk    = i_axi_clk;
 assign  clk             = i_axi_clk;
-assign  o_axi_ready     = (o_ppfifo_act > 0) && (r_count < i_ppfifo_size) && !r_last;
+assign  o_axi_ready     = (o_ppfifo_act > 0) &&
+                          (r_count < i_ppfifo_size) &&
+                          !r_last &&
+                          (state == READ_FRAME);
 //synchronous logic
 
 always @ (posedge clk) begin
@@ -84,7 +95,9 @@ always @ (posedge clk) begin
     r_count                                   <=  0;
     o_ppfifo_act                              <=  0;
     o_ppfifo_data                             <=  0;
-    state                                     <=  IDLE;
+    r_pos_edge_tear                           <=  0;
+    r_pixel_count                             <=  0;
+    state                                     <=  WAIT_FOR_TEAR_EFFECT;
   end
   else begin
     if ((i_ppfifo_rdy > 0) && (o_ppfifo_act == 0)) begin
@@ -96,25 +109,50 @@ always @ (posedge clk) begin
         o_ppfifo_act[1]                       <=  1;
       end
     end
-    else begin
-      if (o_ppfifo_act) begin
-        if (r_last) begin
-          o_ppfifo_act                        <=  0;
-        end
-        else if (r_count < i_ppfifo_size) begin
-          if (i_axi_valid && o_axi_ready) begin
-            o_ppfifo_stb                      <=  1;
-            o_ppfifo_data[DATA_WIDTH - 1: 0]  <=  i_axi_data;
-            o_ppfifo_data[DATA_WIDTH]         <=  i_axi_last;
-            r_last                            <=  i_axi_last;
-            r_count                           <=  r_count + 1;
-          end
-        end
-        else begin
-          o_ppfifo_act                        <=  0;
+
+    case (state)
+      WAIT_FOR_TEAR_EFFECT: begin
+        if (r_pos_edge_tear) begin
+          r_pos_edge_tear                     <=  0;
+          state                               <=  WAIT_FOR_FRAME;
         end
       end
+      WAIT_FOR_FRAME: begin
+        r_pixel_count                         <=  0;
+        if (i_fsync) begin
+          state                               <= READ_FRAME;
+        end
+      end
+      READ_FRAME: begin
+        if (o_ppfifo_act) begin
+          if (r_last) begin
+            o_ppfifo_act                      <=  0;
+            if (r_pixel_count >= i_pixel_count) begin
+              state                           <=  WAIT_FOR_TEAR_EFFECT;
+            end
+          end
+          else if (r_count < i_ppfifo_size) begin
+            if (i_axi_valid && o_axi_ready) begin
+              o_ppfifo_stb                      <=  1;
+              r_pixel_count                     <=  r_pixel_count + 1;
+              o_ppfifo_data[DATA_WIDTH - 1: 0]  <=  i_axi_data;
+              o_ppfifo_data[DATA_WIDTH]         <=  i_axi_last;
+              r_last                            <=  i_axi_last;
+              r_count                           <=  r_count + 1;
+            end
+          end
+          else begin
+            o_ppfifo_act                        <=  0;
+          end
+        end
+      end
+    endcase
+
+    //Detect the positive edge of a tear effect
+    if (!r_prev_tear && i_tear_effect) begin
+      r_pos_edge_tear                           <=  1;
     end
+    r_prev_tear                                 <=  i_tear_effect;
   end
 end
 

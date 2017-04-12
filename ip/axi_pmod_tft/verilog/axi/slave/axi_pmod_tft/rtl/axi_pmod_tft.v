@@ -90,6 +90,7 @@ module axi_pmod_tft #(
   input                               rst,
 
   output                              o_fsync,
+  input                               i_fsync,
 
   output                              o_register_data_sel,
   output                              o_write_n,
@@ -173,7 +174,8 @@ localparam                  REG_STATUS         = 1;
 localparam                  REG_COMMAND_DATA   = 2;
 localparam                  REG_IMAGE_WIDTH    = 3;
 localparam                  REG_IMAGE_HEIGHT   = 4;
-localparam                  REG_VERSION        = 5;
+localparam                  REG_IMAGE_SIZE     = 5;
+localparam                  REG_VERSION        = 6;
 
 //Reg/Wire
 
@@ -199,6 +201,7 @@ wire        [7:0]           w_cmd_data_in;
 
 reg         [31:0]          r_image_width;
 reg         [31:0]          r_image_height;
+reg         [31:0]          r_image_size;
 
 //status
 
@@ -287,6 +290,10 @@ adapter_axi_stream_2_ppfifo_wl #(
   .DATA_WIDTH         (AXIS_WIDTH           )
 ) as2p (
   .rst                (w_axis_rst || ~w_enable ),
+
+  .i_tear_effect      (i_tearing_effect     ),
+  .i_fsync            (i_fsync              ),
+  .i_pixel_count      (r_image_size         ),
 
   //AXI Stream Input
   .i_axi_clk          (i_axis_clk           ),
@@ -418,6 +425,7 @@ always @ (posedge clk) begin
     r_cmd_data_out                        <=  0;
     r_image_width                         <=  IMAGE_WIDTH;
     r_image_height                        <=  IMAGE_HEIGHT;
+    r_image_size                          <=  (IMAGE_WIDTH * IMAGE_HEIGHT);
   end
   else begin
 
@@ -456,6 +464,9 @@ always @ (posedge clk) begin
         REG_IMAGE_HEIGHT: begin
           r_image_height                  <= w_reg_in_data;
         end
+        REG_IMAGE_SIZE: begin
+          r_image_size                    <= w_reg_in_data;
+        end
         default: begin
         end
       endcase
@@ -481,6 +492,9 @@ always @ (posedge clk) begin
         end
         REG_IMAGE_HEIGHT: begin
           r_reg_out_data                  <= r_image_height;
+        end
+        REG_IMAGE_SIZE: begin
+          r_reg_out_data                  <= r_image_size;
         end
         REG_VERSION: begin
           r_reg_out_data                  <= 32'h00;
