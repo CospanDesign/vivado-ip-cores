@@ -66,7 +66,6 @@ localparam      READY       = 1;
 localparam      RELEASE     = 2;
 
 //registes/wires
-wire                        clk;
 reg     [3:0]               state;
 reg     [23:0]              r_count;
 reg     [23:0]              r_total_count;
@@ -76,7 +75,6 @@ wire    [23:0]              w_total_out_size;
 
 //submodules
 //asynchronous logic
-assign  clk             = i_axi_clk;
 assign  o_axi_keep      = ((1 << STROBE_WIDTH) - 1);
 assign  o_axi_data      = i_ppfifo_data;
 assign  o_ppfifo_stb    = (i_axi_ready & o_axi_valid);
@@ -84,14 +82,14 @@ assign  w_total_out_size  = i_ppfifo_size;
 
 generate
   if (MAP_PPFIFO_TO_USER) begin
-    assign  o_axi_user[USER_COUNT - 1: 0] = (r_count < i_ppfifo_size) ? i_ppfifo_data[(DATA_WIDTH + USER_COUNT): DATA_WIDTH] : w_axi_user_zero;
+    assign  o_axi_user[USER_COUNT - 1: 0] = (r_count < i_ppfifo_size) ? i_ppfifo_data[((DATA_WIDTH + USER_COUNT) - 1): DATA_WIDTH] : w_axi_user_zero;
   end
 endgenerate
 
 assign  o_axi_last      = ((r_total_count + 1) >= w_total_out_size) & o_ppfifo_act  & o_axi_valid;
 //synchronous logic
 
-always @ (posedge clk) begin
+always @ (posedge i_axi_clk) begin
   //o_ppfifo_stb          <=  0;
   o_axi_valid           <=  0;
   //o_axi_last            <=  0;
