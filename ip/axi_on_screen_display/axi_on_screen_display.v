@@ -308,8 +308,6 @@ adapter_ppfifo_2_axi_stream #(
 
 
 //Asynchronous Logic
-//assign        r_enable                = control[`BIT_CTRL_EN];
-
 assign        status[31:0]            = 0;
 
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
@@ -329,6 +327,8 @@ always @ (posedge clk) begin
   r_scroll_down_stb                       <=  0;
 
   if (w_axi_rst) begin
+    r_enable                              <=  0;
+    r_scroll_en                           <=  0;
     r_reg_out_data                        <=  0;
     r_image_width                         <=  IMAGE_WIDTH;
     r_image_height                        <=  IMAGE_HEIGHT;
@@ -337,8 +337,6 @@ always @ (posedge clk) begin
     r_x_end                               <=  DEFAULT_X_END;
     r_y_start                             <=  DEFAULT_Y_START;
     r_y_end                               <=  DEFAULT_Y_END;
-    r_enable                              <=  0;
-    r_scroll_en                           <=  0;
     r_fg_color                            <=  FOREGROUND_COLOR;
     r_bg_color                            <=  BACKGROUND_COLOR;
     r_tab_count                           <=  DEFAULT_TAB_COUNT;

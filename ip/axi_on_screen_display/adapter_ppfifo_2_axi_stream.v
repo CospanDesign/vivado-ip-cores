@@ -29,8 +29,11 @@ SOFTWARE.
  * Changes:     Who?  What?
  *  04/06/2017: DFM   Initial check in.
  *  04/06/2017: DFM   Added count so that the 'last' will not be strobed until
-*                    all is sent.
+ *                    all is sent.
  */
+
+
+`timescale 1ps / 1ps
 
 module adapter_ppfifo_2_axi_stream #(
   parameter                                     DATA_WIDTH          = 32,

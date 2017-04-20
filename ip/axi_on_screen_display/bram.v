@@ -28,6 +28,7 @@ SOFTWARE.
  *
  */
 
+`timescale 1ps / 1ps
 
 module bram #(
 parameter DATA_WIDTH        = 32,
@@ -54,6 +55,7 @@ reg [(ADDR_WIDTH - 1):0] read_address_reg;
 
 initial begin
   if (MEM_FILE != "NOTHING") begin
+    $display("Loading file...");
     $readmemh(MEM_FILE, mem, 0, MEM_FILE_LENGTH - 1);
   end
 end
