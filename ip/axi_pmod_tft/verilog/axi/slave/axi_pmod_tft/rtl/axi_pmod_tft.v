@@ -24,6 +24,7 @@ SOFTWARE.
 
 `timescale 1ps / 1ps
 
+
 `define DEFAULT_MEMORY_TIMEOUT  300
 
 `define MAJOR_VERSION             1
