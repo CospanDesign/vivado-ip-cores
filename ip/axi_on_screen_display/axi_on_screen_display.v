@@ -107,7 +107,7 @@ module axi_on_screen_display #(
   //AXI Stream Output
   input                               i_axis_clk,
   input                               i_axis_rst,
-  output      [3:0]                   o_axis_user,
+  output                              o_axis_user,
   output      [AXIS_WIDTH - 1:0]      o_axis_data,
   input                               i_axis_ready,
   output                              o_axis_last,
@@ -276,7 +276,6 @@ console_osd #(
   .o_ppfifo_size      (wfifo_size           ),
   .o_ppfifo_data      (wfifo_data           ),
   .i_ppfifo_stb       (wfifo_stb            )
-
 );
 
 
