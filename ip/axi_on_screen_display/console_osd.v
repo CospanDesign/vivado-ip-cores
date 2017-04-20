@@ -90,7 +90,8 @@ module console_osd #(
   input                           i_ppfifo_act,
   output    [23:0]                o_ppfifo_size,
   output    [PIXEL_WIDTH: 0]      o_ppfifo_data,  //Add an extra bit to communicate start of frame
-  input                           i_ppfifo_stb
+  input                           i_ppfifo_stb,
+  output    [3:0]                 o_state
 
 );
 //local parameters
@@ -161,6 +162,7 @@ assign  w_valid_char_pixel  = (r_pixel_width_count  >= i_x_start)  && (r_pixel_w
 
 assign  w_vertical_padding  = (r_pixel_height_count < i_y_start) || (r_pixel_height_count > i_y_end);
 assign  w_horizontal_padding= (r_pixel_width_count  < i_x_start) || (r_pixel_width_count  > i_x_end);
+assign  o_state             = state;
 
 //Font
 

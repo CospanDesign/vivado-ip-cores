@@ -45,6 +45,17 @@ SOFTWARE.
 `define TAB_COUNT_RANGE           2:0
 
 
+`define COSD_STATE_RANGE          7:4
+`define BIT_PPFIFO_STB            8
+`define BIT_PPFIFO_RDY            9
+`define BIT_PPFIFO_ACT            10
+`define BIT_AXIS_RST              12
+`define BIT_AXIS_RDY              13
+`define BIT_AXIS_VLD              14
+`define BIT_AXIS_USR              15
+`define BIT_AXIS_LST              16
+
+
 //status bit definition
 
 module axi_on_screen_display #(
@@ -182,6 +193,7 @@ reg   [2:0]                     r_tab_count;
 
 reg                             r_cmd_stb;
 reg                             r_char_stb;
+wire    [3:0]                   w_cosd_state;
 
 reg   [31:0]                    r_x_start;
 reg   [31:0]                    r_x_end;
@@ -275,7 +287,9 @@ console_osd #(
   .i_ppfifo_act       (wfifo_act            ),
   .o_ppfifo_size      (wfifo_size           ),
   .o_ppfifo_data      (wfifo_data           ),
-  .i_ppfifo_stb       (wfifo_stb            )
+  .i_ppfifo_stb       (wfifo_stb            ),
+
+  .o_state            (w_cosd_state         )
 );
 
 
@@ -307,8 +321,6 @@ adapter_ppfifo_2_axi_stream #(
 
 
 //Asynchronous Logic
-assign        status[31:0]            = 0;
-
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
 assign        w_axis_rst              = (INVERT_AXIS_RESET)  ? ~i_axis_rst  : i_axis_rst;
 
@@ -412,7 +424,16 @@ always @ (posedge clk) begin
           r_reg_out_data[`BIT_CTRL_SCROLL_EN] <= r_scroll_en;
         end
         REG_STATUS: begin
-          r_reg_out_data                  <= status;
+          r_reg_out_data                      <=  0;
+          r_reg_out_data[`COSD_STATE_RANGE]   <= w_cosd_state;
+          r_reg_out_data[`BIT_PPFIFO_STB]     <= wfifo_stb;
+          r_reg_out_data[`BIT_PPFIFO_RDY]     <= wfifo_rdy;
+          r_reg_out_data[`BIT_PPFIFO_ACT]     <= wfifo_act;
+          r_reg_out_data[`BIT_AXIS_RST]       <= w_axis_rst;
+          r_reg_out_data[`BIT_AXIS_RDY]       <= i_axis_ready;
+          r_reg_out_data[`BIT_AXIS_VLD]       <= o_axis_valid;
+          r_reg_out_data[`BIT_AXIS_USR]       <= o_axis_user;
+          r_reg_out_data[`BIT_AXIS_LST]       <= o_axis_last;
         end
         REG_IMAGE_WIDTH: begin
           r_reg_out_data                  <= r_image_width;
