@@ -297,7 +297,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>398d8342</spirit:value>
+            <spirit:value>a11e0702</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -313,7 +313,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>398d8342</spirit:value>
+            <spirit:value>a11e0702</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -671,7 +671,7 @@
           </spirit:vector>
           <spirit:wireTypeDefs>
             <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:typeName>std_logic_vector</spirit:typeName>
               <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
               <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
             </spirit:wireTypeDef>
@@ -882,7 +882,7 @@
       <spirit:file>
         <spirit:name>axi_on_screen_display.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_2ac32ff0</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_4b2de499</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1067,8 +1067,8 @@
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:vendorDisplayName>Cospan Design</xilinx:vendorDisplayName>
       <xilinx:vendorURL>http://www.cospandesign.com</xilinx:vendorURL>
-      <xilinx:coreRevision>17</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2017-04-20T06:10:05Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>18</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2017-04-20T21:48:08Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="cospandesign:cores:axi_on_screen_display:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
       </xilinx:tags>
@@ -1076,8 +1076,8 @@
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="761ac875"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a52385c8"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="e85ee7d4"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2b99d8cd"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="57c1ed85"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="3a0a364a"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="53d9e250"/>
     </xilinx:packagingInfo>

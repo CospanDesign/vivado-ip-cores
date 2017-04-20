@@ -118,7 +118,7 @@ module axi_on_screen_display #(
   //AXI Stream Output
   input                               i_axis_clk,
   input                               i_axis_rst,
-  output                              o_axis_user,
+  output      [3:0]                   o_axis_user,
   output      [AXIS_WIDTH - 1:0]      o_axis_data,
   input                               i_axis_ready,
   output                              o_axis_last,

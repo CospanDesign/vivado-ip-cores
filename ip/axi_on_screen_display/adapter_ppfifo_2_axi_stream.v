@@ -55,7 +55,7 @@ module adapter_ppfifo_2_axi_stream #(
   input       [23:0]                            i_total_out_size,
 
   input                                         i_axi_clk,
-  output                                        o_axi_user,
+  output      [3:0]                             o_axi_user,
   input                                         i_axi_ready,
   output      [DATA_WIDTH - 1:0]                o_axi_data,
   output                                        o_axi_last,
@@ -83,7 +83,8 @@ assign  w_total_out_size  = i_ppfifo_size;
 
 generate
   if (MAP_PPFIFO_TO_USER) begin
-    assign  o_axi_user = (r_count < i_ppfifo_size) ? i_ppfifo_data[((DATA_WIDTH + USER_COUNT) - 1): DATA_WIDTH] : w_axi_user_zero;
+    assign  o_axi_user[0] = (r_count < i_ppfifo_size) ? i_ppfifo_data[((DATA_WIDTH + USER_COUNT) - 1): DATA_WIDTH] : w_axi_user_zero;
+    assign  o_axi_user[3:1] = 3'h0;
   end
 endgenerate
 
