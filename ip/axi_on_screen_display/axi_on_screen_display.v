@@ -193,7 +193,7 @@ reg   [2:0]                     r_tab_count;
 
 reg                             r_cmd_stb;
 reg                             r_char_stb;
-wire    [3:0]                   w_cosd_state;
+wire  [3:0]                     w_cosd_state;
 
 reg   [31:0]                    r_x_start;
 reg   [31:0]                    r_x_end;
@@ -425,6 +425,7 @@ always @ (posedge clk) begin
         end
         REG_STATUS: begin
           r_reg_out_data                      <=  0;
+          r_reg_out_data[0]                   <=  1;
           r_reg_out_data[`COSD_STATE_RANGE]   <= w_cosd_state;
           r_reg_out_data[`BIT_PPFIFO_STB]     <= wfifo_stb;
           r_reg_out_data[`BIT_PPFIFO_RDY]     <= wfifo_rdy;
