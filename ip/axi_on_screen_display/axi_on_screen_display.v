@@ -256,7 +256,7 @@ console_osd #(
   .FONT_HEIGHT        (FONT_HEIGHT          )
 )cosd(
   .clk                (clk                  ),
-  .rst                (rst                  ),
+  .rst                (w_axi_rst            ),
   .i_enable           (r_enable             ),
 
   .i_fg_color         (r_fg_color           ),
