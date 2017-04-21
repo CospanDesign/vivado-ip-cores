@@ -304,7 +304,7 @@ adapter_ppfifo_2_axi_stream #(
   .MAP_PPFIFO_TO_USER   (1                  ),
   .USER_COUNT           (1                  )
 ) as2p (
-  .rst                (w_axis_rst           ),
+  .rst                (w_axis_rst || !r_enable  ),
 
   .i_total_out_size   (24'h0                ),
 

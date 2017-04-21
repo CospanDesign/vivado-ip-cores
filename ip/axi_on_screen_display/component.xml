@@ -297,7 +297,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>4f0da5b9</spirit:value>
+            <spirit:value>9a4fc058</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -313,7 +313,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>4f0da5b9</spirit:value>
+            <spirit:value>9a4fc058</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -887,7 +887,7 @@
       <spirit:file>
         <spirit:name>axi_on_screen_display.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_bf35caba</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_6153ad4c</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1077,8 +1077,8 @@
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:vendorDisplayName>Cospan Design</xilinx:vendorDisplayName>
       <xilinx:vendorURL>http://www.cospandesign.com</xilinx:vendorURL>
-      <xilinx:coreRevision>20</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2017-04-21T04:21:53Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>21</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2017-04-21T05:42:01Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="cospandesign:cores:axi_on_screen_display:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
       </xilinx:tags>
@@ -1086,7 +1086,7 @@
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="761ac875"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="23297a7e"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="b64d5123"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="fa0fadf4"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="ca96ad89"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="b767167e"/>
