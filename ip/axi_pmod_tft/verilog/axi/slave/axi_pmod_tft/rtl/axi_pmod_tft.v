@@ -90,7 +90,6 @@ module axi_pmod_tft #(
   input                               rst,
 
   output                              o_fsync,
-  //input                               i_fsync,
 
   output                              o_register_data_sel,
   output                              o_write_n,
@@ -155,7 +154,6 @@ module axi_pmod_tft #(
   input                               i_rready,
   output      [1:0]                   o_rresp,
   output      [DATA_WIDTH - 1: 0]     o_rdata,
-
 
   //AXI Stream Input
   input                               i_axis_clk,
