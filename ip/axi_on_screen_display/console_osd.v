@@ -158,6 +158,7 @@ wire        [31: 0]  w_dbg_font_height_adj = FONT_HEIGHT_ADJ;
 
 //****************************************************************************
 
+assign  o_pixel_count       = r_pixel_count[15:0];
 assign  w_valid_char_pixel  = (r_pixel_width_count  >= i_x_start)  && (r_pixel_width_count  <= i_x_end) &&
                               (r_pixel_height_count >= i_y_start)  && (r_pixel_height_count <= i_y_end);
 
