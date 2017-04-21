@@ -25,7 +25,7 @@ SOFTWARE.
 `timescale 1ps / 1ps
 
 `define MAJOR_VERSION             1
-`define MINOR_VERSION             0
+`define MINOR_VERSION             1
 `define REVISION                  0
 
 `define BIT_CTRL_EN               0
@@ -45,15 +45,16 @@ SOFTWARE.
 `define TAB_COUNT_RANGE           2:0
 
 
-`define COSD_STATE_RANGE          7:4
+`define BIT_AXIS_RST              0
+`define BIT_RANGE_COSD_STATE      7:4
 `define BIT_PPFIFO_STB            8
 `define BIT_PPFIFO_RDY            9
 `define BIT_PPFIFO_ACT            10
-`define BIT_AXIS_RST              12
-`define BIT_AXIS_RDY              13
-`define BIT_AXIS_VLD              14
-`define BIT_AXIS_USR              15
-`define BIT_AXIS_LST              16
+`define BIT_AXIS_RDY              12
+`define BIT_AXIS_VLD              13
+`define BIT_AXIS_USR              14
+`define BIT_AXIS_LST              15
+`define BIT_RANGE_PCOUNT          31:16
 
 
 //status bit definition
@@ -72,6 +73,7 @@ module axi_on_screen_display #(
   parameter                           PIXEL_WIDTH         = 24,
   parameter                           FOREGROUND_COLOR    = 24'hFFFFFF,
   parameter                           BACKGROUND_COLOR    = 24'h000000,
+  parameter                           USER_SIZE           = 1,
   parameter                           FONT_WIDTH          = 5,
   parameter                           FONT_HEIGHT         = 7,
   parameter                           DEFAULT_TAB_COUNT   = 2,
@@ -118,7 +120,7 @@ module axi_on_screen_display #(
   //AXI Stream Output
   input                               i_axis_clk,
   input                               i_axis_rst,
-  output      [3:0]                   o_axis_user,
+  output      [USER_SIZE - 1:0]       o_axis_user,
   output      [AXIS_WIDTH - 1:0]      o_axis_data,
   input                               i_axis_ready,
   output                              o_axis_last,
@@ -194,6 +196,7 @@ reg   [2:0]                     r_tab_count;
 reg                             r_cmd_stb;
 reg                             r_char_stb;
 wire  [3:0]                     w_cosd_state;
+wire  [15:0]                    w_pcount;
 
 reg   [31:0]                    r_x_start;
 reg   [31:0]                    r_x_end;
@@ -289,7 +292,9 @@ console_osd #(
   .o_ppfifo_data      (wfifo_data           ),
   .i_ppfifo_stb       (wfifo_stb            ),
 
-  .o_state            (w_cosd_state         )
+  //Debug Signals
+  .o_state            (w_cosd_state         ),
+  .o_pixel_count      (w_pcount             )
 );
 
 
@@ -425,16 +430,16 @@ always @ (posedge clk) begin
         end
         REG_STATUS: begin
           r_reg_out_data                      <=  0;
-          r_reg_out_data[0]                   <=  1;
-          r_reg_out_data[`COSD_STATE_RANGE]   <= w_cosd_state;
+          r_reg_out_data[`BIT_AXIS_RST]       <= w_axis_rst;
+          r_reg_out_data[`BIT_RANGE_COSD_STATE]<= w_cosd_state;
           r_reg_out_data[`BIT_PPFIFO_STB]     <= wfifo_stb;
           r_reg_out_data[`BIT_PPFIFO_RDY]     <= wfifo_rdy;
           r_reg_out_data[`BIT_PPFIFO_ACT]     <= wfifo_act;
-          r_reg_out_data[`BIT_AXIS_RST]       <= w_axis_rst;
           r_reg_out_data[`BIT_AXIS_RDY]       <= i_axis_ready;
           r_reg_out_data[`BIT_AXIS_VLD]       <= o_axis_valid;
           r_reg_out_data[`BIT_AXIS_USR]       <= o_axis_user;
           r_reg_out_data[`BIT_AXIS_LST]       <= o_axis_last;
+          r_reg_out_data[`BIT_RANGE_PCOUNT]   <= w_pcount;
         end
         REG_IMAGE_WIDTH: begin
           r_reg_out_data                  <= r_image_width;

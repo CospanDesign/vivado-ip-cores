@@ -91,7 +91,8 @@ module console_osd #(
   output    [23:0]                o_ppfifo_size,
   output    [PIXEL_WIDTH: 0]      o_ppfifo_data,  //Add an extra bit to communicate start of frame
   input                           i_ppfifo_stb,
-  output    [3:0]                 o_state
+  output    [3:0]                 o_state,
+  output    [15:0]                o_pixel_count
 
 );
 //local parameters
