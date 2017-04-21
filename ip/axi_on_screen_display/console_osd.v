@@ -304,7 +304,7 @@ always @ (posedge clk) begin
           r_read_frame_stb    <=  1;
           r_pixel_height_count<=  0;
           r_char_width_count  <=  0;
-          r_start_frame       <= 1;
+          r_start_frame       <=  1;
           state               <=  WRITE_LINE;
         end
       end
@@ -318,6 +318,9 @@ always @ (posedge clk) begin
           else begin
             state             <=  WRITE_HORIZONTAL_PADDING;
           end
+        end
+        else if (!i_enable) begin
+          state               <=  IDLE;
         end
       end
       WRITE_VERTICAL_PADDING: begin
@@ -393,7 +396,7 @@ always @ (posedge clk) begin
         end
       end
     endcase
-    if (r_write_stb && r_start_frame) begin
+    if ((r_pixel_count == 1) && r_start_frame) begin
       r_start_frame       <=  0;
     end
   end

@@ -73,7 +73,7 @@ module axi_on_screen_display #(
   parameter                           PIXEL_WIDTH         = 24,
   parameter                           FOREGROUND_COLOR    = 24'hFFFFFF,
   parameter                           BACKGROUND_COLOR    = 24'h000000,
-  parameter                           USER_SIZE           = 1,
+  parameter                           AXIS_USER_WIDTH     = 1,
   parameter                           FONT_WIDTH          = 5,
   parameter                           FONT_HEIGHT         = 7,
   parameter                           DEFAULT_TAB_COUNT   = 2,
@@ -120,7 +120,7 @@ module axi_on_screen_display #(
   //AXI Stream Output
   input                               i_axis_clk,
   input                               i_axis_rst,
-  output      [USER_SIZE - 1:0]       o_axis_user,
+  output      [AXIS_USER_WIDTH - 1:0] o_axis_user,
   output      [AXIS_WIDTH - 1:0]      o_axis_data,
   input                               i_axis_ready,
   output                              o_axis_last,
@@ -302,7 +302,7 @@ console_osd #(
 adapter_ppfifo_2_axi_stream #(
   .DATA_WIDTH           (AXIS_WIDTH         ),
   .MAP_PPFIFO_TO_USER   (1                  ),
-  .USER_COUNT           (1                  )
+  .USER_COUNT           (AXIS_USER_WIDTH    )
 ) as2p (
   .rst                (w_axis_rst || !r_enable  ),
 
