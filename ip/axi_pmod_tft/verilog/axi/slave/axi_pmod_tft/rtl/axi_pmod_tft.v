@@ -90,7 +90,7 @@ module axi_pmod_tft #(
   input                               rst,
 
   output                              o_fsync,
-  input                               i_fsync,
+  //input                               i_fsync,
 
   output                              o_register_data_sel,
   output                              o_write_n,
@@ -159,6 +159,7 @@ module axi_pmod_tft #(
 
   //AXI Stream Input
   input                               i_axis_clk,
+  input       [3:0]                   i_axis_user,
   input                               i_axis_rst,
   input       [AXIS_WIDTH - 1:0]      i_axis_data,
   output                              o_axis_ready,
@@ -292,7 +293,7 @@ adapter_axi_stream_2_ppfifo_wl #(
   .rst                (w_axis_rst || ~w_enable ),
 
   .i_tear_effect      (i_tearing_effect     ),
-  .i_fsync            (i_fsync              ),
+  .i_fsync            (i_axis_user[0]       ),
   .i_pixel_count      (r_image_size         ),
 
   //AXI Stream Input
