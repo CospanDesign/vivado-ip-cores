@@ -2,27 +2,31 @@
 proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "Component_Name"
   #Adding Page
-  set Page_0 [ipgui::add_page $IPINST -name "Page 0"]
-  ipgui::add_param $IPINST -name "ADDR_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "AXIS_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "BACKGROUND_COLOR" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "BUFFER_DEPTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "CONSOLE_DEPTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DATA_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DEFAULT_TAB_COUNT" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DEFAULT_X_END" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DEFAULT_X_START" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DEFAULT_Y_END" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DEFAULT_Y_START" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "FONT_HEIGHT" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "FONT_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "FOREGROUND_COLOR" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "IMAGE_HEIGHT" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "IMAGE_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "INVERT_AXIS_RESET" -parent ${Page_0}
+  set Page_0 [ipgui::add_page $IPINST -name "Page 0" -display_name {Configure Controller}]
+  set_property tooltip {Configures the AXI Slave Interface} ${Page_0}
   ipgui::add_param $IPINST -name "INVERT_AXI_RESET" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "PIXEL_WIDTH" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "STROBE_WIDTH" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "INVERT_AXIS_RESET" -parent ${Page_0}
+
+  #Adding Page
+  set Configure_Video_Source [ipgui::add_page $IPINST -name "Configure Video Source"]
+  ipgui::add_param $IPINST -name "DATA_WIDTH" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "IMAGE_WIDTH" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "IMAGE_HEIGHT" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "BUFFER_DEPTH" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "PIXEL_WIDTH" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "DEFAULT_X_END" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "DEFAULT_X_START" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "DEFAULT_Y_END" -parent ${Configure_Video_Source}
+  ipgui::add_param $IPINST -name "DEFAULT_Y_START" -parent ${Configure_Video_Source}
+
+  #Adding Page
+  set Configure_Console [ipgui::add_page $IPINST -name "Configure Console"]
+  ipgui::add_param $IPINST -name "CONSOLE_DEPTH" -parent ${Configure_Console}
+  ipgui::add_param $IPINST -name "DEFAULT_TAB_COUNT" -parent ${Configure_Console}
+  ipgui::add_param $IPINST -name "FONT_HEIGHT" -parent ${Configure_Console}
+  ipgui::add_param $IPINST -name "FONT_WIDTH" -parent ${Configure_Console}
+  ipgui::add_param $IPINST -name "FOREGROUND_COLOR" -parent ${Configure_Console}
+  ipgui::add_param $IPINST -name "BACKGROUND_COLOR" -parent ${Configure_Console}
 
 
 }

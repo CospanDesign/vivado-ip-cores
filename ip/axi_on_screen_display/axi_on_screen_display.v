@@ -69,7 +69,7 @@ module axi_on_screen_display #(
   parameter                           INVERT_AXIS_RESET   = 1,
   parameter                           IMAGE_WIDTH         = 480,
   parameter                           IMAGE_HEIGHT        = 272,
-  parameter                           BUFFER_DEPTH        = 8,
+  parameter                           BUFFER_DEPTH        = 9,
   parameter                           PIXEL_WIDTH         = 24,
   parameter                           FOREGROUND_COLOR    = 24'hFFFFFF,
   parameter                           BACKGROUND_COLOR    = 24'h000000,
@@ -293,6 +293,7 @@ console_osd #(
   .o_ppfifo_data      (wfifo_data           ),
   .i_ppfifo_stb       (wfifo_stb            ),
 
+
   //Debug Signals
   .o_state            (w_cosd_state         ),
   .o_pixel_count      (w_pcount             )
@@ -303,7 +304,7 @@ console_osd #(
 adapter_ppfifo_2_axi_stream #(
   .DATA_WIDTH         (AXIS_WIDTH           )
 ) as2p (
-  .rst                (w_axis_rst || !r_enable  ),
+  .rst                (w_axis_rst           ),
 
   //AXI Stream Input
   .i_axi_clk          (i_axis_clk           ),
@@ -406,7 +407,7 @@ always @ (posedge clk) begin
           r_y_start                       <= w_reg_in_data;
         end
         REG_Y_END: begin
-          r_y_end                        <= w_reg_in_data;
+          r_y_end                         <= w_reg_in_data;
         end
         REG_TAB_COUNT: begin
           r_tab_count                     <= w_reg_in_data[`TAB_COUNT_RANGE];

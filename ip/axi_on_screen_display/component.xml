@@ -55,7 +55,6 @@
       <spirit:parameters>
         <spirit:parameter>
           <spirit:name>ASSOCIATED_RESET</spirit:name>
-          <spirit:displayName>rst</spirit:displayName>
           <spirit:value spirit:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_RESET">rst</spirit:value>
         </spirit:parameter>
         <spirit:parameter>
@@ -92,6 +91,8 @@
     </spirit:busInterface>
     <spirit:busInterface>
       <spirit:name>CONTROL</spirit:name>
+      <spirit:displayName>AXI Lite Slave</spirit:displayName>
+      <spirit:description>Control the core</spirit:description>
       <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
       <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_rtl" spirit:version="1.0"/>
       <spirit:slave/>
@@ -186,14 +187,6 @@
         </spirit:portMap>
         <spirit:portMap>
           <spirit:logicalPort>
-            <spirit:name>WVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_wvalid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
             <spirit:name>WREADY</spirit:name>
           </spirit:logicalPort>
           <spirit:physicalPort>
@@ -202,10 +195,26 @@
         </spirit:portMap>
         <spirit:portMap>
           <spirit:logicalPort>
+            <spirit:name>WVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>i_wvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
             <spirit:name>ARVALID</spirit:name>
           </spirit:logicalPort>
           <spirit:physicalPort>
             <spirit:name>i_arvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>WSTRB</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>i_wstrb</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
         <spirit:portMap>
@@ -224,18 +233,12 @@
             <spirit:name>o_rdata</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>WSTRB</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_wstrb</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
       </spirit:portMaps>
     </spirit:busInterface>
     <spirit:busInterface>
       <spirit:name>VIDEO</spirit:name>
+      <spirit:displayName>AXI Stream Video</spirit:displayName>
+      <spirit:description>Stream Video</spirit:description>
       <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
       <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
       <spirit:master/>
@@ -250,10 +253,10 @@
         </spirit:portMap>
         <spirit:portMap>
           <spirit:logicalPort>
-            <spirit:name>TVALID</spirit:name>
+            <spirit:name>TDATA</spirit:name>
           </spirit:logicalPort>
           <spirit:physicalPort>
-            <spirit:name>o_axis_valid</spirit:name>
+            <spirit:name>o_axis_data</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
         <spirit:portMap>
@@ -266,10 +269,10 @@
         </spirit:portMap>
         <spirit:portMap>
           <spirit:logicalPort>
-            <spirit:name>TDATA</spirit:name>
+            <spirit:name>TVALID</spirit:name>
           </spirit:logicalPort>
           <spirit:physicalPort>
-            <spirit:name>o_axis_data</spirit:name>
+            <spirit:name>o_axis_valid</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
         <spirit:portMap>
@@ -297,7 +300,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>0dbb5a52</spirit:value>
+            <spirit:value>88d025a5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -313,7 +316,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>0dbb5a52</spirit:value>
+            <spirit:value>88d025a5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -327,7 +330,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e40980dd</spirit:value>
+            <spirit:value>20e471d4</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -754,7 +757,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>STROBE_WIDTH</spirit:name>
         <spirit:displayName>Strobe Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.STROBE_WIDTH" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) / 8)">4</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.STROBE_WIDTH" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) / 8)">4</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>AXIS_WIDTH</spirit:name>
@@ -784,7 +787,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>BUFFER_DEPTH</spirit:name>
         <spirit:displayName>Buffer Depth</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.BUFFER_DEPTH">8</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.BUFFER_DEPTH">9</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>PIXEL_WIDTH</spirit:name>
@@ -824,7 +827,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>DEFAULT_X_END</spirit:name>
         <spirit:displayName>Default X End</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.DEFAULT_X_END" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_WIDTH&apos;))">480</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.DEFAULT_X_END" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_WIDTH&apos;))">480</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>DEFAULT_Y_START</spirit:name>
@@ -834,7 +837,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>DEFAULT_Y_END</spirit:name>
         <spirit:displayName>Default Y End</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.DEFAULT_Y_END" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_HEIGHT&apos;))">272</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.DEFAULT_Y_END" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_HEIGHT&apos;))">272</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
@@ -850,16 +853,16 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
+        <spirit:name>ppfifo.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
         <spirit:name>char_defines.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
       </spirit:file>
       <spirit:file>
         <spirit:name>character_buffer.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>ppfifo.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
@@ -882,7 +885,7 @@
       <spirit:file>
         <spirit:name>axi_on_screen_display.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_53ba7bad</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_9e49464b</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -896,16 +899,16 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
+        <spirit:name>ppfifo.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
         <spirit:name>char_defines.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:isIncludeFile>true</spirit:isIncludeFile>
       </spirit:file>
       <spirit:file>
         <spirit:name>character_buffer.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>ppfifo.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
@@ -935,7 +938,7 @@
       <spirit:file>
         <spirit:name>xgui/axi_on_screen_display_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_e40980dd</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_20e471d4</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -990,7 +993,7 @@
     <spirit:parameter>
       <spirit:name>BUFFER_DEPTH</spirit:name>
       <spirit:displayName>Buffer Depth</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.BUFFER_DEPTH">8</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.BUFFER_DEPTH">9</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>PIXEL_WIDTH</spirit:name>
@@ -1051,35 +1054,25 @@
     <xilinx:coreExtensions>
       <xilinx:supportedFamilies>
         <xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">kintex7</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">kintex7l</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">artix7l</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">aartix7</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">zynq</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">azynq</xilinx:family>
-        <xilinx:family xilinx:lifeCycle="Beta">kintexu</xilinx:family>
       </xilinx:supportedFamilies>
       <xilinx:taxonomies>
         <xilinx:taxonomy>/UserIP</xilinx:taxonomy>
-        <xilinx:taxonomy>/Video_&amp;_Image_Processing</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>axi_on_screen_display_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:vendorDisplayName>Cospan Design</xilinx:vendorDisplayName>
-      <xilinx:vendorURL>http://www.cospandesign.com</xilinx:vendorURL>
-      <xilinx:coreRevision>26</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2017-04-21T16:47:02Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2017-04-26T18:51:43Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="cospandesign:cores:axi_on_screen_display:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="761ac875"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="2a567dfa"/>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="d17b4f8d"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="9212b87d"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="57c1ed85"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="3a0a364a"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="53d9e250"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="3d64a9bc"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="da13d010"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
