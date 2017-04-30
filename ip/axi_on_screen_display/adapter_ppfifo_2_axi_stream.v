@@ -88,7 +88,8 @@ assign  o_debug[6]      = i_ppfifo_rdy;
 assign  o_debug[7]      = (r_count > 0);
 assign  o_debug[8]      = (i_ppfifo_size > 0);
 assign  o_debug[9]      = (r_count == i_ppfifo_size);
-assign  o_debug[15:10]  = 0;
+assign  o_debug[10]     = i_ppfifo_data[24];
+assign  o_debug[15:11]  = 0;
 assign  o_debug[23:16]  = r_count[7:0];
 assign  o_debug[31:24]  = 0;
 

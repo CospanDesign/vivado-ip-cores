@@ -160,7 +160,7 @@ always @ (posedge clk) begin
           r_char_stb          <=  1;
           r_char              <=  0;
           r_write_addr_pos    <=  0;
-          r_write_addr_end    <=  0;
+          r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
           in_state            <=  CLEAR_BUFFER;
         end
         else if (i_char_stb) begin
@@ -198,6 +198,8 @@ always @ (posedge clk) begin
               end
               `LF : begin     //Line Feed
                 //Simplify this, only carriage return (goes to new line too)
+                r_char      <=  0;
+                in_state    <=  PROCESS_CARRIAGE_RETURN;                
               end
               `VT : begin     //Vertical Tab
               end
@@ -298,12 +300,18 @@ always @ (posedge clk) begin
           if (r_char_stb) begin
             r_char              <=  0;
             r_write_addr_pos    <=  r_write_addr_pos + 1;
-            r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
+            //r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
           end
         end
         else begin
+	      r_char              <=  0;
           r_write_addr_pos    <=  0;
           r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
+          r_tab_count         <=  0;
+    
+          r_prev_line_addr    <=  (1 << CONSOLE_DEPTH) - CHAR_IMAGE_WIDTH;
+          r_curr_line_addr    <=  0;
+          r_next_line_addr    <=  CHAR_IMAGE_WIDTH;
           in_state            <=  IDLE;
         end
       end
@@ -351,7 +359,7 @@ always @ (posedge clk) begin
         if (!w_in_busy) begin
           //Don't start outputting the data until the in state is idle, otherwise we may get corrupted data
           r_read_addr           <=  r_start_frame_addr;
-          r_read_char_count    <=  0;
+          r_read_char_count    	<=  0;
           out_state             <=  START_READ_FRAME_DELAY;
         end
       end
@@ -398,7 +406,7 @@ always @ (posedge clk) begin
     endcase
 
     //When scroll en is set then the user can scroll up and down
-    if (!i_scroll_en) begin
+    if (i_scroll_en) begin
       if (i_scroll_up_stb) begin
         if ((r_start_frame_addr - CHAR_IMAGE_WIDTH) != (w_write_addr_start)) begin
           r_start_frame_addr  <=  r_start_frame_addr - CHAR_IMAGE_WIDTH;

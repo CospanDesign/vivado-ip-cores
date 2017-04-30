@@ -166,11 +166,11 @@ reg         [7:0]               r_char_data;
 
 //status
 
-wire        [23:0]              wfifo_size;
-wire                            wfifo_rdy;
-wire                            wfifo_act;
-wire                            wfifo_stb;
-wire        [AXIS_WIDTH:0]      wfifo_data;
+(* KEEP *) wire        [23:0]              wfifo_size;
+(* KEEP *) wire                            wfifo_rdy;
+(* KEEP *) wire                            wfifo_act;
+(* KEEP *) wire                            wfifo_stb;
+(* KEEP *) wire        [AXIS_WIDTH:0]      wfifo_data;
 wire        [31:0]              w_adapter_debug;
 
 //Simple User Interface
@@ -432,9 +432,9 @@ always @ (posedge clk) begin
           r_reg_out_data                      <=  0;
           r_reg_out_data[`BIT_AXIS_RST]       <= w_axis_rst;
           r_reg_out_data[`BIT_RANGE_COSD_STATE]<= w_cosd_state;
-          r_reg_out_data[`BIT_PPFIFO_STB]     <= wfifo_stb;
-          r_reg_out_data[`BIT_PPFIFO_RDY]     <= wfifo_rdy;
-          r_reg_out_data[`BIT_PPFIFO_ACT]     <= wfifo_act;
+          //r_reg_out_data[`BIT_PPFIFO_STB]     <= wfifo_stb;
+          //r_reg_out_data[`BIT_PPFIFO_RDY]     <= wfifo_rdy;
+          //r_reg_out_data[`BIT_PPFIFO_ACT]     <= wfifo_act;
           r_reg_out_data[`BIT_AXIS_RDY]       <= i_axis_ready;
           r_reg_out_data[`BIT_AXIS_VLD]       <= o_axis_valid;
           r_reg_out_data[`BIT_AXIS_USR]       <= o_axis_user[0];
