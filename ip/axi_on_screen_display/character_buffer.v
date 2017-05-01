@@ -169,9 +169,10 @@ always @ (posedge clk) begin
         else if (i_char_stb) begin
           if (i_alt_func_en) begin
             //Allows user to put in special characters like hearts and clovers
-              r_tab_count <=  0;
-            r_char        <=  i_char;
-            in_state      <=  PROCESS_NORMAL_CHAR;
+            r_tab_count       <=  0;
+            r_char            <=  i_char;
+            r_char_stb        <=  1;
+            in_state          <=  PROCESS_NORMAL_CHAR;
           end
           else begin
             case (i_char)
@@ -324,16 +325,16 @@ always @ (posedge clk) begin
     endcase
 
     if (in_state != CLEAR_BUFFER) begin
-    if (r_write_addr_pos >= r_next_line_addr) begin
-      r_prev_line_addr        <=  r_prev_line_addr + CHAR_IMAGE_WIDTH;
-      r_curr_line_addr        <=  r_curr_line_addr + CHAR_IMAGE_WIDTH;
-      r_next_line_addr        <=  r_next_line_addr + CHAR_IMAGE_WIDTH;
-    end
-    if (r_write_addr_pos < r_curr_line_addr) begin
-      r_next_line_addr        <=  r_next_line_addr - CHAR_IMAGE_WIDTH;
-      r_curr_line_addr        <=  r_curr_line_addr - CHAR_IMAGE_WIDTH;
-      r_prev_line_addr        <=  r_prev_line_addr - CHAR_IMAGE_WIDTH;
-    end
+      if (r_write_addr_pos >= r_next_line_addr) begin
+        r_prev_line_addr        <=  r_prev_line_addr + CHAR_IMAGE_WIDTH;
+        r_curr_line_addr        <=  r_curr_line_addr + CHAR_IMAGE_WIDTH;
+        r_next_line_addr        <=  r_next_line_addr + CHAR_IMAGE_WIDTH;
+      end
+      if (r_write_addr_pos < r_curr_line_addr) begin
+        r_next_line_addr        <=  r_next_line_addr - CHAR_IMAGE_WIDTH;
+        r_curr_line_addr        <=  r_curr_line_addr - CHAR_IMAGE_WIDTH;
+        r_prev_line_addr        <=  r_prev_line_addr - CHAR_IMAGE_WIDTH;
+      end
     end
 
     if (i_clear_screen_stb) begin
@@ -416,33 +417,34 @@ always @ (posedge clk) begin
     endcase
 
     //When scroll en is set then the user can scroll up and down
-    if (i_scroll_en) begin
-      if (i_scroll_up_stb) begin
-        if ((r_start_frame_addr - CHAR_IMAGE_WIDTH) != (w_write_addr_start)) begin
-          r_start_frame_addr  <=  r_start_frame_addr - CHAR_IMAGE_WIDTH;
+    if (in_state != CLEAR_BUFFER) begin
+      if (i_scroll_en) begin
+        if (i_scroll_up_stb) begin
+          if ((r_start_frame_addr - CHAR_IMAGE_WIDTH) != (w_write_addr_start)) begin
+            r_start_frame_addr  <=  r_start_frame_addr - CHAR_IMAGE_WIDTH;
+          end
+          else begin
+            r_start_frame_addr  <=  w_write_addr_start;
+          end
+        end
+        else if (i_scroll_down_stb) begin
+          if (r_start_frame_addr + CHAR_IMAGE_SIZE != r_curr_line_addr) begin
+            r_start_frame_addr  <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
+          end
+        end
+      end
+      else begin
+        if  (r_write_addr_pos > (w_write_addr_start + CHAR_IMAGE_SIZE)) begin
+          //Character has reached and went past the end of the character buffer
+          r_start_frame_addr  <= r_next_line_addr - CHAR_IMAGE_SIZE;
         end
         else begin
+          //Haven't written enough characters to make the char buffer start scrolling down
           r_start_frame_addr  <=  w_write_addr_start;
         end
       end
-      else if (i_scroll_down_stb) begin
-        if (r_start_frame_addr + CHAR_IMAGE_SIZE != r_curr_line_addr) begin
-          r_start_frame_addr  <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
-        end
-      end
-    end
-    else begin
-      if  (r_write_addr_pos > (w_write_addr_start + CHAR_IMAGE_SIZE)) begin
-        //Character has reached and went past the end of the character buffer
-        r_start_frame_addr  <= r_next_line_addr - CHAR_IMAGE_SIZE;
-      end
-      else begin
-        //Haven't written enough characters to make the char buffer start scrolling down
-        r_start_frame_addr  <=  w_write_addr_start;
-      end
     end
   end
-
 end
 
 
