@@ -71,6 +71,7 @@ localparam      PROCESS_BACKSPACE       = 2;
 localparam      PROCESS_CARRIAGE_RETURN = 3;
 localparam      PROCESS_TAB             = 4;
 localparam      CLEAR_BUFFER            = 5;
+localparam      CLEAR_LINE              = 6;
 
 localparam      START_READ_FRAME        = 1;
 localparam      START_READ_FRAME_DELAY  = 2;
@@ -84,6 +85,7 @@ reg         [3:0]                   out_state;
 
 reg                                 r_char_stb;
 reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_pos;
+reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_pos_prev;
 reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_end;
 wire        [CONSOLE_DEPTH - 1:0]   w_write_addr_start;
 
@@ -145,6 +147,7 @@ always @ (posedge clk) begin
   if (rst) begin
     r_char                <=  0;
     r_write_addr_pos      <=  0;
+    r_write_addr_pos_prev <=  0;
     r_write_addr_end      <=  ((1 << CONSOLE_DEPTH) - 1);
     r_tab_count           <=  0;
 
@@ -198,11 +201,14 @@ always @ (posedge clk) begin
                 in_state    <=  PROCESS_BACKSPACE;
               end
               `HT : begin     //Horizontal Tab
+                r_char      <=  0;
+                r_char_stb  <=  1;
                 in_state    <=  PROCESS_TAB;
               end
               `LF : begin     //Line Feed
                 //Simplify this, only carriage return (goes to new line too)
                 r_char      <=  0;
+                r_char_stb  <=  1;
                 in_state    <=  PROCESS_CARRIAGE_RETURN;                
               end
               `VT : begin     //Vertical Tab
@@ -211,6 +217,7 @@ always @ (posedge clk) begin
               end
               `CR : begin     //Carriage Return
                 r_char      <=  0;
+                r_char_stb  <=  1;
                 in_state    <=  PROCESS_CARRIAGE_RETURN;
               end
               `SO : begin     //Shift Out
@@ -322,6 +329,17 @@ always @ (posedge clk) begin
       default: begin
         in_state              <=  IDLE;
       end
+/*
+      CLEAR_LINE: begin
+        if (r_write_addr_pos < r_next_line_addr) begin
+          if (r_char_stb) begin
+          
+          end
+          r_char              <=  0;
+          r_char_stb          <=  1;
+        end
+      end
+*/
     endcase
 
     if (in_state != CLEAR_BUFFER) begin
@@ -359,7 +377,6 @@ always @ (posedge clk) begin
   else begin
     case (out_state)
       IDLE: begin
-        r_read_char_count    	  <=  0;
         o_char_rdy              <=  0;
         r_font_height_pos       <=  0;
         if (i_read_frame_stb) begin
@@ -367,10 +384,10 @@ always @ (posedge clk) begin
         end
       end
       START_READ_FRAME: begin
-        r_read_char_count    	  <=  0;
         o_char_rdy              <=  0;
         r_font_height_pos       <=  0;
         if (!w_in_busy) begin
+          r_read_char_count    	<=  0;
           //Don't start outputting the data until the in state is idle, otherwise we may get corrupted data
           r_read_addr           <=  r_start_frame_addr;
           out_state             <=  START_READ_FRAME_DELAY;
@@ -389,6 +406,7 @@ always @ (posedge clk) begin
           end
           else begin
             r_read_width_pos    <=  0;
+            //if (r_font_height_pos < (FONT_HEIGHT - 1)) begin
             if (r_font_height_pos < (FONT_HEIGHT - 1)) begin
               //Go back to the beginning of the current line
               r_font_height_pos <=  r_font_height_pos + 1;
