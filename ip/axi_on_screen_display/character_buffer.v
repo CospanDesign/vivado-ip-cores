@@ -367,6 +367,9 @@ always @ (posedge clk) begin
         end
       end
       START_READ_FRAME: begin
+        r_read_char_count    	  <=  0;
+        o_char_rdy              <=  0;
+        r_font_height_pos       <=  0;
         if (!w_in_busy) begin
           //Don't start outputting the data until the in state is idle, otherwise we may get corrupted data
           r_read_addr           <=  r_start_frame_addr;
@@ -442,6 +445,10 @@ always @ (posedge clk) begin
           r_start_frame_addr  <=  w_write_addr_start;
         end
       end
+    end
+
+    if (i_read_frame_stb) begin
+      out_state             <=  START_READ_FRAME;
     end
   end
 end
