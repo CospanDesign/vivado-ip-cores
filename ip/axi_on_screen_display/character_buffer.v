@@ -105,6 +105,7 @@ wire                                w_out_busy;
 
 reg         [3:0]                   r_font_height_pos;
 reg         [7:0]                   r_read_width_pos;
+reg                                 r_clear_req;
 
 
 //*************** DEBUG ******************************************************
@@ -131,7 +132,7 @@ bram #(
 );
 
 //asynchronous logic
-assign  w_in_busy     = (in_state != IDLE);
+assign  w_in_busy     = (in_state  != IDLE);
 assign  w_out_busy    = (out_state != IDLE);
 assign  w_buf_full    = (r_write_addr_pos == r_write_addr_end);
 assign  w_write_addr_start  = r_write_addr_end + 1;
@@ -151,12 +152,14 @@ always @ (posedge clk) begin
     r_curr_line_addr      <=  0;
     r_next_line_addr      <=  CHAR_IMAGE_WIDTH;
     in_state              <=  CLEAR_BUFFER;
+    r_clear_req           <=  0;
   end
   else begin
 
     case (in_state)
       IDLE: begin
-        if (i_clear_screen_stb) begin
+        if (r_clear_req && (out_state == IDLE)) begin
+          r_clear_req         <=  0;
           r_char_stb          <=  1;
           r_char              <=  0;
           r_write_addr_pos    <=  0;
@@ -304,7 +307,7 @@ always @ (posedge clk) begin
           end
         end
         else begin
-	      r_char              <=  0;
+	        r_char              <=  0;
           r_write_addr_pos    <=  0;
           r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
           r_tab_count         <=  0;
@@ -320,6 +323,7 @@ always @ (posedge clk) begin
       end
     endcase
 
+    if (in_state != CLEAR_BUFFER) begin
     if (r_write_addr_pos >= r_next_line_addr) begin
       r_prev_line_addr        <=  r_prev_line_addr + CHAR_IMAGE_WIDTH;
       r_curr_line_addr        <=  r_curr_line_addr + CHAR_IMAGE_WIDTH;
@@ -330,6 +334,12 @@ always @ (posedge clk) begin
       r_curr_line_addr        <=  r_curr_line_addr - CHAR_IMAGE_WIDTH;
       r_prev_line_addr        <=  r_prev_line_addr - CHAR_IMAGE_WIDTH;
     end
+    end
+
+    if (i_clear_screen_stb) begin
+      r_clear_req                <=  1;
+    end
+
   end
 end
 
@@ -349,6 +359,7 @@ always @ (posedge clk) begin
   else begin
     case (out_state)
       IDLE: begin
+        r_read_char_count    	  <=  0;
         o_char_rdy              <=  0;
         r_font_height_pos       <=  0;
         if (i_read_frame_stb) begin
@@ -359,7 +370,6 @@ always @ (posedge clk) begin
         if (!w_in_busy) begin
           //Don't start outputting the data until the in state is idle, otherwise we may get corrupted data
           r_read_addr           <=  r_start_frame_addr;
-          r_read_char_count    	<=  0;
           out_state             <=  START_READ_FRAME_DELAY;
         end
       end
@@ -432,6 +442,7 @@ always @ (posedge clk) begin
       end
     end
   end
+
 end
 
 
