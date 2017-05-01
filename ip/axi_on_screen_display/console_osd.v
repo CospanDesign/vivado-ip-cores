@@ -363,7 +363,9 @@ always @ (posedge clk) begin
       WRITE_VERTICAL_PADDING: begin
         if (r_pixel_count >= IMAGE_SIZE) begin
           //Finished sending image
-          r_write_act         <=  0;
+          if (r_pixel_width_count > 0) begin
+            r_write_act       <=  0;
+          end
           r_pixel_count       <=  0;
           state               <=  IDLE;
         end

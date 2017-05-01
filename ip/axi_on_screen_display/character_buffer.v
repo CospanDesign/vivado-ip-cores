@@ -263,7 +263,7 @@ always @ (posedge clk) begin
       end
       PROCESS_NORMAL_CHAR: begin
         if (w_buf_full) begin
-          r_write_addr_end      <= r_write_addr_end + 1;
+          r_write_addr_end    <= r_write_addr_end + 1;
         end
         r_write_addr_pos      <= r_write_addr_pos + 1;
         in_state              <=  IDLE;
@@ -340,7 +340,6 @@ always @ (posedge clk) begin
     if (i_clear_screen_stb) begin
       r_clear_req                <=  1;
     end
-
   end
 end
 
