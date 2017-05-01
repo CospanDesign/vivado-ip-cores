@@ -423,8 +423,10 @@ always @ (posedge clk) begin
       if (w_reg_address > REG_VERSION) begin
         r_reg_invalid_addr                <= 1;
       end
-      else if ((w_reg_address == REG_CONSOLE_CHAR) &&  w_wr_char_rdy) begin
-        r_reg_in_ack_stb                  <= 1;
+      else if (w_reg_address == REG_CONSOLE_CHAR) begin
+        if (w_wr_char_rdy) begin
+          r_reg_in_ack_stb                <= 1;
+        end
       end
       else begin
         r_reg_in_ack_stb                  <= 1;
