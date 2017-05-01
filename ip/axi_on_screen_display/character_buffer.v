@@ -53,6 +53,7 @@ module character_buffer #(
   input       [2:0]         i_tab_count,
   input                     i_char_stb,
   input       [7:0]         i_char,
+  output                    o_wr_char_rdy,
 
   input                     i_read_frame_stb,
   input                     i_char_req_en,
@@ -135,6 +136,7 @@ bram #(
 
 //asynchronous logic
 assign  w_in_busy     = (in_state  != IDLE);
+assign  o_wr_char_rdy = !w_in_busy;
 assign  w_out_busy    = (out_state != IDLE);
 assign  w_buf_full    = (r_write_addr_pos == r_write_addr_end);
 assign  w_write_addr_start  = r_write_addr_end + 1;
@@ -173,8 +175,8 @@ always @ (posedge clk) begin
           if (i_alt_func_en) begin
             //Allows user to put in special characters like hearts and clovers
             r_tab_count       <=  0;
-            r_char            <=  i_char;
             r_char_stb        <=  1;
+            r_char            <=  i_char;
             in_state          <=  PROCESS_NORMAL_CHAR;
           end
           else begin
@@ -283,9 +285,11 @@ always @ (posedge clk) begin
       end
       PROCESS_CARRIAGE_RETURN: begin
         if (r_write_addr_pos < r_next_line_addr) begin
+          if (r_char_stb) begin
+            r_write_addr_pos  <=  r_write_addr_pos + 1;
+          end
           r_char              <=  0;
           r_char_stb          <=  1;
-          r_write_addr_pos    <=  r_write_addr_pos + 1;
         end
         else begin
           in_state            <=  IDLE;

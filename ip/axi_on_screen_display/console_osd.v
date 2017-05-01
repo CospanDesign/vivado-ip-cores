@@ -69,6 +69,7 @@ module console_osd #(
 
   input                           i_char_stb,
   input     [7:0]                 i_char,
+  output                          o_wr_char_rdy,
 
   input                           i_clear_screen_stb,
   input                           i_alt_func_en,
@@ -232,6 +233,7 @@ character_buffer#(
   .i_tab_count          (i_tab_count          ),
   .i_char_stb           (i_char_stb           ),
   .i_char               (i_char               ),
+  .o_wr_char_rdy        (o_wr_char_rdy        ),
 
   .i_read_frame_stb     (r_read_frame_stb     ),
   .i_char_req_en        (r_char_req_en        ),

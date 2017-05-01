@@ -196,6 +196,7 @@ reg   [2:0]                     r_tab_count;
 
 reg                             r_cmd_stb;
 reg                             r_char_stb;
+wire                            w_char_rdy;
 wire  [3:0]                     w_cosd_state;
 wire  [15:0]                    w_pcount;
 
@@ -271,6 +272,7 @@ console_osd #(
 
   .i_char_stb         (r_char_stb           ),
   .i_char             (r_char_data          ),
+  .o_wr_char_rdy      (w_wr_char_rdy        ),
 
   .i_clear_screen_stb (r_clear_screen_stb   ),
   .i_alt_func_en      (r_alt_char           ),
@@ -392,7 +394,9 @@ always @ (posedge clk) begin
         REG_CONSOLE_CHAR: begin
           r_char_data                     <= w_reg_in_data[`CHAR_ADDR_RANGE];
           r_alt_char                      <= w_reg_in_data[`BIT_CHAR_ALT_ENABLE];
-          r_char_stb                      <= 1;
+          if (w_wr_char_rdy) begin
+            r_char_stb                    <= 1;
+          end
         end
         REG_CONSOLE_COMMAND: begin
           r_console_command               <= w_reg_in_data;
@@ -415,10 +419,16 @@ always @ (posedge clk) begin
         default: begin
         end
       endcase
+
       if (w_reg_address > REG_VERSION) begin
         r_reg_invalid_addr                <= 1;
       end
-      r_reg_in_ack_stb                    <= 1;
+      else if ((w_reg_address == REG_CONSOLE_CHAR) &&  w_wr_char_rdy) begin
+        r_reg_in_ack_stb                  <= 1;
+      end
+      else begin
+        r_reg_in_ack_stb                  <= 1;
+      end
     end
     else if (w_reg_out_req) begin
       //To master
