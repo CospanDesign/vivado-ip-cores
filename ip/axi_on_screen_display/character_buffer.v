@@ -80,12 +80,18 @@ localparam      GET_CHAR                = 3;
 localparam      GET_CHAR_DELAY          = 4;
 
 
+
+
+localparam      CONSOLE_SIZE            = (1 << CONSOLE_DEPTH);
+
 //registes/wires
 reg         [3:0]                   in_state;
 reg         [3:0]                   out_state;
 
 reg                                 r_char_stb;
-reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_pos;
+//reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_pos;
+reg         [CONSOLE_DEPTH    :0]   r_write_addr_pos;
+wire        [CONSOLE_DEPTH - 1:0]   w_write_addr_pos;
 reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_pos_prev;
 reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_end;
 wire        [CONSOLE_DEPTH - 1:0]   w_write_addr_start;
@@ -99,9 +105,14 @@ reg         [CONSOLE_DEPTH - 1: 0]  r_read_addr;
 reg         [CONSOLE_DEPTH - 1: 0]  r_read_char_count;
 
 reg         [CONSOLE_DEPTH - 1: 0]  r_start_frame_addr;
-reg         [CONSOLE_DEPTH - 1: 0]  r_prev_line_addr;
-reg         [CONSOLE_DEPTH - 1: 0]  r_curr_line_addr;
-reg         [CONSOLE_DEPTH - 1: 0]  r_next_line_addr;
+reg         [CONSOLE_DEPTH    : 0]  r_prev_line_addr;
+reg         [CONSOLE_DEPTH    : 0]  r_curr_line_addr;
+reg         [CONSOLE_DEPTH    : 0]  r_next_line_addr;
+
+reg                                 r_dbg_prev_wrap_stb;
+reg                                 r_dbg_next_wrap_stb;
+reg                                 r_dbg_next_stb;
+reg                                 r_dbg_prev_stb;
 
 wire                                w_in_busy;
 wire                                w_out_busy;
@@ -110,12 +121,14 @@ reg         [3:0]                   r_font_height_pos;
 reg         [7:0]                   r_read_width_pos;
 reg                                 r_clear_req;
 
+wire        [CONSOLE_DEPTH - 1: 0]  w_prev_line_addr_start = (CONSOLE_SIZE - CHAR_IMAGE_WIDTH);
 
 //*************** DEBUG ******************************************************
 
 wire        [CONSOLE_DEPTH - 1: 0]  w_dbg_char_image_width = CHAR_IMAGE_WIDTH;
 wire        [CONSOLE_DEPTH - 1: 0]  w_dbg_char_image_height = CHAR_IMAGE_HEIGHT;
 wire        [CONSOLE_DEPTH - 1: 0]  w_dbg_char_image_size = CHAR_IMAGE_SIZE;
+wire        [CONSOLE_DEPTH    : 0]  w_dbg_console_depth = CONSOLE_SIZE;
 
 //****************************************************************************
 
@@ -128,32 +141,38 @@ bram #(
   .rst              (rst                ),
   .en               (1'b1               ),
   .we               (r_char_stb         ),
-  .write_address    (r_write_addr_pos   ),
+  .write_address    (w_write_addr_pos   ),
   .read_address     (r_read_addr        ),
   .data_in          (r_char             ),
   .data_out         (o_char             )
 );
 
 //asynchronous logic
-assign  w_in_busy     = (in_state  != IDLE);
-assign  o_wr_char_rdy = !w_in_busy;
-assign  w_out_busy    = (out_state != IDLE);
-assign  w_buf_full    = (r_write_addr_pos == r_write_addr_end);
+assign  w_in_busy           = (in_state  != IDLE);
+assign  o_wr_char_rdy       = !w_in_busy;
+assign  w_out_busy          = (out_state != IDLE);
+assign  w_buf_full          = (w_write_addr_pos == r_write_addr_end);
 assign  w_write_addr_start  = r_write_addr_end + 1;
+assign  w_write_addr_pos    = r_write_addr_pos;
 
 //synchronous logic
 
 //Incomming state machine
 always @ (posedge clk) begin
   r_char_stb              <=  0;
+  r_dbg_prev_wrap_stb     <=  0;
+  r_dbg_next_wrap_stb     <=  0;
+  r_dbg_next_stb          <=  0;
+  r_dbg_prev_stb          <=  0;
   if (rst) begin
     r_char                <=  0;
     r_write_addr_pos      <=  0;
     r_write_addr_pos_prev <=  0;
-    r_write_addr_end      <=  ((1 << CONSOLE_DEPTH) - 1);
+    r_write_addr_end      <=  (CONSOLE_SIZE - 1);
     r_tab_count           <=  0;
 
-    r_prev_line_addr      <=  (1 << CONSOLE_DEPTH) - CHAR_IMAGE_WIDTH;
+    //r_prev_line_addr      <=  (1 << CONSOLE_DEPTH) - CHAR_IMAGE_WIDTH;
+    r_prev_line_addr      <=  w_prev_line_addr_start;
     r_curr_line_addr      <=  0;
     r_next_line_addr      <=  CHAR_IMAGE_WIDTH;
     in_state              <=  CLEAR_BUFFER;
@@ -168,7 +187,7 @@ always @ (posedge clk) begin
           r_char_stb          <=  1;
           r_char              <=  0;
           r_write_addr_pos    <=  0;
-          r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
+          r_write_addr_end    <=  ((CONSOLE_SIZE) - 1);
           in_state            <=  CLEAR_BUFFER;
         end
         else if (i_char_stb) begin
@@ -211,7 +230,7 @@ always @ (posedge clk) begin
                 //Simplify this, only carriage return (goes to new line too)
                 r_char      <=  0;
                 r_char_stb  <=  1;
-                in_state    <=  PROCESS_CARRIAGE_RETURN;                
+                in_state    <=  PROCESS_CARRIAGE_RETURN;
               end
               `VT : begin     //Vertical Tab
               end
@@ -271,11 +290,8 @@ always @ (posedge clk) begin
         end
       end
       PROCESS_NORMAL_CHAR: begin
-        if (w_buf_full) begin
-          r_write_addr_end    <= r_write_addr_end + 1;
-        end
         r_write_addr_pos      <= r_write_addr_pos + 1;
-        in_state              <=  IDLE;
+        in_state            <=  IDLE;
       end
       PROCESS_BACKSPACE: begin
         if (r_write_addr_pos != w_write_addr_start) begin
@@ -321,10 +337,11 @@ always @ (posedge clk) begin
         else begin
 	        r_char              <=  0;
           r_write_addr_pos    <=  0;
-          r_write_addr_end    <=  ((1 << CONSOLE_DEPTH) - 1);
+          r_write_addr_end    <=  ((CONSOLE_SIZE) - 1);
           r_tab_count         <=  0;
-    
-          r_prev_line_addr    <=  (1 << CONSOLE_DEPTH) - CHAR_IMAGE_WIDTH;
+
+          //r_prev_line_addr    <=  {1'b0, (1 << CONSOLE_DEPTH) - CHAR_IMAGE_WIDTH};
+          r_prev_line_addr      <=  w_prev_line_addr_start;
           r_curr_line_addr    <=  0;
           r_next_line_addr    <=  CHAR_IMAGE_WIDTH;
           in_state            <=  IDLE;
@@ -333,30 +350,64 @@ always @ (posedge clk) begin
       default: begin
         in_state              <=  IDLE;
       end
-/*
       CLEAR_LINE: begin
         if (r_write_addr_pos < r_next_line_addr) begin
           if (r_char_stb) begin
-          
+            r_write_addr_pos      <= r_write_addr_pos + 1;
           end
           r_char              <=  0;
           r_char_stb          <=  1;
         end
+        else begin
+          r_write_addr_pos  <=  r_prev_line_addr;
+        end
       end
-*/
     endcase
 
     if (in_state != CLEAR_BUFFER) begin
+      //Move to next line
       if (r_write_addr_pos >= r_next_line_addr) begin
-        r_prev_line_addr        <=  r_prev_line_addr + CHAR_IMAGE_WIDTH;
-        r_curr_line_addr        <=  r_curr_line_addr + CHAR_IMAGE_WIDTH;
-        r_next_line_addr        <=  r_next_line_addr + CHAR_IMAGE_WIDTH;
+        r_dbg_next_stb          <=  1;
+        $display("Move to next line");
+        if ((r_write_addr_pos > CHAR_IMAGE_WIDTH) &&
+            (r_prev_line_addr > CONSOLE_SIZE)) begin
+          r_dbg_prev_wrap_stb       <=  1;
+          r_prev_line_addr      <=  r_prev_line_addr + (CHAR_IMAGE_WIDTH  - CONSOLE_SIZE);
+        end
+        else begin
+          r_prev_line_addr      <=  r_prev_line_addr + CHAR_IMAGE_WIDTH;
+        end
+        if ((r_curr_line_addr > CONSOLE_SIZE) &&
+            (r_next_line_addr > CONSOLE_SIZE)) begin
+          r_curr_line_addr      <=  r_curr_line_addr + (CHAR_IMAGE_WIDTH - CONSOLE_SIZE);
+          r_next_line_addr      <=  r_next_line_addr + (CHAR_IMAGE_WIDTH - CONSOLE_SIZE);
+          r_write_addr_pos[CONSOLE_DEPTH] <=  0;
+          r_dbg_next_wrap_stb   <=  1;
+        end
+        else begin
+          r_next_line_addr      <=  r_next_line_addr + CHAR_IMAGE_WIDTH;
+          r_curr_line_addr      <=  r_curr_line_addr + CHAR_IMAGE_WIDTH;
+        end
       end
-      if (r_write_addr_pos < r_curr_line_addr) begin
+
+      //Move to previous line
+      /*
+      else if (r_curr_line_addr > CONSOLE_SIZE) begin
+        if (r_write_addr_pos < (r_curr_line_addr - (CONSOLE_SIZE))) begin
+          $display("Prev... ");
+          r_next_line_addr        <=  r_next_line_addr - CHAR_IMAGE_WIDTH;
+          r_curr_line_addr        <=  r_curr_line_addr - CHAR_IMAGE_WIDTH;
+          r_prev_line_addr        <=  r_prev_line_addr - CHAR_IMAGE_WIDTH;
+        end
+      end
+      else if (r_write_addr_pos < r_curr_line_addr) begin
+        $display("Prev x... ");
+        r_dbg_prev_stb          <=  1;
         r_next_line_addr        <=  r_next_line_addr - CHAR_IMAGE_WIDTH;
         r_curr_line_addr        <=  r_curr_line_addr - CHAR_IMAGE_WIDTH;
         r_prev_line_addr        <=  r_prev_line_addr - CHAR_IMAGE_WIDTH;
       end
+      */
     end
 
     if (i_clear_screen_stb) begin
@@ -458,7 +509,7 @@ always @ (posedge clk) begin
         end
       end
       else begin
-        if  (r_write_addr_pos > (w_write_addr_start + CHAR_IMAGE_SIZE)) begin
+        if  (w_write_addr_pos > (w_write_addr_start + CHAR_IMAGE_SIZE)) begin
           //Character has reached and went past the end of the character buffer
           r_start_frame_addr  <= r_next_line_addr - CHAR_IMAGE_SIZE;
         end

@@ -196,7 +196,7 @@ reg   [2:0]                     r_tab_count;
 
 reg                             r_cmd_stb;
 reg                             r_char_stb;
-wire                            w_char_rdy;
+wire                            w_wr_char_rdy;
 wire  [3:0]                     w_cosd_state;
 wire  [15:0]                    w_pcount;
 
