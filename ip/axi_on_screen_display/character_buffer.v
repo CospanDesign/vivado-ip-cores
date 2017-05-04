@@ -108,6 +108,7 @@ reg         [CONSOLE_DEPTH - 1: 0]  r_start_frame_addr;
 reg         [CONSOLE_DEPTH    : 0]  r_prev_line_addr;
 reg         [CONSOLE_DEPTH    : 0]  r_curr_line_addr;
 reg         [CONSOLE_DEPTH    : 0]  r_next_line_addr;
+wire        [CONSOLE_DEPTH - 1: 0]  w_next_line_addr;
 
 reg                                 r_dbg_prev_wrap_stb;
 reg                                 r_dbg_next_wrap_stb;
@@ -120,6 +121,7 @@ wire                                w_out_busy;
 reg         [3:0]                   r_font_height_pos;
 reg         [7:0]                   r_read_width_pos;
 reg                                 r_clear_req;
+reg                                 r_scroll_enable;
 
 wire        [CONSOLE_DEPTH - 1: 0]  w_prev_line_addr_start = (CONSOLE_SIZE - CHAR_IMAGE_WIDTH);
 
@@ -132,6 +134,7 @@ wire        [CONSOLE_DEPTH    : 0]  w_dbg_console_depth = CONSOLE_SIZE;
 
 //****************************************************************************
 
+assign  w_next_line_addr    = r_next_line_addr;
 //submodules
 bram #(
   .DATA_WIDTH       (8                  ),
@@ -326,6 +329,11 @@ always @ (posedge clk) begin
         end
       end
       CLEAR_BUFFER: begin
+        r_curr_line_addr    <=  0;
+        r_prev_line_addr    <=  w_prev_line_addr_start;
+        r_curr_line_addr    <=  0;
+        r_next_line_addr    <=  CHAR_IMAGE_WIDTH;
+
         if (!w_buf_full) begin
           r_char_stb          <=  1;
           if (r_char_stb) begin
@@ -341,9 +349,6 @@ always @ (posedge clk) begin
           r_tab_count         <=  0;
 
           //r_prev_line_addr    <=  {1'b0, (1 << CONSOLE_DEPTH) - CHAR_IMAGE_WIDTH};
-          r_prev_line_addr      <=  w_prev_line_addr_start;
-          r_curr_line_addr    <=  0;
-          r_next_line_addr    <=  CHAR_IMAGE_WIDTH;
           in_state            <=  IDLE;
         end
       end
@@ -428,6 +433,7 @@ always @ (posedge clk) begin
 
     r_font_height_pos           <=  0;
     o_char_rdy                  <=  0;
+    r_scroll_enable             <=  0;
   end
   else begin
     case (out_state)
@@ -492,7 +498,8 @@ always @ (posedge clk) begin
     endcase
 
     //When scroll en is set then the user can scroll up and down
-    if (in_state != CLEAR_BUFFER) begin
+//    if (in_state != CLEAR_BUFFER) begin
+/*
       if (i_scroll_en) begin
         if (i_scroll_up_stb) begin
           if ((r_start_frame_addr - CHAR_IMAGE_WIDTH) != (w_write_addr_start)) begin
@@ -509,23 +516,43 @@ always @ (posedge clk) begin
         end
       end
       else begin
-        if  (w_write_addr_pos > (w_write_addr_start + CHAR_IMAGE_SIZE)) begin
+*/
+/*
+        //if  (w_write_addr_pos > (w_write_addr_start + CHAR_IMAGE_SIZE)) begin
+        if  (w_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
           //Character has reached and went past the end of the character buffer
-          r_start_frame_addr  <= r_next_line_addr - CHAR_IMAGE_SIZE;
+          //r_start_frame_addr  <= r_next_line_addr - CHAR_IMAGE_SIZE;
+//          r_start_frame_addr  <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
+          r_scroll_enable       <=  1;
         end
+*/
+/*
         else begin
           //Haven't written enough characters to make the char buffer start scrolling down
           r_start_frame_addr  <=  w_write_addr_start;
         end
+*/
+/*
       end
+*/
+//    end
+    if (in_state == CLEAR_BUFFER) begin
+      r_start_frame_addr      <=  r_curr_line_addr;
+      r_scroll_enable         <=  0;
     end
+    else if (w_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
+      r_scroll_enable         <=  1;
+    end
+
+    if (r_scroll_enable && r_dbg_next_stb) begin
+      r_start_frame_addr      <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
+    end
+
 
     if (i_read_frame_stb) begin
       out_state             <=  START_READ_FRAME;
     end
   end
 end
-
-
 
 endmodule
