@@ -311,7 +311,8 @@ always @ (posedge clk) begin
           r_char_stb          <=  1;
         end
         else begin
-          in_state            <=  IDLE;
+          //in_state            <=  IDLE;
+          in_state            <=  CLEAR_LINE;
         end
       end
       PROCESS_TAB: begin
@@ -355,7 +356,7 @@ always @ (posedge clk) begin
         in_state              <=  IDLE;
       end
       CLEAR_LINE: begin
-        if (r_write_addr_pos < (r_next_line_addr + CHAR_IMAGE_WIDTH)) begin
+        if (r_write_addr_pos < r_next_line_addr) begin
           if (r_char_stb) begin
             r_write_addr_pos      <= r_write_addr_pos + 1;
           end
@@ -363,13 +364,13 @@ always @ (posedge clk) begin
           r_char_stb          <=  1;
         end
         else begin
-          r_write_addr_pos    <=  r_prev_line_addr;
-          in_state            <=  IDLE;
+          r_write_addr_pos  <=  r_curr_line_addr;
+          in_state          <=  IDLE;
         end
       end
     endcase
 
-    if ((in_state != CLEAR_BUFFER) || (in_state != CLEAR_LINE)) begin
+    if ((in_state != CLEAR_BUFFER) && (in_state != CLEAR_LINE)) begin
       //Move to next line
       if (r_write_addr_pos >= r_next_line_addr) begin
         r_dbg_next_stb          <=  1;
@@ -549,8 +550,7 @@ always @ (posedge clk) begin
     //if (r_scroll_enable && r_dbg_next_stb) begin
     if (r_scroll_enable) begin
       //r_start_frame_addr      <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
-      //r_start_frame_addr      <=  (w_next_line_addr - CHAR_IMAGE_SIZE);
-      r_start_frame_addr      <=  (r_curr_line_addr - CHAR_IMAGE_SIZE);
+      r_start_frame_addr      <=  (w_next_line_addr - CHAR_IMAGE_SIZE);
     end
 
 
