@@ -329,7 +329,6 @@ always @ (posedge clk) begin
         end
       end
       CLEAR_BUFFER: begin
-        r_curr_line_addr    <=  0;
         r_prev_line_addr    <=  w_prev_line_addr_start;
         r_curr_line_addr    <=  0;
         r_next_line_addr    <=  CHAR_IMAGE_WIDTH;
@@ -541,13 +540,15 @@ always @ (posedge clk) begin
       r_start_frame_addr      <=  r_curr_line_addr;
       r_scroll_enable         <=  0;
     end
-    //else if (w_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
-    else if (r_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
+    else if (w_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
+    //else if (r_curr_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
       r_scroll_enable         <=  1;
     end
 
-    if (r_scroll_enable && r_dbg_next_stb) begin
-      r_start_frame_addr      <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
+    //if (r_scroll_enable && r_dbg_next_stb) begin
+    if (r_scroll_enable) begin
+      //r_start_frame_addr      <=  r_start_frame_addr + CHAR_IMAGE_WIDTH;
+      r_start_frame_addr      <=  (w_next_line_addr - CHAR_IMAGE_SIZE);
     end
 
 
