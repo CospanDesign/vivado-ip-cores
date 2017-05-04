@@ -536,11 +536,13 @@ always @ (posedge clk) begin
       end
 */
 //    end
+
     if (in_state == CLEAR_BUFFER) begin
       r_start_frame_addr      <=  r_curr_line_addr;
       r_scroll_enable         <=  0;
     end
-    else if (w_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
+    //else if (w_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
+    else if (r_next_line_addr > (r_start_frame_addr + CHAR_IMAGE_SIZE)) begin
       r_scroll_enable         <=  1;
     end
 
