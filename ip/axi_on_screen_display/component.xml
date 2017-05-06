@@ -1,1078 +1,1223 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <spirit:vendor>cospandesign</spirit:vendor>
-  <spirit:library>cores</spirit:library>
-  <spirit:name>axi_on_screen_display</spirit:name>
-  <spirit:version>1.0</spirit:version>
-  <spirit:busInterfaces>
-    <spirit:busInterface>
-      <spirit:name>rst</spirit:name>
-      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset" spirit:version="1.0"/>
-      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset_rtl" spirit:version="1.0"/>
-      <spirit:slave/>
-      <spirit:portMaps>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>RST</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>rst</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-      </spirit:portMaps>
-    </spirit:busInterface>
-    <spirit:busInterface>
-      <spirit:name>i_axis_rst</spirit:name>
-      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset" spirit:version="1.0"/>
-      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset_rtl" spirit:version="1.0"/>
-      <spirit:slave/>
-      <spirit:portMaps>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>RST</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_axis_rst</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-      </spirit:portMaps>
-    </spirit:busInterface>
-    <spirit:busInterface>
-      <spirit:name>clk</spirit:name>
-      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
-      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
-      <spirit:slave/>
-      <spirit:portMaps>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>CLK</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>clk</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-      </spirit:portMaps>
-      <spirit:parameters>
-        <spirit:parameter>
-          <spirit:name>ASSOCIATED_RESET</spirit:name>
-          <spirit:value spirit:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_RESET">rst</spirit:value>
-        </spirit:parameter>
-        <spirit:parameter>
-          <spirit:name>ASSOCIATED_BUSIF</spirit:name>
-          <spirit:value spirit:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_BUSIF">CONTROL</spirit:value>
-        </spirit:parameter>
-      </spirit:parameters>
-    </spirit:busInterface>
-    <spirit:busInterface>
-      <spirit:name>i_axis_clk</spirit:name>
-      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
-      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
-      <spirit:slave/>
-      <spirit:portMaps>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>CLK</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_axis_clk</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-      </spirit:portMaps>
-      <spirit:parameters>
-        <spirit:parameter>
-          <spirit:name>ASSOCIATED_RESET</spirit:name>
-          <spirit:value spirit:id="BUSIFPARAM_VALUE.I_AXIS_CLK.ASSOCIATED_RESET">i_axis_rst</spirit:value>
-        </spirit:parameter>
-        <spirit:parameter>
-          <spirit:name>ASSOCIATED_BUSIF</spirit:name>
-          <spirit:value spirit:id="BUSIFPARAM_VALUE.I_AXIS_CLK.ASSOCIATED_BUSIF">VIDEO</spirit:value>
-        </spirit:parameter>
-      </spirit:parameters>
-    </spirit:busInterface>
-    <spirit:busInterface>
-      <spirit:name>CONTROL</spirit:name>
-      <spirit:displayName>AXI Lite Slave</spirit:displayName>
-      <spirit:description>Control the core</spirit:description>
-      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm" spirit:version="1.0"/>
-      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="aximm_rtl" spirit:version="1.0"/>
-      <spirit:slave/>
-      <spirit:portMaps>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>BVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_bvalid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>RREADY</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_rready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>BREADY</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_bready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>AWVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_awvalid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>AWREADY</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_awready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>WDATA</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_wdata</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>RRESP</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_rresp</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>RVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_rvalid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>ARADDR</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_araddr</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>AWADDR</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_awaddr</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>ARREADY</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_arready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>WREADY</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_wready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>WVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_wvalid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>ARVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_arvalid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>WSTRB</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_wstrb</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>BRESP</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_bresp</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>RDATA</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_rdata</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-      </spirit:portMaps>
-    </spirit:busInterface>
-    <spirit:busInterface>
-      <spirit:name>VIDEO</spirit:name>
-      <spirit:displayName>AXI Stream Video</spirit:displayName>
-      <spirit:description>Stream Video</spirit:description>
-      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
-      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
-      <spirit:master/>
-      <spirit:portMaps>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>TUSER</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_axis_user</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>TDATA</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_axis_data</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>TLAST</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_axis_last</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>TVALID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>o_axis_valid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>TREADY</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>i_axis_ready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-      </spirit:portMaps>
-    </spirit:busInterface>
-  </spirit:busInterfaces>
-  <spirit:model>
-    <spirit:views>
-      <spirit:view>
-        <spirit:name>xilinx_anylanguagesynthesis</spirit:name>
-        <spirit:displayName>Synthesis</spirit:displayName>
-        <spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
-        <spirit:language>Verilog</spirit:language>
-        <spirit:modelName>axi_on_screen_display</spirit:modelName>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_anylanguagesynthesis_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:parameters>
-          <spirit:parameter>
-            <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>5bc69c6f</spirit:value>
-          </spirit:parameter>
-        </spirit:parameters>
-      </spirit:view>
-      <spirit:view>
-        <spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
-        <spirit:displayName>Simulation</spirit:displayName>
-        <spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
-        <spirit:language>Verilog</spirit:language>
-        <spirit:modelName>axi_on_screen_display</spirit:modelName>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:parameters>
-          <spirit:parameter>
-            <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>5bc69c6f</spirit:value>
-          </spirit:parameter>
-        </spirit:parameters>
-      </spirit:view>
-      <spirit:view>
-        <spirit:name>xilinx_xpgui</spirit:name>
-        <spirit:displayName>UI Layout</spirit:displayName>
-        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
-        <spirit:fileSetRef>
-          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
-        </spirit:fileSetRef>
-        <spirit:parameters>
-          <spirit:parameter>
-            <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>20e471d4</spirit:value>
-          </spirit:parameter>
-        </spirit:parameters>
-      </spirit:view>
-    </spirit:views>
-    <spirit:ports>
-      <spirit:port>
-        <spirit:name>clk</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>rst</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_awvalid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_awaddr</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH&apos;)) - 1)">4</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_awready</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_wvalid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_wready</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_wstrb</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.STROBE_WIDTH&apos;)) - 1)">3</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">1</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_wdata</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) - 1)">31</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_bvalid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_bready</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_bresp</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long">1</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_arvalid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_arready</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_araddr</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH&apos;)) - 1)">4</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_rvalid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_rready</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-          <spirit:driver>
-            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
-          </spirit:driver>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_rresp</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long">1</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_rdata</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) - 1)">31</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_axis_clk</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_axis_rst</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_axis_user</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_axis_data</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.AXIS_WIDTH&apos;)) - 1)">23</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>i_axis_ready</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_axis_last</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>o_axis_valid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-    </spirit:ports>
-    <spirit:modelParameters>
-      <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="integer">
-        <spirit:name>CONSOLE_DEPTH</spirit:name>
-        <spirit:displayName>Console Depth</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.CONSOLE_DEPTH">12</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>ADDR_WIDTH</spirit:name>
-        <spirit:displayName>Addr Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.ADDR_WIDTH">5</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>DATA_WIDTH</spirit:name>
-        <spirit:displayName>Data Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.DATA_WIDTH">32</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>STROBE_WIDTH</spirit:name>
-        <spirit:displayName>Strobe Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.STROBE_WIDTH" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) / 8)">4</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>AXIS_WIDTH</spirit:name>
-        <spirit:displayName>Axis Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.AXIS_WIDTH">24</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>INVERT_AXI_RESET</spirit:name>
-        <spirit:displayName>Invert Axi Reset</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.INVERT_AXI_RESET">1</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>INVERT_AXIS_RESET</spirit:name>
-        <spirit:displayName>Invert Axis Reset</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.INVERT_AXIS_RESET">1</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>IMAGE_WIDTH</spirit:name>
-        <spirit:displayName>Image Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IMAGE_WIDTH">480</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>IMAGE_HEIGHT</spirit:name>
-        <spirit:displayName>Image Height</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.IMAGE_HEIGHT">272</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>BUFFER_DEPTH</spirit:name>
-        <spirit:displayName>Buffer Depth</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.BUFFER_DEPTH">9</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>PIXEL_WIDTH</spirit:name>
-        <spirit:displayName>Pixel Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PIXEL_WIDTH">24</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>FOREGROUND_COLOR</spirit:name>
-        <spirit:displayName>Foreground Color</spirit:displayName>
-        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.FOREGROUND_COLOR" spirit:bitStringLength="24">0xFFFFFF</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>BACKGROUND_COLOR</spirit:name>
-        <spirit:displayName>Background Color</spirit:displayName>
-        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.BACKGROUND_COLOR" spirit:bitStringLength="24">0x000000</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>FONT_WIDTH</spirit:name>
-        <spirit:displayName>Font Width</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.FONT_WIDTH">5</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>FONT_HEIGHT</spirit:name>
-        <spirit:displayName>Font Height</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.FONT_HEIGHT">7</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>DEFAULT_TAB_COUNT</spirit:name>
-        <spirit:displayName>Default Tab Count</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.DEFAULT_TAB_COUNT">2</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>DEFAULT_X_START</spirit:name>
-        <spirit:displayName>Default X Start</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.DEFAULT_X_START">0</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>DEFAULT_X_END</spirit:name>
-        <spirit:displayName>Default X End</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.DEFAULT_X_END" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_WIDTH&apos;))">480</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>DEFAULT_Y_START</spirit:name>
-        <spirit:displayName>Default Y Start</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.DEFAULT_Y_START">0</spirit:value>
-      </spirit:modelParameter>
-      <spirit:modelParameter spirit:dataType="integer">
-        <spirit:name>DEFAULT_Y_END</spirit:name>
-        <spirit:displayName>Default Y End</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.DEFAULT_Y_END" spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_HEIGHT&apos;))">272</spirit:value>
-      </spirit:modelParameter>
-    </spirit:modelParameters>
-  </spirit:model>
-  <spirit:fileSets>
-    <spirit:fileSet>
-      <spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>fontdata.mif</spirit:name>
-        <spirit:userFileType>mif</spirit:userFileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>bram.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>ppfifo.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>char_defines.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>character_buffer.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>adapter_ppfifo_2_axi_stream.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>axi_defines.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>axi_lite_slave.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>console_osd.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>axi_on_screen_display.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_64c85be2</spirit:userFileType>
-      </spirit:file>
-    </spirit:fileSet>
-    <spirit:fileSet>
-      <spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>fontdata.mif</spirit:name>
-        <spirit:userFileType>mif</spirit:userFileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>bram.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>ppfifo.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>char_defines.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>character_buffer.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>adapter_ppfifo_2_axi_stream.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>axi_defines.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:isIncludeFile>true</spirit:isIncludeFile>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>axi_lite_slave.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>console_osd.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>axi_on_screen_display.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-    </spirit:fileSet>
-    <spirit:fileSet>
-      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
-      <spirit:file>
-        <spirit:name>xgui/axi_on_screen_display_v1_0.tcl</spirit:name>
-        <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_20e471d4</spirit:userFileType>
-        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
-      </spirit:file>
-    </spirit:fileSet>
-  </spirit:fileSets>
-  <spirit:description>axi_on_screen_display_v1_0</spirit:description>
-  <spirit:parameters>
-    <spirit:parameter>
-      <spirit:name>CONSOLE_DEPTH</spirit:name>
-      <spirit:displayName>Console Depth</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.CONSOLE_DEPTH">12</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>ADDR_WIDTH</spirit:name>
-      <spirit:displayName>Addr Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.ADDR_WIDTH">5</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>DATA_WIDTH</spirit:name>
-      <spirit:displayName>Data Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.DATA_WIDTH">32</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>STROBE_WIDTH</spirit:name>
-      <spirit:displayName>Strobe Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.STROBE_WIDTH">4</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>AXIS_WIDTH</spirit:name>
-      <spirit:displayName>Axis Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.AXIS_WIDTH">24</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>INVERT_AXI_RESET</spirit:name>
-      <spirit:displayName>Invert Axi Reset</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.INVERT_AXI_RESET">1</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>INVERT_AXIS_RESET</spirit:name>
-      <spirit:displayName>Invert Axis Reset</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.INVERT_AXIS_RESET">1</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>IMAGE_WIDTH</spirit:name>
-      <spirit:displayName>Image Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.IMAGE_WIDTH">480</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>IMAGE_HEIGHT</spirit:name>
-      <spirit:displayName>Image Height</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.IMAGE_HEIGHT">272</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>BUFFER_DEPTH</spirit:name>
-      <spirit:displayName>Buffer Depth</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.BUFFER_DEPTH">9</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>PIXEL_WIDTH</spirit:name>
-      <spirit:displayName>Pixel Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.PIXEL_WIDTH">24</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>FOREGROUND_COLOR</spirit:name>
-      <spirit:displayName>Foreground Color</spirit:displayName>
-      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.FOREGROUND_COLOR" spirit:bitStringLength="24">0xFFFFFF</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>BACKGROUND_COLOR</spirit:name>
-      <spirit:displayName>Background Color</spirit:displayName>
-      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.BACKGROUND_COLOR" spirit:bitStringLength="24">0x000000</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>FONT_WIDTH</spirit:name>
-      <spirit:displayName>Font Width</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.FONT_WIDTH">5</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>FONT_HEIGHT</spirit:name>
-      <spirit:displayName>Font Height</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.FONT_HEIGHT">7</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>DEFAULT_TAB_COUNT</spirit:name>
-      <spirit:displayName>Default Tab Count</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.DEFAULT_TAB_COUNT">2</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>DEFAULT_X_START</spirit:name>
-      <spirit:displayName>Default X Start</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.DEFAULT_X_START">0</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>DEFAULT_X_END</spirit:name>
-      <spirit:displayName>Default X End</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.DEFAULT_X_END">480</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>DEFAULT_Y_START</spirit:name>
-      <spirit:displayName>Default Y Start</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.DEFAULT_Y_START">0</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>DEFAULT_Y_END</spirit:name>
-      <spirit:displayName>Default Y End</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.DEFAULT_Y_END">272</spirit:value>
-    </spirit:parameter>
-    <spirit:parameter>
-      <spirit:name>Component_Name</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">axi_on_screen_display_v1_0</spirit:value>
-    </spirit:parameter>
-  </spirit:parameters>
-  <spirit:vendorExtensions>
-    <xilinx:coreExtensions>
-      <xilinx:supportedFamilies>
-        <xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
-      </xilinx:supportedFamilies>
-      <xilinx:taxonomies>
-        <xilinx:taxonomy>/UserIP</xilinx:taxonomy>
-      </xilinx:taxonomies>
-      <xilinx:displayName>axi_on_screen_display_v1_0</xilinx:displayName>
-      <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>16</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2017-05-04T08:43:50Z</xilinx:coreCreationDateTime>
-      <xilinx:tags>
-        <xilinx:tag xilinx:name="cospandesign:cores:axi_on_screen_display:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
-      </xilinx:tags>
-    </xilinx:coreExtensions>
-    <xilinx:packagingInfo>
-      <xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="d17b4f8d"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ce081744"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="57c1ed85"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="c697f8a3"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="da13d010"/>
-    </xilinx:packagingInfo>
-  </spirit:vendorExtensions>
+<spirit:component xmlns:xilinx="http://www.xilinx.com"
+		xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<spirit:vendor>cospandesign</spirit:vendor>
+	<spirit:library>cores</spirit:library>
+	<spirit:name>axi_on_screen_display</spirit:name>
+	<spirit:version>1.0</spirit:version>
+	<spirit:busInterfaces>
+		<spirit:busInterface>
+			<spirit:name>rst</spirit:name>
+			<spirit:busType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="reset"
+					spirit:version="1.0"/>
+			<spirit:abstractionType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="reset_rtl"
+					spirit:version="1.0"/>
+			<spirit:slave/>
+			<spirit:portMaps>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>RST</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>rst</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+			</spirit:portMaps>
+		</spirit:busInterface>
+		<spirit:busInterface>
+			<spirit:name>i_axis_rst</spirit:name>
+			<spirit:busType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="reset"
+					spirit:version="1.0"/>
+			<spirit:abstractionType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="reset_rtl"
+					spirit:version="1.0"/>
+			<spirit:slave/>
+			<spirit:portMaps>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>RST</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_axis_rst</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+			</spirit:portMaps>
+		</spirit:busInterface>
+		<spirit:busInterface>
+			<spirit:name>clk</spirit:name>
+			<spirit:busType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="clock"
+					spirit:version="1.0"/>
+			<spirit:abstractionType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="clock_rtl"
+					spirit:version="1.0"/>
+			<spirit:slave/>
+			<spirit:portMaps>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>CLK</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>clk</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+			</spirit:portMaps>
+			<spirit:parameters>
+				<spirit:parameter>
+					<spirit:name>ASSOCIATED_RESET</spirit:name>
+					<spirit:value spirit:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_RESET">rst</spirit:value>
+				</spirit:parameter>
+				<spirit:parameter>
+					<spirit:name>ASSOCIATED_BUSIF</spirit:name>
+					<spirit:value spirit:id="BUSIFPARAM_VALUE.CLK.ASSOCIATED_BUSIF">CONTROL</spirit:value>
+				</spirit:parameter>
+			</spirit:parameters>
+		</spirit:busInterface>
+		<spirit:busInterface>
+			<spirit:name>i_axis_clk</spirit:name>
+			<spirit:busType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="clock"
+					spirit:version="1.0"/>
+			<spirit:abstractionType spirit:vendor="xilinx.com"
+					spirit:library="signal"
+					spirit:name="clock_rtl"
+					spirit:version="1.0"/>
+			<spirit:slave/>
+			<spirit:portMaps>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>CLK</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_axis_clk</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+			</spirit:portMaps>
+			<spirit:parameters>
+				<spirit:parameter>
+					<spirit:name>ASSOCIATED_RESET</spirit:name>
+					<spirit:value spirit:id="BUSIFPARAM_VALUE.I_AXIS_CLK.ASSOCIATED_RESET">i_axis_rst</spirit:value>
+				</spirit:parameter>
+				<spirit:parameter>
+					<spirit:name>ASSOCIATED_BUSIF</spirit:name>
+					<spirit:value spirit:id="BUSIFPARAM_VALUE.I_AXIS_CLK.ASSOCIATED_BUSIF">VIDEO</spirit:value>
+				</spirit:parameter>
+			</spirit:parameters>
+		</spirit:busInterface>
+		<spirit:busInterface>
+			<spirit:name>CONTROL</spirit:name>
+			<spirit:displayName>AXI Lite Slave</spirit:displayName>
+			<spirit:description>Control the core</spirit:description>
+			<spirit:busType spirit:vendor="xilinx.com"
+					spirit:library="interface"
+					spirit:name="aximm"
+					spirit:version="1.0"/>
+			<spirit:abstractionType spirit:vendor="xilinx.com"
+					spirit:library="interface"
+					spirit:name="aximm_rtl"
+					spirit:version="1.0"/>
+			<spirit:slave/>
+			<spirit:portMaps>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>BVALID</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_bvalid</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>RREADY</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_rready</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>BREADY</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_bready</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>AWVALID</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_awvalid</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>AWREADY</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_awready</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>WDATA</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_wdata</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>RRESP</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_rresp</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>RVALID</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_rvalid</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>ARADDR</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_araddr</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>AWADDR</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_awaddr</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>ARREADY</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_arready</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>WREADY</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_wready</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>WVALID</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_wvalid</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>ARVALID</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_arvalid</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>WSTRB</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_wstrb</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>BRESP</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_bresp</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>RDATA</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_rdata</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+			</spirit:portMaps>
+		</spirit:busInterface>
+		<spirit:busInterface>
+			<spirit:name>VIDEO</spirit:name>
+			<spirit:displayName>AXI Stream Video</spirit:displayName>
+			<spirit:description>Stream Video</spirit:description>
+			<spirit:busType spirit:vendor="xilinx.com"
+					spirit:library="interface"
+					spirit:name="axis"
+					spirit:version="1.0"/>
+			<spirit:abstractionType spirit:vendor="xilinx.com"
+					spirit:library="interface"
+					spirit:name="axis_rtl"
+					spirit:version="1.0"/>
+			<spirit:master/>
+			<spirit:portMaps>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>TUSER</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_axis_user</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>TDATA</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_axis_data</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>TLAST</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_axis_last</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>TVALID</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>o_axis_valid</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+				<spirit:portMap>
+					<spirit:logicalPort>
+						<spirit:name>TREADY</spirit:name>
+					</spirit:logicalPort>
+					<spirit:physicalPort>
+						<spirit:name>i_axis_ready</spirit:name>
+					</spirit:physicalPort>
+				</spirit:portMap>
+			</spirit:portMaps>
+		</spirit:busInterface>
+	</spirit:busInterfaces>
+	<spirit:model>
+		<spirit:views>
+			<spirit:view>
+				<spirit:name>xilinx_anylanguagesynthesis</spirit:name>
+				<spirit:displayName>Synthesis</spirit:displayName>
+				<spirit:envIdentifier>:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+				<spirit:language>Verilog</spirit:language>
+				<spirit:modelName>axi_on_screen_display</spirit:modelName>
+				<spirit:fileSetRef>
+					<spirit:localName>xilinx_anylanguagesynthesis_view_fileset</spirit:localName>
+				</spirit:fileSetRef>
+				<spirit:parameters>
+					<spirit:parameter>
+						<spirit:name>viewChecksum</spirit:name>
+						<spirit:value>44c44711</spirit:value>
+					</spirit:parameter>
+				</spirit:parameters>
+			</spirit:view>
+			<spirit:view>
+				<spirit:name>xilinx_anylanguagebehavioralsimulation</spirit:name>
+				<spirit:displayName>Simulation</spirit:displayName>
+				<spirit:envIdentifier>:vivado.xilinx.com:simulation</spirit:envIdentifier>
+				<spirit:language>Verilog</spirit:language>
+				<spirit:modelName>axi_on_screen_display</spirit:modelName>
+				<spirit:fileSetRef>
+					<spirit:localName>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:localName>
+				</spirit:fileSetRef>
+				<spirit:parameters>
+					<spirit:parameter>
+						<spirit:name>viewChecksum</spirit:name>
+						<spirit:value>44c44711</spirit:value>
+					</spirit:parameter>
+				</spirit:parameters>
+			</spirit:view>
+			<spirit:view>
+				<spirit:name>xilinx_xpgui</spirit:name>
+				<spirit:displayName>UI Layout</spirit:displayName>
+				<spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+				<spirit:fileSetRef>
+					<spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+				</spirit:fileSetRef>
+				<spirit:parameters>
+					<spirit:parameter>
+						<spirit:name>viewChecksum</spirit:name>
+						<spirit:value>20e471d4</spirit:value>
+					</spirit:parameter>
+				</spirit:parameters>
+			</spirit:view>
+		</spirit:views>
+		<spirit:ports>
+			<spirit:port>
+				<spirit:name>clk</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>rst</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_awvalid</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_awaddr</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long"
+								spirit:resolve="dependent"
+								spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH&apos;)) - 1)">4</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_awready</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_wvalid</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_wready</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_wstrb</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long"
+								spirit:resolve="dependent"
+								spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.STROBE_WIDTH&apos;)) - 1)">3</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">1</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_wdata</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long"
+								spirit:resolve="dependent"
+								spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) - 1)">31</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_bvalid</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_bready</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_bresp</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long">1</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_arvalid</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_arready</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_araddr</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long"
+								spirit:resolve="dependent"
+								spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.ADDR_WIDTH&apos;)) - 1)">4</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_rvalid</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_rready</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+					<spirit:driver>
+						<spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+					</spirit:driver>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_rresp</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long">1</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_rdata</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long"
+								spirit:resolve="dependent"
+								spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) - 1)">31</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_axis_clk</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_axis_rst</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_axis_user</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long">3</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_axis_data</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:vector>
+						<spirit:left spirit:format="long"
+								spirit:resolve="dependent"
+								spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.AXIS_WIDTH&apos;)) - 1)">23</spirit:left>
+						<spirit:right spirit:format="long">0</spirit:right>
+					</spirit:vector>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic_vector</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>i_axis_ready</spirit:name>
+				<spirit:wire>
+					<spirit:direction>in</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_axis_last</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+			<spirit:port>
+				<spirit:name>o_axis_valid</spirit:name>
+				<spirit:wire>
+					<spirit:direction>out</spirit:direction>
+					<spirit:wireTypeDefs>
+						<spirit:wireTypeDef>
+							<spirit:typeName>std_logic</spirit:typeName>
+							<spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
+							<spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
+						</spirit:wireTypeDef>
+					</spirit:wireTypeDefs>
+				</spirit:wire>
+			</spirit:port>
+		</spirit:ports>
+		<spirit:modelParameters>
+			<spirit:modelParameter xsi:type="spirit:nameValueTypeType"
+					spirit:dataType="integer">
+				<spirit:name>CONSOLE_DEPTH</spirit:name>
+				<spirit:displayName>Console Depth</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.CONSOLE_DEPTH">12</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>ADDR_WIDTH</spirit:name>
+				<spirit:displayName>Addr Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.ADDR_WIDTH">5</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>DATA_WIDTH</spirit:name>
+				<spirit:displayName>Data Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.DATA_WIDTH">32</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>STROBE_WIDTH</spirit:name>
+				<spirit:displayName>Strobe Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="dependent"
+						spirit:id="MODELPARAM_VALUE.STROBE_WIDTH"
+						spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.DATA_WIDTH&apos;)) / 8)">4</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>AXIS_WIDTH</spirit:name>
+				<spirit:displayName>Axis Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.AXIS_WIDTH">24</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>INVERT_AXI_RESET</spirit:name>
+				<spirit:displayName>Invert Axi Reset</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.INVERT_AXI_RESET">1</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>INVERT_AXIS_RESET</spirit:name>
+				<spirit:displayName>Invert Axis Reset</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.INVERT_AXIS_RESET">1</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>IMAGE_WIDTH</spirit:name>
+				<spirit:displayName>Image Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.IMAGE_WIDTH">480</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>IMAGE_HEIGHT</spirit:name>
+				<spirit:displayName>Image Height</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.IMAGE_HEIGHT">272</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>BUFFER_DEPTH</spirit:name>
+				<spirit:displayName>Buffer Depth</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.BUFFER_DEPTH">9</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>PIXEL_WIDTH</spirit:name>
+				<spirit:displayName>Pixel Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.PIXEL_WIDTH">24</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>FOREGROUND_COLOR</spirit:name>
+				<spirit:displayName>Foreground Color</spirit:displayName>
+				<spirit:value spirit:format="bitString"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.FOREGROUND_COLOR"
+						spirit:bitStringLength="24">0xFFFFFF</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>BACKGROUND_COLOR</spirit:name>
+				<spirit:displayName>Background Color</spirit:displayName>
+				<spirit:value spirit:format="bitString"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.BACKGROUND_COLOR"
+						spirit:bitStringLength="24">0x000000</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>FONT_WIDTH</spirit:name>
+				<spirit:displayName>Font Width</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.FONT_WIDTH">5</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>FONT_HEIGHT</spirit:name>
+				<spirit:displayName>Font Height</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.FONT_HEIGHT">7</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>DEFAULT_TAB_COUNT</spirit:name>
+				<spirit:displayName>Default Tab Count</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.DEFAULT_TAB_COUNT">2</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>DEFAULT_X_START</spirit:name>
+				<spirit:displayName>Default X Start</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.DEFAULT_X_START">0</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>DEFAULT_X_END</spirit:name>
+				<spirit:displayName>Default X End</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="dependent"
+						spirit:id="MODELPARAM_VALUE.DEFAULT_X_END"
+						spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_WIDTH&apos;))">480</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>DEFAULT_Y_START</spirit:name>
+				<spirit:displayName>Default Y Start</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="generated"
+						spirit:id="MODELPARAM_VALUE.DEFAULT_Y_START">0</spirit:value>
+			</spirit:modelParameter>
+			<spirit:modelParameter spirit:dataType="integer">
+				<spirit:name>DEFAULT_Y_END</spirit:name>
+				<spirit:displayName>Default Y End</spirit:displayName>
+				<spirit:value spirit:format="long"
+						spirit:resolve="dependent"
+						spirit:id="MODELPARAM_VALUE.DEFAULT_Y_END"
+						spirit:dependency="spirit:decode(id(&apos;MODELPARAM_VALUE.IMAGE_HEIGHT&apos;))">272</spirit:value>
+			</spirit:modelParameter>
+		</spirit:modelParameters>
+	</spirit:model>
+	<spirit:fileSets>
+		<spirit:fileSet>
+			<spirit:name>xilinx_anylanguagesynthesis_view_fileset</spirit:name>
+			<spirit:file>
+				<spirit:name>fontdata.mif</spirit:name>
+				<spirit:userFileType>mif</spirit:userFileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>bram.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>ppfifo.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>char_defines.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+				<spirit:isIncludeFile>true</spirit:isIncludeFile>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>character_buffer.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>adapter_ppfifo_2_axi_stream.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>axi_defines.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+				<spirit:isIncludeFile>true</spirit:isIncludeFile>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>axi_lite_slave.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>console_osd.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>axi_on_screen_display.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+				<spirit:userFileType>CHECKSUM_64c85be2</spirit:userFileType>
+			</spirit:file>
+		</spirit:fileSet>
+		<spirit:fileSet>
+			<spirit:name>xilinx_anylanguagebehavioralsimulation_view_fileset</spirit:name>
+			<spirit:file>
+				<spirit:name>fontdata.mif</spirit:name>
+				<spirit:userFileType>mif</spirit:userFileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>bram.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>ppfifo.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>char_defines.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+				<spirit:isIncludeFile>true</spirit:isIncludeFile>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>character_buffer.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>adapter_ppfifo_2_axi_stream.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>axi_defines.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+				<spirit:isIncludeFile>true</spirit:isIncludeFile>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>axi_lite_slave.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>console_osd.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>axi_on_screen_display.v</spirit:name>
+				<spirit:fileType>verilogSource</spirit:fileType>
+			</spirit:file>
+		</spirit:fileSet>
+		<spirit:fileSet>
+			<spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+			<spirit:file>
+				<spirit:name>xgui/axi_on_screen_display_v1_0.tcl</spirit:name>
+				<spirit:fileType>tclSource</spirit:fileType>
+				<spirit:userFileType>CHECKSUM_20e471d4</spirit:userFileType>
+				<spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+			</spirit:file>
+		</spirit:fileSet>
+	</spirit:fileSets>
+	<spirit:description>axi_on_screen_display_v1_0</spirit:description>
+	<spirit:parameters>
+		<spirit:parameter>
+			<spirit:name>CONSOLE_DEPTH</spirit:name>
+			<spirit:displayName>Console Depth</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.CONSOLE_DEPTH">12</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>ADDR_WIDTH</spirit:name>
+			<spirit:displayName>Addr Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.ADDR_WIDTH">5</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>DATA_WIDTH</spirit:name>
+			<spirit:displayName>Data Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.DATA_WIDTH">32</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>STROBE_WIDTH</spirit:name>
+			<spirit:displayName>Strobe Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.STROBE_WIDTH">4</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>AXIS_WIDTH</spirit:name>
+			<spirit:displayName>Axis Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.AXIS_WIDTH">24</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>INVERT_AXI_RESET</spirit:name>
+			<spirit:displayName>Invert Axi Reset</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.INVERT_AXI_RESET">1</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>INVERT_AXIS_RESET</spirit:name>
+			<spirit:displayName>Invert Axis Reset</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.INVERT_AXIS_RESET">1</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>IMAGE_WIDTH</spirit:name>
+			<spirit:displayName>Image Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.IMAGE_WIDTH">480</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>IMAGE_HEIGHT</spirit:name>
+			<spirit:displayName>Image Height</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.IMAGE_HEIGHT">272</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>BUFFER_DEPTH</spirit:name>
+			<spirit:displayName>Buffer Depth</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.BUFFER_DEPTH">9</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>PIXEL_WIDTH</spirit:name>
+			<spirit:displayName>Pixel Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.PIXEL_WIDTH">24</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>FOREGROUND_COLOR</spirit:name>
+			<spirit:displayName>Foreground Color</spirit:displayName>
+			<spirit:value spirit:format="bitString"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.FOREGROUND_COLOR"
+					spirit:bitStringLength="24">0xFFFFFF</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>BACKGROUND_COLOR</spirit:name>
+			<spirit:displayName>Background Color</spirit:displayName>
+			<spirit:value spirit:format="bitString"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.BACKGROUND_COLOR"
+					spirit:bitStringLength="24">0x000000</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>FONT_WIDTH</spirit:name>
+			<spirit:displayName>Font Width</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.FONT_WIDTH">5</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>FONT_HEIGHT</spirit:name>
+			<spirit:displayName>Font Height</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.FONT_HEIGHT">7</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>DEFAULT_TAB_COUNT</spirit:name>
+			<spirit:displayName>Default Tab Count</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.DEFAULT_TAB_COUNT">2</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>DEFAULT_X_START</spirit:name>
+			<spirit:displayName>Default X Start</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.DEFAULT_X_START">0</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>DEFAULT_X_END</spirit:name>
+			<spirit:displayName>Default X End</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.DEFAULT_X_END">480</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>DEFAULT_Y_START</spirit:name>
+			<spirit:displayName>Default Y Start</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.DEFAULT_Y_START">0</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>DEFAULT_Y_END</spirit:name>
+			<spirit:displayName>Default Y End</spirit:displayName>
+			<spirit:value spirit:format="long"
+					spirit:resolve="user"
+					spirit:id="PARAM_VALUE.DEFAULT_Y_END">272</spirit:value>
+		</spirit:parameter>
+		<spirit:parameter>
+			<spirit:name>Component_Name</spirit:name>
+			<spirit:value spirit:resolve="user"
+					spirit:id="PARAM_VALUE.Component_Name"
+					spirit:order="1">axi_on_screen_display_v1_0</spirit:value>
+		</spirit:parameter>
+	</spirit:parameters>
+	<spirit:vendorExtensions>
+		<xilinx:coreExtensions>
+			<xilinx:supportedFamilies>
+				<xilinx:family xilinx:lifeCycle="Production">artix7</xilinx:family>
+			</xilinx:supportedFamilies>
+			<xilinx:taxonomies>
+				<xilinx:taxonomy>/UserIP</xilinx:taxonomy>
+			</xilinx:taxonomies>
+			<xilinx:displayName>axi_on_screen_display_v1_0</xilinx:displayName>
+			<xilinx:definitionSource>package_project</xilinx:definitionSource>
+			<xilinx:coreRevision>18</xilinx:coreRevision>
+			<xilinx:coreCreationDateTime>2017-05-06T03:08:22Z</xilinx:coreCreationDateTime>
+			<xilinx:tags>
+				<xilinx:tag xilinx:name="cospandesign:cores:axi_on_screen_display:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
+			</xilinx:tags>
+		</xilinx:coreExtensions>
+		<xilinx:packagingInfo>
+			<xilinx:xilinxVersion>2016.4</xilinx:xilinxVersion>
+			<xilinx:checksum xilinx:scope="busInterfaces"
+					xilinx:value="67fb63fa"/>
+			<xilinx:checksum xilinx:scope="fileGroups"
+					xilinx:value="aef312e1"/>
+			<xilinx:checksum xilinx:scope="ports"
+					xilinx:value="57c1ed85"/>
+			<xilinx:checksum xilinx:scope="hdlParameters"
+					xilinx:value="c697f8a3"/>
+			<xilinx:checksum xilinx:scope="parameters"
+					xilinx:value="da13d010"/>
+		</xilinx:packagingInfo>
+	</spirit:vendorExtensions>
 </spirit:component>
