@@ -70,11 +70,13 @@ localparam      IDLE                    = 0;
 localparam      PROCESS_NORMAL_CHAR     = 1;
 localparam      PROCESS_BACKSPACE_PREP  = 2;
 localparam      PROCESS_BACKSPACE       = 3;
-localparam      NOM_BLANKS              = 4;
-localparam      PROCESS_CARRIAGE_RETURN = 5;
-localparam      PROCESS_TAB             = 6;
-localparam      CLEAR_BUFFER            = 7;
-localparam      CLEAR_LINE              = 8;
+localparam      NOM_BLANKS_PREP1        = 4;
+localparam      NOM_BLANKS_PREP2        = 5;
+localparam      NOM_BLANKS              = 6;
+localparam      PROCESS_CARRIAGE_RETURN = 7;
+localparam      PROCESS_TAB             = 8;
+localparam      CLEAR_BUFFER            = 9;
+localparam      CLEAR_LINE              = 10;
 
 localparam      START_READ_FRAME        = 1;
 localparam      START_READ_FRAME_DELAY  = 2;
@@ -126,6 +128,8 @@ reg                                 r_dbg_prev_stb;
 
 wire                                w_in_busy;
 wire                                w_out_busy;
+wire                                w_clear_screen;
+wire                                w_backspace;
 
 reg         [3:0]                   r_font_height_pos;
 reg         [7:0]                   r_read_width_pos;
@@ -169,12 +173,18 @@ bram #(
 //asynchronous logic
 assign  w_in_busy           = (in_state  != IDLE);
 assign  o_wr_char_rdy       = !w_in_busy;
-assign  w_out_busy          = ((out_state != IDLE) && (out_state != START_READ_FRAME));
+assign  w_out_busy          = (out_state != IDLE);
 assign  w_buf_full          = (w_write_addr_pos == r_write_addr_end);
 assign  w_write_addr_start  = r_write_addr_end + 1;
 //assign  w_read_addr         = r_read_addr;
-assign  w_read_addr         = ((in_state == PROCESS_BACKSPACE) || (in_state == NOM_BLANKS)) ? w_write_addr_pos : r_read_addr;
+assign  w_read_addr         = w_backspace ? w_write_addr_pos : r_read_addr;
 assign  w_write_addr_pos    = r_write_addr_pos;
+assign  w_clear_screen      = ((in_state == CLEAR_BUFFER)       ||
+                               (in_state == CLEAR_LINE));
+assign  w_backspace         = ((in_state == PROCESS_BACKSPACE)  ||
+                               (in_state == NOM_BLANKS)         ||
+                               (in_state == NOM_BLANKS_PREP1)   ||
+                               (in_state == NOM_BLANKS_PREP2));
 
 //synchronous logic
 
@@ -241,7 +251,7 @@ always @ (posedge clk) begin
               end
               `BS : begin     //Backspace
                 r_char      <=  0;
-                r_char_stb  <=  1;
+                //r_char_stb  <=  1;
                 in_state    <=  PROCESS_BACKSPACE_PREP;
               end
               `HT : begin     //Horizontal Tab
@@ -313,18 +323,32 @@ always @ (posedge clk) begin
         end
       end
       PROCESS_NORMAL_CHAR: begin
+        if (w_buf_full) begin
+          r_write_addr_end    <= r_write_addr_end + 1;
+        end
         r_write_addr_pos      <= r_write_addr_pos + 1;
         in_state              <=  IDLE;
       end
       PROCESS_BACKSPACE_PREP: begin
         if (!w_out_busy) begin
-          in_state            <=  NOM_BLANKS;
+          //in_state            <=  PROCESS_BACKSPACE;
+          in_state            <=  NOM_BLANKS_PREP1;
         end
       end
       PROCESS_BACKSPACE: begin
+        //if (w_write_addr_pos != w_write_addr_start) begin
         if (r_write_addr_pos != w_write_addr_start) begin
           r_write_addr_pos    <= r_write_addr_pos - 1;
+          in_state            <=  NOM_BLANKS_PREP1;
         end
+        else begin
+          in_state            <=  IDLE; 
+        end
+      end
+      NOM_BLANKS_PREP1: begin
+        in_state              <=  NOM_BLANKS_PREP2;
+      end
+      NOM_BLANKS_PREP2: begin
         in_state              <=  NOM_BLANKS;
       end
       NOM_BLANKS: begin
@@ -395,6 +419,9 @@ always @ (posedge clk) begin
           if (r_char_stb) begin
             r_write_addr_pos      <= r_write_addr_pos + 1;
           end
+          if (w_buf_full) begin
+            r_write_addr_end  <= r_write_addr_end + 1;
+          end
           r_char              <=  0;
           r_char_stb          <=  1;
         end
@@ -405,7 +432,7 @@ always @ (posedge clk) begin
       end
     endcase
 
-    if ((in_state != CLEAR_BUFFER) && (in_state != CLEAR_LINE)) begin
+    if (!w_clear_screen) begin
       //Move to next line
       if (r_write_addr_pos >= r_next_line_addr) begin
         r_dbg_next_stb          <=  1;
@@ -437,31 +464,39 @@ always @ (posedge clk) begin
 
 
       //Move to previous line
-      else if (r_write_addr_pos < r_curr_line_addr) begin
+      else if (w_backspace && (r_write_addr_pos < r_curr_line_addr)) begin
+      //else if (w_backspace && (w_write_addr_pos < w_curr_line_addr)) begin
         if (r_char_line_count > 0) begin
           r_char_line_count     <=  r_char_line_count - 1;
         end
+
         if (r_prev_line_addr < CHAR_IMAGE_WIDTH) begin
-          r_prev_line_addr      <= {1'b1, w_prev_line_addr - CHAR_IMAGE_WIDTH}; 
+          r_prev_line_addr      <= r_prev_line_addr + (CONSOLE_SIZE - CHAR_IMAGE_WIDTH);
         end
         else begin
           r_prev_line_addr      <=  r_prev_line_addr - CHAR_IMAGE_WIDTH;
         end
-        if (r_curr_line_addr < CHAR_IMAGE_WIDTH) begin
-          r_curr_line_addr      <= {1'b1, w_prev_line_addr}; 
+        if (r_curr_line_addr < (2 * CHAR_IMAGE_WIDTH)) begin
+          //r_curr_line_addr      <= {1'b1, w_prev_line_addr}; 
+          //r_curr_line_addr      <=  r_prev_line_addr; 
+          r_curr_line_addr      <=  r_curr_line_addr + (CONSOLE_SIZE - CHAR_IMAGE_WIDTH); 
+          r_write_addr_pos      <=  r_write_addr_pos + CONSOLE_SIZE;
         end
         else begin
           r_curr_line_addr      <=  r_prev_line_addr;
         end
-        if (r_next_line_addr < CHAR_IMAGE_WIDTH) begin
-          r_next_line_addr      <= {1'b1, w_curr_line_addr}; 
+        if (r_next_line_addr < (3 * CHAR_IMAGE_WIDTH)) begin
+          //r_next_line_addr      <= {1'b1, w_curr_line_addr}; 
+          r_next_line_addr      <=  r_next_line_addr + (CONSOLE_SIZE - CHAR_IMAGE_WIDTH);
         end
         else begin
           r_next_line_addr      <=  r_curr_line_addr;
         end
       end
-    end
 
+
+
+    end
     if (i_clear_screen_stb) begin
       r_clear_req                <=  1;
     end
