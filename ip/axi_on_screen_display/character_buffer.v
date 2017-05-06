@@ -94,6 +94,7 @@ reg         [3:0]                   in_state;
 reg         [3:0]                   out_state;
 
 reg                                 r_char_stb;
+reg                                 r_bs_line_flag;
 //reg         [CONSOLE_DEPTH - 1:0]   r_write_addr_pos;
 reg         [CONSOLE_DEPTH    :0]   r_write_addr_pos;
 wire        [CONSOLE_DEPTH - 1:0]   w_write_addr_pos;
@@ -209,11 +210,13 @@ always @ (posedge clk) begin
     in_state              <=  CLEAR_BUFFER;
     r_clear_req           <=  0;
     r_char_line_count     <=  0;
+    r_bs_line_flag        <=  0;
   end
   else begin
 
     case (in_state)
       IDLE: begin
+        r_bs_line_flag        <=  0;
         if (r_clear_req && (out_state == IDLE)) begin
           r_clear_req         <=  0;
           r_char_stb          <=  1;
@@ -337,7 +340,10 @@ always @ (posedge clk) begin
       end
       PROCESS_BACKSPACE: begin
         //if (w_write_addr_pos != w_write_addr_start) begin
-        if (r_write_addr_pos != w_write_addr_start) begin
+        if (r_bs_line_flag && (w_write_addr_pos == w_curr_line_addr)) begin
+          in_state            <=  IDLE;
+        end
+        else if (r_write_addr_pos != w_write_addr_start) begin
           r_write_addr_pos    <= r_write_addr_pos - 1;
           in_state            <=  NOM_BLANKS_PREP1;
         end
@@ -466,6 +472,7 @@ always @ (posedge clk) begin
       //Move to previous line
       else if (w_backspace && (r_write_addr_pos < r_curr_line_addr)) begin
       //else if (w_backspace && (w_write_addr_pos < w_curr_line_addr)) begin
+        r_bs_line_flag          <=  1;
         if (r_char_line_count > 0) begin
           r_char_line_count     <=  r_char_line_count - 1;
         end
@@ -493,8 +500,6 @@ always @ (posedge clk) begin
           r_next_line_addr      <=  r_curr_line_addr;
         end
       end
-
-
 
     end
     if (i_clear_screen_stb) begin
