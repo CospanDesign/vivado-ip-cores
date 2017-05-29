@@ -601,17 +601,10 @@
 		<spirit:memoryMap>
 			<spirit:name>CONTROL</spirit:name>
 			<spirit:addressBlock>
-				<spirit:name>Register Map</spirit:name>
+				<spirit:name>Reg</spirit:name>
 				<spirit:baseAddress spirit:format="long">0</spirit:baseAddress>
-				<spirit:range spirit:format="long">1</spirit:range>
+				<spirit:range spirit:format="long">16</spirit:range>
 				<spirit:width spirit:format="long">0</spirit:width>
-				<spirit:parameters>
-					<spirit:parameter>
-						<spirit:name>ENABLE</spirit:name>
-						<spirit:displayName>Enable</spirit:displayName>
-						<spirit:value spirit:id="ADDRBLOCKPARAM_VALUE.CONTROL.REGISTER MAP.ENABLE">0</spirit:value>
-					</spirit:parameter>
-				</spirit:parameters>
 			</spirit:addressBlock>
 		</spirit:memoryMap>
 	</spirit:memoryMaps>
@@ -687,7 +680,7 @@
 				<spirit:parameters>
 					<spirit:parameter>
 						<spirit:name>viewChecksum</spirit:name>
-						<spirit:value>0a8d67b6</spirit:value>
+						<spirit:value>6614d5d3</spirit:value>
 					</spirit:parameter>
 				</spirit:parameters>
 			</spirit:view>
@@ -701,7 +694,7 @@
 				<spirit:parameters>
 					<spirit:parameter>
 						<spirit:name>viewChecksum</spirit:name>
-						<spirit:value>1333326b</spirit:value>
+						<spirit:value>53f41f9b</spirit:value>
 					</spirit:parameter>
 				</spirit:parameters>
 			</spirit:view>
@@ -1705,24 +1698,24 @@
 		<spirit:fileSet>
 			<spirit:name>xilinx_softwaredriver_view_fileset</spirit:name>
 			<spirit:file>
-				<spirit:name>src/axi_pmod_tft.c</spirit:name>
+				<spirit:name>drivers/axi_pmod_tft_v1_0/src/axi_pmod_tft.c</spirit:name>
 				<spirit:fileType>cSource</spirit:fileType>
 			</spirit:file>
 			<spirit:file>
-				<spirit:name>src/axi_pmod_tft.h</spirit:name>
-				<spirit:fileType>cSource</spirit:fileType>
-			</spirit:file>
-			<spirit:file>
-				<spirit:name>src/Makefile</spirit:name>
+				<spirit:name>drivers/axi_pmod_tft_v1_0/src/Makefile</spirit:name>
 				<spirit:fileType>unknown</spirit:fileType>
 			</spirit:file>
 			<spirit:file>
-				<spirit:name>src/axi_pmod_tft.mdd</spirit:name>
+				<spirit:name>drivers/axi_pmod_tft_v1_0/data/axi_pmod_tft.mdd</spirit:name>
 				<spirit:userFileType>mdd</spirit:userFileType>
 			</spirit:file>
 			<spirit:file>
-				<spirit:name>src/axi_pmod_tft.tcl</spirit:name>
+				<spirit:name>drivers/axi_pmod_tft_v1_0/data/axi_pmod_tft.tcl</spirit:name>
 				<spirit:fileType>tclSource</spirit:fileType>
+			</spirit:file>
+			<spirit:file>
+				<spirit:name>drivers/axi_pmod_tft_v1_0/src/axi_pmod_tft.h</spirit:name>
+				<spirit:fileType>cSource</spirit:fileType>
 			</spirit:file>
 		</spirit:fileSet>
 	</spirit:fileSets>
@@ -1830,14 +1823,14 @@
 			<xilinx:definitionSource>package_project</xilinx:definitionSource>
 			<xilinx:vendorDisplayName>Cospan Design</xilinx:vendorDisplayName>
 			<xilinx:vendorURL>http://www.cospandesign.com</xilinx:vendorURL>
-			<xilinx:coreRevision>93</xilinx:coreRevision>
-			<xilinx:coreCreationDateTime>2017-05-23T13:39:51Z</xilinx:coreCreationDateTime>
+			<xilinx:coreRevision>131</xilinx:coreRevision>
+			<xilinx:coreCreationDateTime>2017-05-28T05:19:19Z</xilinx:coreCreationDateTime>
 			<xilinx:tags>
 				<xilinx:tag xilinx:name="user.org:user:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
 				<xilinx:tag xilinx:name="cd.com:user:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
 				<xilinx:tag xilinx:name="cd.com:cospandesign:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/xilinx_projects/axi_pmod_tft/axi_pmod_tft.srcs/sources_1/imports</xilinx:tag>
 				<xilinx:tag xilinx:name="cospandesign.com:cores:axi_pmod_tft:0.1_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
-				<xilinx:tag xilinx:name="cospandesign.com:cores:axi_pmod_tft:1.0_ARCHIVE_LOCATION">/home/cospan/Projects/vivado-ip-cores/ip</xilinx:tag>
+				<xilinx:tag xilinx:name="cospandesign.com:cores:axi_pmod_tft:1.0_ARCHIVE_LOCATION">C:/Xilinx/IP/vivado-ip-cores/ip</xilinx:tag>
 			</xilinx:tags>
 		</xilinx:coreExtensions>
 		<xilinx:packagingInfo>
@@ -1845,9 +1838,9 @@
 			<xilinx:checksum xilinx:scope="busInterfaces"
 					xilinx:value="ba086c5b"/>
 			<xilinx:checksum xilinx:scope="memoryMaps"
-					xilinx:value="f7cd80a9"/>
+					xilinx:value="fb08c662"/>
 			<xilinx:checksum xilinx:scope="fileGroups"
-					xilinx:value="91854dae"/>
+					xilinx:value="653a1d4f"/>
 			<xilinx:checksum xilinx:scope="ports"
 					xilinx:value="d478c206"/>
 			<xilinx:checksum xilinx:scope="hdlParameters"
