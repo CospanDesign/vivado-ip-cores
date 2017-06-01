@@ -29,13 +29,13 @@
 /************************** Constant Definitions *****************************/
 
 //Registers
-#define REG_CONTROL                 0x00
-#define REG_STATUS                  0x01
-#define REG_REG_DATA                0x02
-#define REG_IMAGE_WIDTH				      0x03
-#define REG_IMAGE_HEIGHT            0x04
-#define REG_IMAGE_SIZE              0x05
-#define REG_VERSION					        0x06
+#define REG_CONTROL                 (0x00 << 2)
+#define REG_STATUS                  (0x01 << 2)
+#define REG_REG_DATA                (0x02 << 2)
+#define REG_IMAGE_WIDTH				(0x03 << 2)
+#define REG_IMAGE_HEIGHT            (0x04 << 2)
+#define REG_IMAGE_SIZE              (0x05 << 2)
+#define REG_VERSION					(0x06 << 2)
 
 //Control Bits
 #define CONTROL_ENABLE              0
@@ -174,10 +174,12 @@ int CDAxiPmodTft_Initialize(CDPmodTft * InstancePtr, uint32_t EffectiveAddr){
   //Start the PLL
   buffer[0] = 0x01;
   CDAxiPmodTft_WriteDriverRegister(InstancePtr, MEM_ADR_SET_PLL, buffer, 1);
+  usleep(1 * 1000);
 
   //Lock the PLL
   buffer[0] = 0x03;
   CDAxiPmodTft_WriteDriverRegister(InstancePtr, MEM_ADR_SET_PLL, buffer, 1);
+  usleep(1 * 1000);
 
   //Setup the LCD Mode
   buffer[0] = 0x20;

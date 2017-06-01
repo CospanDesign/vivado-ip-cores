@@ -13,22 +13,22 @@
 #include <microblaze_sleep.h>
 #include "on_screen_display.h"
 
-#define REG_CONTROL               0
-#define REG_STATUS                1
-#define REG_IMAGE_WIDTH           2
-#define REG_IMAGE_HEIGHT          3
-#define REG_IMAGE_SIZE            4
-#define REG_FG_COLOR              5
-#define REG_BG_COLOR              6
-#define REG_CONSOLE_CHAR          7
-#define REG_CONSOLE_COMMAND       8
-#define REG_TAB_COUNT             9
-#define REG_X_START               10
-#define REG_X_END                 11
-#define REG_Y_START               12
-#define REG_Y_END                 13
-#define REG_ADAPTER_DEBUG	        14
-#define REG_VERSION               15
+#define REG_CONTROL               (0  << 2)
+#define REG_STATUS                (1  << 2)
+#define REG_IMAGE_WIDTH           (2  << 2)
+#define REG_IMAGE_HEIGHT          (3  << 2)
+#define REG_IMAGE_SIZE            (4  << 2)
+#define REG_FG_COLOR              (5  << 2)
+#define REG_BG_COLOR              (6  << 2)
+#define REG_CONSOLE_CHAR          (7  << 2)
+#define REG_CONSOLE_COMMAND       (8  << 2)
+#define REG_TAB_COUNT             (9  << 2)
+#define REG_X_START               (10 << 2)
+#define REG_X_END                 (11 << 2)
+#define REG_Y_START               (12 << 2)
+#define REG_Y_END                 (13 << 2)
+#define REG_ADAPTER_DEBUG	      (14 << 2)
+#define REG_VERSION               (15 << 2)
 
 
 #define BIT_CTRL_EN               0
@@ -172,6 +172,7 @@ int CDOnScreenDisplay_PutChar(CDOSD * InstancePtr, char c){
 	}
 	return XST_SUCCESS;
 }
+
 
 /*****************************************************************************/
 /**

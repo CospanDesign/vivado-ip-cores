@@ -61,7 +61,7 @@ SOFTWARE.
 
 module axi_on_screen_display #(
   parameter                           CONSOLE_DEPTH       = 12,
-  parameter                           ADDR_WIDTH          = 5,
+  parameter                           ADDR_WIDTH          = 7,
   parameter                           DATA_WIDTH          = 32,
   parameter                           STROBE_WIDTH        = (DATA_WIDTH / 8),
   parameter                           AXIS_WIDTH          = 24,
@@ -204,6 +204,7 @@ reg   [31:0]                    r_x_start;
 reg   [31:0]                    r_x_end;
 reg   [31:0]                    r_y_start;
 reg   [31:0]                    r_y_end;
+wire   [((ADDR_WIDTH-1) - 2):0]     w_reg_32bit_addr;
 
 //Submodules
 //Convert AXI Slave signals to a simple register/address strobe
@@ -330,6 +331,7 @@ adapter_ppfifo_2_axi_stream #(
 //Asynchronous Logic
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
 assign        w_axis_rst              = (INVERT_AXIS_RESET)  ? ~i_axis_rst  : i_axis_rst;
+assign        w_reg_32bit_address     = w_reg_address[ADDR_WIDTH:2];
 
 //blocks
 always @ (posedge clk) begin
@@ -365,7 +367,7 @@ always @ (posedge clk) begin
 
     if (w_reg_in_rdy) begin
       //From master
-      case (w_reg_address)
+      case (w_reg_32bit_address)
         REG_CONTROL: begin
           r_enable                        <= w_reg_in_data[`BIT_CTRL_EN];
           r_clear_screen_stb              <= w_reg_in_data[`BIT_CTRL_CLEAR_SCREEN_STB];
@@ -420,10 +422,10 @@ always @ (posedge clk) begin
         end
       endcase
 
-      if (w_reg_address > REG_VERSION) begin
+      if (w_reg_32bit_address > REG_VERSION) begin
         r_reg_invalid_addr                <= 1;
       end
-      else if (w_reg_address == REG_CONSOLE_CHAR) begin
+      else if (w_reg_32bit_address == REG_CONSOLE_CHAR) begin
         if (w_wr_char_rdy) begin
           r_reg_in_ack_stb                <= 1;
         end
@@ -434,7 +436,7 @@ always @ (posedge clk) begin
     end
     else if (w_reg_out_req) begin
       //To master
-      case (w_reg_address)
+      case (w_reg_32bit_address)
         REG_CONTROL: begin
           r_reg_out_data                      <=  0;
           r_reg_out_data[`BIT_CTRL_EN]        <= r_enable;
@@ -502,7 +504,7 @@ always @ (posedge clk) begin
           r_reg_out_data                  <= 32'h00;
         end
       endcase
-      if (w_reg_address > REG_VERSION) begin
+      if (w_reg_32bit_address > REG_VERSION) begin
         r_reg_invalid_addr                <= 1;
       end
       r_reg_out_rdy_stb                   <= 1;
