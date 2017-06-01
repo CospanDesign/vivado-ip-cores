@@ -331,7 +331,7 @@ adapter_ppfifo_2_axi_stream #(
 //Asynchronous Logic
 assign        w_axi_rst               = (INVERT_AXI_RESET)   ? ~rst         : rst;
 assign        w_axis_rst              = (INVERT_AXIS_RESET)  ? ~i_axis_rst  : i_axis_rst;
-assign        w_reg_32bit_address     = w_reg_address[ADDR_WIDTH:2];
+assign        w_reg_32bit_address     = w_reg_address[(ADDR_WIDTH - 1):2];
 
 //blocks
 always @ (posedge clk) begin

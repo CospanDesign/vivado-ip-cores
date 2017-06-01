@@ -28,7 +28,7 @@ SOFTWARE.
 
 `define MAJOR_VERSION             1
 `define MINOR_VERSION             0
-`define REVISION                  0
+`define REVISION                  1
 
 `include "nh_lcd_defines.v"
 
@@ -412,7 +412,7 @@ assign        w_tft_data_in[6]        =  i_pmod_in_tft_data4;
 assign        w_tft_data_in[7]        =  i_pmod_in_tft_data10;
 
 assign        o_fsync                 = ~i_tearing_effect;
-assign        w_reg_32bit_address     = w_reg_address[ADDR_WIDTH:2];
+assign        w_reg_32bit_address     = w_reg_address[(ADDR_WIDTH - 1):2];
 
 //blocks
 always @ (posedge clk) begin
