@@ -76,7 +76,7 @@ SOFTWARE.
 
 
 module axi_pmod_tft #(
-  parameter           ADDR_WIDTH          = 5,
+  parameter           ADDR_WIDTH          = 7,
   parameter           DATA_WIDTH          = 32,
   parameter           STROBE_WIDTH        = (DATA_WIDTH / 8),
   parameter           AXIS_WIDTH           = 24,
@@ -212,7 +212,8 @@ wire                        wfifo_strobe;
 wire        [AXIS_WIDTH:0]  wfifo_data;
 
 //Simple User Interface
-wire [ADDR_WIDTH - 1: 0]    w_reg_address;
+wire [ADDR_WIDTH - 1: 0]      w_reg_address;
+wire [((ADDR_WIDTH-1) - 2):0] w_reg_32bit_address;
 reg                         r_reg_invalid_addr;
 
 wire                        w_reg_in_rdy;
@@ -236,7 +237,7 @@ wire                        w_read_en;
 wire                        w_tp_red;
 wire                        w_tp_blue;
 wire                        w_tp_green;
-wire   [((ADDR_WIDTH-1) - 2):0]     w_reg_32bit_addr;
+
 
 
 

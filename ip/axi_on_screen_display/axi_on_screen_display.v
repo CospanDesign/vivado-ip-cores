@@ -175,6 +175,7 @@ wire        [31:0]              w_adapter_debug;
 
 //Simple User Interface
 wire [ADDR_WIDTH - 1: 0]        w_reg_address;
+wire   [((ADDR_WIDTH-1) - 2):0]     w_reg_32bit_address;
 reg                             r_reg_invalid_addr;
 
 wire                            w_reg_in_rdy;
@@ -204,7 +205,7 @@ reg   [31:0]                    r_x_start;
 reg   [31:0]                    r_x_end;
 reg   [31:0]                    r_y_start;
 reg   [31:0]                    r_y_end;
-wire   [((ADDR_WIDTH-1) - 2):0]     w_reg_32bit_addr;
+
 
 //Submodules
 //Convert AXI Slave signals to a simple register/address strobe
