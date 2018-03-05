@@ -1,0 +1,2 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_CLOCK_RATE_ENABLEMENT {} {expr get_property value [ipx::get_bus_parameters FREQ_HZ -of_objects [ipx::get_bus_interfaces S_AXI -of_objects [ipx::current_core]]]}
