@@ -37,16 +37,16 @@ typedef struct {
 } i2c_control_t;
 
 //Register Addresses
-#define REG_I2C_CONTROL       0x00
-#define REG_I2C_STATUS        0x04
-#define REG_I2C_INTERRUPT     0x08
-#define REG_I2C_INTERRUPT_EN  0x0C
-#define REG_I2C_CLOCK_RATE    0x10
-#define REG_I2C_CLOCK_DIVISOR 0x14
-#define REG_I2C_COMMAND       0x18
-#define REG_I2C_TRANSMIT      0x1C
-#define REG_I2C_RECEIVE       0x20
-#define REG_I2C_VERSION       0x24
+#define REG_I2C_CONTROL           0x00
+#define REG_I2C_STATUS            0x04
+#define REG_I2C_INTERRUPT         0x08
+#define REG_I2C_INTERRUPT_EN      0x0C
+#define REG_I2C_CLOCK_RATE        0x10
+#define REG_I2C_CLOCK_DIVISOR     0x14
+#define REG_I2C_COMMAND           0x18
+#define REG_I2C_TRANSMIT          0x1C
+#define REG_I2C_RECEIVE           0x20
+#define REG_I2C_VERSION           0x24
 
 //Control Bit Values
 #define CTRL_I2C_BIT_EN           0
@@ -65,7 +65,7 @@ typedef struct {
 //Command
 #define CMD_I2C_BIT_START        1 << 0
 #define CMD_I2C_BIT_STOP         1 << 1
-#define CMD_I2C_BIT_READ         1 << 2 
+#define CMD_I2C_BIT_READ         1 << 2
 #define CMD_I2C_BIT_WRITE        1 << 3
 #define CMD_I2C_BIT_NACK         1 << 4
 
@@ -87,13 +87,23 @@ void i2c_control_soft_reset(i2c_control_t *ic);
 void i2c_control_enable(i2c_control_t *ic);
 bool i2c_control_is_enabled(i2c_control_t *ic);
 
+int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length);
 int i2c_control_write_to_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length);
 int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length);
 void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg, uint8_t data);
 uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg);
 
+void i2c_control_ll_bus_start_write(i2c_control_t *ic, uint8_t addr);
+void i2c_control_ll_bus_start_read(i2c_control_t *ic, uint8_t addr);
+void i2c_control_ll_bus_write(i2c_control_t *ic, uint8_t data);
+uint8_t i2c_control_ll_bus_read(i2c_control_t *ic, uint8_t last);
+void i2c_control_ll_bus_stop(i2c_control_t *ic);
+uint8_t i2c_control_ll_bus_is_busy(i2c_control_t *ic);
+uint32_t i2c_control_ll_bus_errors(i2c_control_t *ic);
+
+
 #if defined(XPAR_XINTC_NUM_INSTANCES)
-void i2c_control_enable_interrupt(i2c_control_t *ic, 
+void i2c_control_enable_interrupt(i2c_control_t *ic,
                                   bool enable,
                                   XIntc *interrupt_controller,
                                   uint32_t i2c_interrupt_index);
