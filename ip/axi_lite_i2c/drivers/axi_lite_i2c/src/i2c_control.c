@@ -194,7 +194,7 @@ uint8_t i2c_control_ll_bus_read(i2c_control_t *ic, uint8_t last){
   if (last)
     command |= CMD_I2C_BIT_NACK;
   i2c_write_register(ic, REG_I2C_COMMAND, command);
-  while i2c_is_register_bit_set(ic, REG_i2C_STATUS, STS_I2C_BIT_TIP); 
+  while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)){} 
   return i2c_read_register(ic, REG_I2C_RECEIVE);
 }
 void i2c_control_ll_bus_stop(i2c_control_t *ic){
@@ -204,13 +204,14 @@ uint8_t i2c_control_ll_bus_is_busy(i2c_control_t *ic){
   return i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP);
 }
 uint32_t i2c_control_ll_bus_errors(i2c_control_t *ic){
-  return errors = i2c_check_for_errors(ic, true);
+  return i2c_check_for_errors(ic, true);
 }
 
 int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length){
   uint32_t errors = 0;
 
   i2c_write_register(ic, REG_I2C_TRANSMIT, (i2c_id << 1));
+  if (ic->debug) xil_printf("%s: Start Write Transaction\r\n", __func__);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE | CMD_I2C_BIT_START);
   if (ic->interrupt_enable){
     ic->buffer = data;
@@ -227,8 +228,9 @@ int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t 
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
   }
+  if (ic->debug) xil_printf("%s: Writing Data\r\n", __func__);
   for (uint32_t i = 0; i < length; i++){
-    //if (ic->debug) xil_printf("%s: Sending 0x%02X\r\n", __func__, data[i]);
+    if (ic->debug) xil_printf("%s: Sending 0x%02X\r\n", __func__, data[i]);
     i2c_write_register(ic, REG_I2C_TRANSMIT, data[i]);
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE);
     //Poll for I2C to be finished
@@ -299,10 +301,11 @@ int i2c_control_write_to_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, u
 
 int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length){
   uint32_t errors;
+  if (ic->debug) xil_printf("%s: Entered\r\n", __func__);
   //Keep a reference to the data pointer we will modify
   //i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_START);
   i2c_write_register(ic, REG_I2C_TRANSMIT, ((i2c_id << 1) | 0x01));
-  i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_READ | CMD_I2C_BIT_START);
+  i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE | CMD_I2C_BIT_START);
   if (ic->interrupt_enable){
     ic->buffer = data;
     ic->buffer_pos = 0;
@@ -317,6 +320,7 @@ int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, 
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
   }
+  if (ic->debug) xil_printf("%s: Reading Data\r\n", __func__);
   for (uint32_t i = 0; i < length; i++){
     //Check for last item
     if (i == (length - 1))
@@ -325,6 +329,7 @@ int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, 
       i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_READ);
     while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
     data[i] = i2c_read_register(ic, REG_I2C_RECEIVE);
+    if (ic->debug) xil_printf("%s: Read %02X\r\n", __func__, data[i]);
   }
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
   return XST_SUCCESS;
