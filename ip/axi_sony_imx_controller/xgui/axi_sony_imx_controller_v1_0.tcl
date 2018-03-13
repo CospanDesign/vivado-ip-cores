@@ -11,6 +11,8 @@ proc init_gui { IPINST } {
 
   #Adding Page
   set AXI_Configuration [ipgui::add_page $IPINST -name "AXI Configuration"]
+  set AXIS_DATA_WIDTH [ipgui::add_param $IPINST -name "AXIS_DATA_WIDTH" -parent ${AXI_Configuration}]
+  set_property tooltip {Set the Width of the AXI Stream, 64-bit only allows 64-bit only allows 8-bit data, 16-bit allows 8, 10 and 12 bit data} ${AXIS_DATA_WIDTH}
   ipgui::add_param $IPINST -name "INVERT_VDMA_RESET" -parent ${AXI_Configuration}
   ipgui::add_param $IPINST -name "INVERT_AXI_RESET" -parent ${AXI_Configuration}
 

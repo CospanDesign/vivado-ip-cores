@@ -4,7 +4,7 @@
 /* STYLE_NOTES begin
 *
 * */
-module rxd_to_rbuf #(
+module cam_in_to_bram #(
 parameter ADDR_WIDTH = 9,
 parameter DATA_WIDTH = 16
 )
@@ -98,6 +98,7 @@ reg                      r_data_valid;
 wire [9:0]               w_data;  //Only for simulation visualization top ten bits
 assign w_data = r_wbuf_data[(DATA_WIDTH - 1):(DATA_WIDTH - 10)];
 
+
 always @(posedge camera_clk)
   //De-assert Strobes
   if (rst) begin
@@ -121,6 +122,7 @@ always @(posedge camera_clk)
     r_wbuf_wea    <= 0;
     r_state       <= 0;
     r_rbuf_bank   <= 0;
+
   end
   else begin
     r_lvds_sr <= {r_lvds_sr[47:0],i_lvds};
