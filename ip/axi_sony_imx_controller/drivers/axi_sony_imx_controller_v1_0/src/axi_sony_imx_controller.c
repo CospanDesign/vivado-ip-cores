@@ -7,14 +7,22 @@
 const u32 MAX_CAMERA_COUNT            = 3;
 const u32 MAX_LANE_WIDTH              = 16;
 
-const u32 REG_CONTROL                 = 0 << 2;
-const u32 REG_STATUS                  = 1 << 2;
-const u32 REG_TRIGGER_PULSE_WIDTH     = 2 << 2;
-const u32 REG_TRIGGER_PERIOD          = 3 << 2;
-const u32 REG_CAMERA_COUNT            = 4 << 2;
-const u32 REG_LANE_WIDTH              = 5 << 2;
-const u32 REG_ALIGNED_FLAG_LOW        = 6 << 2;
-const u32 REG_ALIGNED_FLAG_HIGH       = 7 << 2;
+const u32 REG_CONTROL                 = 0  << 2;
+const u32 REG_STATUS                  = 1  << 2;
+const u32 REG_TRIGGER_PULSE_WIDTH     = 2  << 2;
+const u32 REG_TRIGGER_PERIOD          = 3  << 2;
+const u32 REG_CAMERA_COUNT            = 4  << 2;
+const u32 REG_LANE_WIDTH              = 5  << 2;
+const u32 REG_ALIGNED_FLAG_LOW        = 6  << 2;
+const u32 REG_ALIGNED_FLAG_HIGH       = 7  << 2;
+const u33 REG_FRAME_WIDTH             = 8  << 2;
+const u32 REG_FRAME_HEIGHT            = 9  << 2;
+const u32 REG_PRE_VERTICAL_BLANK      = 10 << 2;
+const u32 REG_PRE_HORIZONTAL_BLANK    = 11 << 2;
+const u32 REG_POST_VERTICAL_BLANK     = 12 << 2;
+const u32 REG_POST_HORIZONTAL_BLANK   = 13 << 2;
+
+
 
 const u32 REG_TAP_DELAY_START         = 16 << 2;
 const u32 SIZE_TAP_DELAY              = 3 * 16;
@@ -99,6 +107,27 @@ int imx_control_camera_power_enable(imx_control_t *ic, u8 cam_index,  u8 enable)
 void imx_control_camera_trigger_enable(imx_control_t *ic, u8 enable){ 
   imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_TRIGGER_EN, enable);
 }
+
+void imx_control_set_image_width(imx_control_t *ic, u16 width){
+  imxc_write_register(ic, REG_FRAME_WIDTH, width);
+}
+void imx_control_set_image_width(imx_control_t *ic, u16 height){
+  imxc_write_register(ic, REG_FRAME_HEIGHT, height);
+}
+void imx_control_set_pre_vsync_blank(imx_control_t *ic, u8 vblank){
+  imxc_write_register(ic, REG_PRE_VERTICAL_BLANK, vblank);
+}
+void imx_control_set_pre_hsync_blank(imx_control_t *ic, u8 hblank){
+  imxc_write_register(ic, REG_PRE_HORIZONTAL_BLANK, hblank);
+}
+void imx_control_set_post_vsync_blank(imx_control_t *ic, u8 vblank){
+  imxc_write_register(ic, REG_POST_VERTICAL_BLANK, vblank);
+}
+void imx_control_set_post_hsync_blank(imx_control_t *ic, u8 hblank){
+  imxc_write_register(ic, REG_POST_HORIZONTAL_BLANK, hblank);
+}
+
+
 int imx_control_set_tap_delay(imx_control_t *ic, u8 cam_index, u8 lane_index, u32 delay){
   u32 tap_address = ((((u32)cam_index) * ((u32)MAX_LANE_WIDTH)) + ((u32)lane_index));
   if (tap_address > (MAX_CAMERA_COUNT + MAX_LANE_WIDTH))
