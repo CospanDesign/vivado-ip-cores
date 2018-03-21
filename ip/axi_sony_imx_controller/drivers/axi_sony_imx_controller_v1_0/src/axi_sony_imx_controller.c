@@ -15,7 +15,7 @@ const u32 REG_CAMERA_COUNT            = 4  << 2;
 const u32 REG_LANE_WIDTH              = 5  << 2;
 const u32 REG_ALIGNED_FLAG_LOW        = 6  << 2;
 const u32 REG_ALIGNED_FLAG_HIGH       = 7  << 2;
-const u32 REG_FRAME_WIDTH             = 8  << 2;
+const u33 REG_FRAME_WIDTH             = 8  << 2;
 const u32 REG_FRAME_HEIGHT            = 9  << 2;
 const u32 REG_PRE_VERTICAL_BLANK      = 10 << 2;
 const u32 REG_PRE_HORIZONTAL_BLANK    = 11 << 2;
@@ -111,7 +111,7 @@ void imx_control_camera_trigger_enable(imx_control_t *ic, u8 enable){
 void imx_control_set_image_width(imx_control_t *ic, u16 width){
   imxc_write_register(ic, REG_FRAME_WIDTH, width);
 }
-void imx_control_set_image_height(imx_control_t *ic, u16 height){
+void imx_control_set_image_width(imx_control_t *ic, u16 height){
   imxc_write_register(ic, REG_FRAME_HEIGHT, height);
 }
 void imx_control_set_pre_vsync_blank(imx_control_t *ic, u8 vblank){

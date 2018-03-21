@@ -50,7 +50,7 @@ int imx_control_is_all_camera_lanes_aligned(imx_control_t *ic, u8 cam_index);
 int imx_control_camera_power_enable(imx_control_t *ic, u8 cam_index, u8 enable);
 void imx_control_camera_trigger_enable(imx_control_t *ic, u8 enable);
 void imx_control_set_image_width(imx_control_t *ic, u16 width);
-void imx_control_set_image_height(imx_control_t *ic, u16 height);
+void imx_control_set_image_width(imx_control_t *ic, u16 height);
 void imx_control_set_pre_vsync_blank(imx_control_t *ic, u8 vblank);
 void imx_control_set_pre_hsync_blank(imx_control_t *ic, u8 hblank);
 void imx_control_set_post_vsync_blank(imx_control_t *ic, u8 vblank);
