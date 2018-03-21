@@ -432,6 +432,10 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
   assign w_cam_data_valid[cam_i]    = (w_lane_data_valid[cam_i] == ((1 << LANE_WIDTH) - 1));
   assign w_vdma_active[cam_i]       = (w_vdma_axis_valid[cam_i] && w_vdma_axis_ready[cam_i]);
 
+
+
+  //Gobaly Goop!
+/*
   serdes_descramble serdes_descramble_cam (
     .i_lvds   (w_cam_unaligned [cam_i]    ),
     .o_lvds0  (w_unaligned_data[cam_i][3] ),
@@ -443,6 +447,92 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
     .o_lvds6  (w_unaligned_data[cam_i][0] ),
     .o_lvds7  (w_unaligned_data[cam_i][7] )
   );
+*/
+/*
+  //Descrambler in reverse order
+  serdes_descramble serdes_descramble_cam (
+    .i_lvds   (w_cam_unaligned [cam_i]    ),
+    .o_lvds0  (w_unaligned_data[cam_i][6] ),
+    .o_lvds1  (w_unaligned_data[cam_i][4] ),
+    .o_lvds2  (w_unaligned_data[cam_i][2] ),
+    .o_lvds3  (w_unaligned_data[cam_i][0] ),
+    .o_lvds4  (w_unaligned_data[cam_i][1] ),
+    .o_lvds5  (w_unaligned_data[cam_i][3] ),
+    .o_lvds6  (w_unaligned_data[cam_i][5] ),
+    .o_lvds7  (w_unaligned_data[cam_i][7] )
+  );
+  */
+/*
+  //Descramble in reverse order then reversed the order (LOOKS COMPLETELY
+  //REVERSED!
+  serdes_descramble serdes_descramble_cam (
+    .i_lvds   (w_cam_unaligned [cam_i]    ),
+    .o_lvds0  (w_unaligned_data[cam_i][7] ),
+    .o_lvds1  (w_unaligned_data[cam_i][5] ),
+    .o_lvds2  (w_unaligned_data[cam_i][3] ),
+    .o_lvds3  (w_unaligned_data[cam_i][1] ),
+    .o_lvds4  (w_unaligned_data[cam_i][0] ),
+    .o_lvds5  (w_unaligned_data[cam_i][2] ),
+    .o_lvds6  (w_unaligned_data[cam_i][4] ),
+    .o_lvds7  (w_unaligned_data[cam_i][6] )
+  );
+*/
+  serdes_descramble serdes_descramble_cam (
+    .i_lvds   (w_cam_unaligned [cam_i]    ),
+    .o_lvds0  (w_unaligned_data[cam_i][0] ),
+    .o_lvds1  (w_unaligned_data[cam_i][2] ),
+    .o_lvds2  (w_unaligned_data[cam_i][4] ),
+    .o_lvds3  (w_unaligned_data[cam_i][6] ),
+    .o_lvds4  (w_unaligned_data[cam_i][7] ),
+    .o_lvds5  (w_unaligned_data[cam_i][5] ),
+    .o_lvds6  (w_unaligned_data[cam_i][3] ),
+    .o_lvds7  (w_unaligned_data[cam_i][1] )
+  );
+
+
+
+/*
+  //Reversed?
+  serdes_descramble serdes_descramble_cam (
+    .i_lvds   (w_cam_unaligned [cam_i]    ),
+    .o_lvds0  (w_unaligned_data[cam_i][0] ),
+    .o_lvds1  (w_unaligned_data[cam_i][1] ),
+    .o_lvds2  (w_unaligned_data[cam_i][2] ),
+    .o_lvds3  (w_unaligned_data[cam_i][3] ),
+    .o_lvds4  (w_unaligned_data[cam_i][4] ),
+    .o_lvds5  (w_unaligned_data[cam_i][5] ),
+    .o_lvds6  (w_unaligned_data[cam_i][6] ),
+    .o_lvds7  (w_unaligned_data[cam_i][7] )
+  );
+*/
+/*
+  //Meh... similar to the first  
+  serdes_descramble serdes_descramble_cam (
+  .i_lvds   (w_cam_unaligned [cam_i]    ),
+  .o_lvds0  (w_unaligned_data[cam_i][7] ),
+  .o_lvds1  (w_unaligned_data[cam_i][6] ),
+  .o_lvds2  (w_unaligned_data[cam_i][5] ),
+  .o_lvds3  (w_unaligned_data[cam_i][4] ),
+  .o_lvds4  (w_unaligned_data[cam_i][3] ),
+  .o_lvds5  (w_unaligned_data[cam_i][2] ),
+  .o_lvds6  (w_unaligned_data[cam_i][1] ),
+  .o_lvds7  (w_unaligned_data[cam_i][0] )
+);
+*/
+/*
+  //Super Scrambled!!
+serdes_descramble serdes_descramble_cam (
+  .i_lvds   (w_cam_unaligned [cam_i]    ),
+  .o_lvds0  (w_unaligned_data[cam_i][7] ),
+  .o_lvds1  (w_unaligned_data[cam_i][0] ),
+  .o_lvds2  (w_unaligned_data[cam_i][4] ),
+  .o_lvds3  (w_unaligned_data[cam_i][6] ),
+  .o_lvds4  (w_unaligned_data[cam_i][1] ),
+  .o_lvds5  (w_unaligned_data[cam_i][5] ),
+  .o_lvds6  (w_unaligned_data[cam_i][2] ),
+  .o_lvds7  (w_unaligned_data[cam_i][3] )
+);
+*/
 
   //LANES: Go through the lanes
   for (lane_i = 0; lane_i < LANE_WIDTH; lane_i = lane_i + 1) begin : LANES
@@ -481,9 +571,7 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
       .i_rbuf_addrb     (w_bram_addr[cam_i]             ),  //XXX
       .o_rbuf_doutb     (w_bram_data[cam_i][lane_i]     )
     );
-
   end
-
 
   bram_to_frame_fifo #(
     .AXIS_DATA_WIDTH  (AXIS_DATA_WIDTH                    ),
