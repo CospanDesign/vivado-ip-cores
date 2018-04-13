@@ -438,7 +438,7 @@
 				<spirit:parameters>
 					<spirit:parameter>
 						<spirit:name>viewChecksum</spirit:name>
-						<spirit:value>86f9de03</spirit:value>
+						<spirit:value>2c10c156</spirit:value>
 					</spirit:parameter>
 				</spirit:parameters>
 			</spirit:view>
@@ -974,7 +974,6 @@
 			<spirit:file>
 				<spirit:name>logo/i2c_logo.png</spirit:name>
 				<spirit:userFileType>image</spirit:userFileType>
-				<spirit:userFileType>LOGO</spirit:userFileType>				
 			</spirit:file>
 		</spirit:fileSet>
 		<spirit:fileSet>
@@ -1135,8 +1134,8 @@
 			<xilinx:definitionSource>package_project</xilinx:definitionSource>
 			<xilinx:vendorDisplayName>Super Duper Cool Stuff</xilinx:vendorDisplayName>
 			<xilinx:vendorURL>http://www.theworldsworstwebsiteever.com/</xilinx:vendorURL>
-			<xilinx:coreRevision>40</xilinx:coreRevision>
-			<xilinx:coreCreationDateTime>2018-03-07T16:15:53Z</xilinx:coreCreationDateTime>
+			<xilinx:coreRevision>41</xilinx:coreRevision>
+			<xilinx:coreCreationDateTime>2018-04-13T16:04:30Z</xilinx:coreCreationDateTime>
 			<xilinx:tags>
 				<xilinx:tag xilinx:name="xilinx.com:user:axi_lite_i2c:1.0_ARCHIVE_LOCATION">c:/Xilinx/Projects/axi_lite_i2c/axi_lite_i2c.srcs</xilinx:tag>
 			</xilinx:tags>
@@ -1148,7 +1147,7 @@
 			<xilinx:checksum xilinx:scope="memoryMaps"
 					xilinx:value="d6ba9c4d"/>
 			<xilinx:checksum xilinx:scope="fileGroups"
-					xilinx:value="fd150888"/>
+					xilinx:value="e0a7f28b"/>
 			<xilinx:checksum xilinx:scope="ports"
 					xilinx:value="8ac3c992"/>
 			<xilinx:checksum xilinx:scope="hdlParameters"

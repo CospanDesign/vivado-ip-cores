@@ -15,7 +15,6 @@ typedef void (*i2c_error_callback_t)(uint32_t i2c_status, void * user);
 typedef struct {
   //Address of I2C Core
   uint32_t base_addr;
-  bool debug;
 
   uint8_t state;
   uint8_t *buffer;
@@ -75,7 +74,6 @@ typedef struct {
 #define INT_EN_I2C_BIT_RXACK      2
 
 
-void setup_i2c_control_with_debug(i2c_control_t *ic, uint32_t base_addr);
 void setup_i2c_control(i2c_control_t *ic, uint32_t base_addr);
 uint32_t i2c_control_get_version(i2c_control_t *ic);
 

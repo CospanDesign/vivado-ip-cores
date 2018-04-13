@@ -10,6 +10,9 @@
 #endif
 
 //i2c_control_t ic;
+#ifndef I2C_DEBUG
+#define I2C_DEBUG 0
+#endif
 
 enum I2C_STATE {
   IDLE        = 0,
@@ -39,15 +42,17 @@ uint32_t i2c_check_for_errors(i2c_control_t *ic, bool print_errors);
 /*****************************************************************************
  * Public Functions
  *****************************************************************************/
+/*
 void setup_i2c_control_with_debug(i2c_control_t *ic, uint32_t base_addr){
   setup_i2c_control(ic, base_addr);
-  ic->debug = true;
+  I2C_DEBUG = true;
 }
+*/
 
 void setup_i2c_control(i2c_control_t *ic, uint32_t base_addr){
 
   ic->base_addr = base_addr;
-  ic->debug = false;
+  //I2C_DEBUG = false;
 
   ic->state = IDLE;
   ic->buffer = NULL;
@@ -211,7 +216,7 @@ int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t 
   uint32_t errors = 0;
 
   i2c_write_register(ic, REG_I2C_TRANSMIT, (i2c_id << 1));
-  if (ic->debug) xil_printf("%s: Start Write Transaction\r\n", __func__);
+  if (I2C_DEBUG) xil_printf("%s: Start Write Transaction\r\n", __func__);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE | CMD_I2C_BIT_START);
   if (ic->interrupt_enable){
     ic->buffer = data;
@@ -224,20 +229,20 @@ int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t 
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending address\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
   }
-  if (ic->debug) xil_printf("%s: Writing Data\r\n", __func__);
+  if (I2C_DEBUG) xil_printf("%s: Writing Data\r\n", __func__);
   for (uint32_t i = 0; i < length; i++){
-    if (ic->debug) xil_printf("%s: Sending 0x%02X\r\n", __func__, data[i]);
+    if (I2C_DEBUG) xil_printf("%s: Sending 0x%02X\r\n", __func__, data[i]);
     i2c_write_register(ic, REG_I2C_TRANSMIT, data[i]);
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE);
     //Poll for I2C to be finished
     while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
     //Check for Errors
     if (errors = i2c_check_for_errors(ic, true), errors > 0){
-      xil_printf("I2C Error detected while sending data\r\n");
+      if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
       i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
       return XST_FAILURE;
     }
@@ -250,7 +255,7 @@ int i2c_control_write_to_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, u
   uint32_t errors = 0;
   //uint32_t d = 0;
 
-  //if (ic->debug) xil_printf("%s: Entered\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Entered\r\n", __func__);
   //i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_START);
   i2c_write_register(ic, REG_I2C_TRANSMIT, (i2c_id << 1));
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE | CMD_I2C_BIT_START);
@@ -262,46 +267,47 @@ int i2c_control_write_to_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, u
     return XST_SUCCESS;
   }
 
-  //if (ic->debug) xil_printf("%s: Sent Address\r\n", __func__);
+
+  //if (I2C_DEBUG) xil_printf("%s: Sent Address\r\n", __func__);
   //Poll for I2C to be finished
-  //if (ic->debug) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
-  //if (ic->debug) xil_printf("%s: finish\r\n", __func__);
-  //if (ic->debug) xil_printf("%s: Checking for errors\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Checking for errors\r\n", __func__);
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending address\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
   }
-  //if (ic->debug) d = i2c_read_register(REG_I2C_COMMAND);
-  //if (ic->debug) xil_printf("%s: Command: 0x%08X\r\n", __func__, d);
+  //if (I2C_DEBUG) d = i2c_read_register(REG_I2C_COMMAND);
+  //if (I2C_DEBUG) xil_printf("%s: Command: 0x%08X\r\n", __func__, d);
 
-  //if (ic->debug) xil_printf("%s: Write data addr\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Write data addr\r\n", __func__);
   for (uint32_t i = 0; i < length; i++){
-    //if (ic->debug) xil_printf("%s: Sending 0x%02X\r\n", __func__, data[i]);
+    //if (I2C_DEBUG) xil_printf("%s: Sending 0x%02X\r\n", __func__, data[i]);
     i2c_write_register(ic, REG_I2C_TRANSMIT, data[i]);
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE);
     //Poll for I2C to be finished
-    //if (ic->debug) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
+    //if (I2C_DEBUG) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
     while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
     //Check for Errors
-    //if (ic->debug) xil_printf("%s: finish\r\n", __func__);
-    //if (ic->debug) xil_printf("%s: Checking for errors\r\n", __func__);
+    //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
+    //if (I2C_DEBUG) xil_printf("%s: Checking for errors\r\n", __func__);
     if (errors = i2c_check_for_errors(ic, true), errors > 0){
-      xil_printf("I2C Error detected while sending data\r\n");
+      if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
       i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
       return XST_FAILURE;
     }
   }
-  //if (ic->debug) xil_printf("%s: Wrote all data\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Wrote all data\r\n", __func__);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
   return XST_SUCCESS;
 }
 
 int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length){
   uint32_t errors;
-  if (ic->debug) xil_printf("%s: Entered\r\n", __func__);
+  if (I2C_DEBUG) xil_printf("%s: Entered\r\n", __func__);
   //Keep a reference to the data pointer we will modify
   //i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_START);
   i2c_write_register(ic, REG_I2C_TRANSMIT, ((i2c_id << 1) | 0x01));
@@ -320,7 +326,7 @@ int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, 
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
   }
-  if (ic->debug) xil_printf("%s: Reading Data\r\n", __func__);
+  if (I2C_DEBUG) xil_printf("%s: Reading Data\r\n", __func__);
   for (uint32_t i = 0; i < length; i++){
     //Check for last item
     if (i == (length - 1))
@@ -329,7 +335,7 @@ int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, 
       i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_READ);
     while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
     data[i] = i2c_read_register(ic, REG_I2C_RECEIVE);
-    if (ic->debug) xil_printf("%s: Read %02X\r\n", __func__, data[i]);
+    if (I2C_DEBUG) xil_printf("%s: Read %02X\r\n", __func__, data[i]);
   }
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
   return XST_SUCCESS;
@@ -359,7 +365,7 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending address\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return;
   }
@@ -372,7 +378,7 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending data\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return;
   }
@@ -385,7 +391,7 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending data\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return;
   }
@@ -394,13 +400,13 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
 
 uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg){
   uint32_t errors;
-  //if (ic->debug) xil_printf("%s: Entered\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Entered\r\n", __func__);
 
   //Start by a write
-  //if (ic->debug) xil_printf("%s: Sent Start\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Sent Start\r\n", __func__);
   i2c_write_register(ic, REG_I2C_TRANSMIT, ((i2c_id << 1) | 0x0));
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE | CMD_I2C_BIT_START);
-  //if (ic->debug) xil_printf("%s: Sent Address\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Sent Address\r\n", __func__);
   if (ic->interrupt_enable){
     //Interrupt Based Transaction
     ic->reg = reg;
@@ -415,56 +421,56 @@ uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t
   }
 
   //Poll for I2C to be finished
-  //if (ic->debug) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
-  //if (ic->debug) xil_printf("%s: finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //Check for Errors
-  //if (ic->debug) xil_printf("%s: Checking for errors\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Checking for errors\r\n", __func__);
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending address\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return 0xFF;
   }
 
   //Set Register Value
-  //if (ic->debug) xil_printf("%s: Write reg addr\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Write reg addr\r\n", __func__);
   i2c_write_register(ic, REG_I2C_TRANSMIT, reg);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE);
-  //if (ic->debug) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
   //Poll for I2C to be finished
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
-  //if (ic->debug) xil_printf("%s: finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //Check for Errors
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
-    xil_printf("I2C Error detected while sending Register Address\r\n");
+    if (I2C_DEBUG) xil_printf("I2C Error detected while sending Register Address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return 0xFF;
   }
 
   //Restart The bus
-  //if (ic->debug) xil_printf("%s: Restart\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Restart\r\n", __func__);
 
   //Keep a reference to the data pointer we will modify
   i2c_write_register(ic, REG_I2C_TRANSMIT, ((i2c_id << 1) | 0x01));
-  //if (ic->debug) xil_printf("%s: Sending address\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Sending address\r\n", __func__);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_WRITE | CMD_I2C_BIT_START);
 
-  //if (ic->debug) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
-  //if (ic->debug) xil_printf("%s: finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //Check for Errors
   if (errors = i2c_check_for_errors(ic, true), errors > 0){
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return 0xFF;
   }
 
-  //if (ic->debug) xil_printf("%s: Reading Data\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Reading Data\r\n", __func__);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_READ | CMD_I2C_BIT_NACK);
 
-  //if (ic->debug) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: Wait for a the transmit to finish\r\n", __func__);
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   ic->reg_data = i2c_read_register(ic, REG_I2C_RECEIVE);
-  //if (ic->debug) xil_printf("%s: finish\r\n", __func__);
+  //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
 	i2c_check_for_errors(ic, true);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
   return ic->reg_data;
@@ -568,7 +574,7 @@ uint32_t i2c_get_clock_divisor(i2c_control_t *ic){
 
 uint32_t i2c_check_for_errors(i2c_control_t *ic, bool print_errors){
   uint32_t i2c_status = i2c_read_register(ic, REG_I2C_STATUS);
-  //if (ic->debug) xil_printf ("Status: 0x%08X\r\n", i2c_status);
+  //if (I2C_DEBUG) xil_printf ("Status: 0x%08X\r\n", i2c_status);
   if (i2c_status & STS_I2C_ERROR_MASK){
     if (i2c_status & STS_I2C_BIT_ARB_LOST){
       if (print_errors)

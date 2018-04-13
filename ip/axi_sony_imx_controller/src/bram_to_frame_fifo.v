@@ -60,6 +60,7 @@ module bram_to_frame_fifo #(
 
   input                                 i_vsync,
 
+  input                                 i_bram_frame_start,
   input                                 i_bram_data_valid,
   input       [AXIS_DATA_WIDTH - 1: 0]  i_bram_data,
   input       [BRAM_DATA_DEPTH - 1: 0]  i_bram_size,
@@ -89,27 +90,24 @@ localparam  BRAM_READ   = 3;
 localparam  BRAM_FIN    = 4;
 
 
-localparam  DECOUPLE_DEPTH = 4;
-localparam  DECOUPLE_COUNT_SIZE = 2;
+localparam  DECOUPLE_DEPTH = 8;
+localparam  DECOUPLE_COUNT_SIZE = 3;
 
 //registes/wires
-reg   [3:0]             state;
-reg   [3:0]             r_sr_vsync;
-wire                    w_posedge_vsync;
-reg                     r_frame_fifo_enable;
-
-reg   [15:0]            r_hcount;
-reg   [15:0]            r_vcount;
-
-wire                    w_pre_vpad;
-wire                    w_post_vpad;
-wire                    w_frame_finished;
-
-wire                    w_pre_hpad;
-wire                    w_post_hpad;
-
-wire                    w_half_pad;
-
+reg   [3:0]                         state;
+reg   [3:0]                         r_sr_vsync;
+wire                                w_posedge_vsync;
+reg                                 r_frame_fifo_enable;
+reg   [15:0]                        r_hcount;
+reg   [15:0]                        r_vcount;
+wire                                w_pre_vpad;
+wire                                w_post_vpad;
+wire                                w_frame_finished;
+wire                                w_pre_hpad;
+wire                                w_post_hpad;
+wire                                w_half_pad;
+wire                                w_data_valid;
+reg   [2:0]                         r_cc_data_valid;
 
 reg   [DECOUPLE_COUNT_SIZE - 1:0]   dstart;
 reg   [DECOUPLE_COUNT_SIZE - 1:0]   dend;
@@ -121,14 +119,14 @@ wire                                dfull;
 wire                                dalmost_full;
 wire                                dlast;
 wire  [AXIS_DATA_WIDTH - 1:0]       dcurrent_data;
-
-
+wire                                w_hvalid;
+wire                                w_vvalid;
 
 //submodules
 //asynchronous logic
-
+assign  w_data_valid          = r_cc_data_valid == 3'b111;
 assign  w_pre_vpad            = (r_vcount < i_pre_vblank);
-assign  w_pre_hpad            = (r_hcount < ((1 << i_pre_hblank) - 1));
+assign  w_pre_hpad            = (r_hcount < (i_pre_hblank - 1));
 assign  w_post_hpad           = (w_half_pad) ? (r_hcount > (i_frame_width + 8)) : (r_hcount > (i_frame_width + i_pre_hblank - i_post_hblank + 8));
 assign  w_half_pad            = (i_pre_hblank == 4);
 assign  w_frame_finished      = (r_vcount >= (i_frame_height + i_pre_vblank));
@@ -141,6 +139,8 @@ assign  o_frame_fifo_data     = dframe_fifo[dstart];
 assign  o_frame_fifo_ready    = !dempty && r_frame_fifo_enable; //r_frame_fifo_enable to stop FIFO fill oscillation
 assign  o_frame_fifo_last     = (dlast && (state == BRAM_FIN));
 assign  dcurrent_data         = dframe_fifo[dstart];
+assign  w_hvalid              = (!w_pre_hpad && !w_post_hpad);
+assign  w_vvalid              = (!w_pre_vpad && !w_frame_finished);
 
 //Edges??
 assign  w_posedge_vsync   = (r_sr_vsync   == 4'b0011);
@@ -159,6 +159,7 @@ always @ (posedge clk) begin
     r_prev_data           <=  0;
     o_frame_fifo_sof      <=  0;
     r_frame_fifo_enable   <=  0;
+    r_cc_data_valid       <=  0;
     for (i = 0; i < DECOUPLE_DEPTH; i = i + 1) begin
       dframe_fifo[i]            <=  0;
     end
@@ -174,7 +175,7 @@ always @ (posedge clk) begin
         dend                <=  0;
         r_hcount            <=  0;
         r_frame_fifo_enable <=  0;
-        if (i_bram_data_valid) begin
+        if (w_data_valid) begin
           if (w_pre_vpad || (r_vcount >= (i_frame_height + i_pre_vblank + i_post_vblank) || w_frame_finished)) begin
             state     <=  BRAM_FIN;
           end
@@ -188,19 +189,20 @@ always @ (posedge clk) begin
         if (dfull) begin
           r_frame_fifo_enable <=  1;
         end
-        //else if (!dfull) begin
-        else begin
-          if (w_pre_hpad) begin
-            //Definetly not full
-            r_prev_data   <=  i_bram_data;
-            o_bram_addr   <=  o_bram_addr + 1;
-            r_hcount      <=  r_hcount + 8;
-            state         <=  BRAM_DELAY;
-          end
-          else if (w_post_hpad) begin
-            state         <=  BRAM_FIN;
-          end
-          r_prev_data   <=  i_bram_data;
+        else if(w_post_hpad) begin
+          state               <=  BRAM_FIN;
+        end
+        else if (w_pre_hpad) begin
+          //Definetly not full
+          r_prev_data         <=  i_bram_data;
+          o_bram_addr         <=  o_bram_addr + 1;
+          r_hcount            <=  r_hcount + 8;
+          state               <=  BRAM_DELAY;
+        end
+        else begin // !Full
+          o_bram_addr         <=  o_bram_addr + 1;
+          r_hcount            <=  r_hcount + 8;
+          r_prev_data         <=  i_bram_data;
           if (w_half_pad) begin
             dframe_fifo[dend] <=  {i_bram_data[31:0], r_prev_data[63:32]};
           end
@@ -208,8 +210,6 @@ always @ (posedge clk) begin
             dframe_fifo[dend] <=  i_bram_data;
           end
           dend          <=  dend + 1;
-          o_bram_addr   <=  o_bram_addr + 1;
-          r_hcount      <=  r_hcount + 8;
           if ((o_bram_addr + 1) >= i_bram_size) begin
             state  <=  BRAM_FIN;
           end
@@ -220,13 +220,13 @@ always @ (posedge clk) begin
       end
       BRAM_DELAY: begin
         if (o_bram_addr >= i_bram_size) begin
-            state  <=  BRAM_FIN;
+          state         <=  BRAM_FIN;
         end
         else if (w_post_hpad) begin
-            state  <=  BRAM_FIN;
+          state         <=  BRAM_FIN;
         end
         else if (dfull) begin
-          state    <=  BRAM_START;
+          state         <=  BRAM_START;
         end
         else begin
           state         <=  BRAM_READ;
@@ -242,7 +242,7 @@ always @ (posedge clk) begin
         else begin
           dframe_fifo[dend] <=  i_bram_data;
         end
-        dend            <=  dend + 1;
+        dend                <=  dend + 1;
 
         if (o_bram_addr > i_bram_size) begin
           state  <=  BRAM_FIN;
@@ -260,7 +260,7 @@ always @ (posedge clk) begin
         end
       end
       BRAM_FIN: begin
-        if (!i_bram_data_valid) begin
+        if (!w_data_valid) begin
           state         <=  IDLE;
           r_frame_fifo_enable <=  0;
           r_vcount      <= r_vcount + 1;
@@ -273,12 +273,13 @@ always @ (posedge clk) begin
       dstart              <=  dstart + 1;
     end
 
-    if (w_posedge_vsync) begin
+    if (i_bram_frame_start && w_data_valid) begin
       r_vcount            <=  0;
       o_frame_fifo_sof    <=  1;
     end
 
     r_sr_vsync            <=  {r_sr_vsync[2:0], i_vsync};
+    r_cc_data_valid       <=  {r_cc_data_valid[1:0], i_bram_data_valid};
   end
 end
 

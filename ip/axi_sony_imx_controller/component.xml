@@ -623,7 +623,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>26da4a18</spirit:value>
+            <spirit:value>30ddf1b3</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -639,7 +639,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>26da4a18</spirit:value>
+            <spirit:value>30ddf1b3</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -667,7 +667,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>34b1d0f3</spirit:value>
+            <spirit:value>5fd9e75a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1705,6 +1705,21 @@
         <spirit:displayName>Invert Vdma Reset</spirit:displayName>
         <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.INVERT_VDMA_RESET">1</spirit:value>
       </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>CAM0_LVDS_INVERT_MAP</spirit:name>
+        <spirit:displayName>Cam0 Lvds Invert Map</spirit:displayName>
+        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.CAM0_LVDS_INVERT_MAP" spirit:bitStringLength="8">&quot;00000000&quot;</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>CAM1_LVDS_INVERT_MAP</spirit:name>
+        <spirit:displayName>Cam1 Lvds Invert Map</spirit:displayName>
+        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.CAM1_LVDS_INVERT_MAP" spirit:bitStringLength="8">&quot;00001000&quot;</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>CAM2_LVDS_INVERT_MAP</spirit:name>
+        <spirit:displayName>Cam2 Lvds Invert Map</spirit:displayName>
+        <spirit:value spirit:format="bitString" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.CAM2_LVDS_INVERT_MAP" spirit:bitStringLength="8">&quot;00100000&quot;</spirit:value>
+      </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
   <spirit:choices>
@@ -1763,7 +1778,7 @@
       <spirit:file>
         <spirit:name>src/axi_sony_imx_control.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_9792bbf2</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_5da74da3</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1833,7 +1848,7 @@
       <spirit:file>
         <spirit:name>xgui/axi_sony_imx_controller_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_34b1d0f3</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_5fd9e75a</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1935,6 +1950,21 @@
       <spirit:displayName>Invert Vdma Reset</spirit:displayName>
       <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.INVERT_VDMA_RESET">1</spirit:value>
     </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>CAM0_LVDS_INVERT_MAP</spirit:name>
+      <spirit:displayName>Cam0 Lvds Invert Map</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.CAM0_LVDS_INVERT_MAP" spirit:bitStringLength="8">&quot;00000000&quot;</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>CAM1_LVDS_INVERT_MAP</spirit:name>
+      <spirit:displayName>Cam1 Lvds Invert Map</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.CAM1_LVDS_INVERT_MAP" spirit:bitStringLength="8">&quot;00001000&quot;</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>CAM2_LVDS_INVERT_MAP</spirit:name>
+      <spirit:displayName>Cam2 Lvds Invert Map</spirit:displayName>
+      <spirit:value spirit:format="bitString" spirit:resolve="user" spirit:id="PARAM_VALUE.CAM2_LVDS_INVERT_MAP" spirit:bitStringLength="8">&quot;00100000&quot;</spirit:value>
+    </spirit:parameter>
   </spirit:parameters>
   <spirit:vendorExtensions>
     <xilinx:coreExtensions>
@@ -1945,8 +1975,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>axi_sony_imx_controller_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>77</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2018-03-20T23:36:28Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>83</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2018-03-30T11:08:52Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="xilinx.com:user:axi_sony_imx_controller:1.0_ARCHIVE_LOCATION">c:/Xilinx/Projects/axi_sony_imx_controller/axi_sony_imx_controller_1.0</xilinx:tag>
       </xilinx:tags>
@@ -1955,10 +1985,10 @@
       <xilinx:xilinxVersion>2017.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="2feed6e8"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="98fcbfe0"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="e0fd6540"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="c15a2110"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="0deca642"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="7067af80"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="72ec396e"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="c71c20f5"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="c73e950c"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
