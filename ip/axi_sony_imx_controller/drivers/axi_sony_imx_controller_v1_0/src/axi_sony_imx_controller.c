@@ -4,13 +4,15 @@
 #include "xstatus.h"
 #include "axi_sony_imx_controller.h"
 
-const u32 MAX_CAMERA_COUNT            = 3;
-const u32 MAX_LANE_WIDTH              = 16;
+#define MAX_CAMERA_COUNT            	3
+#define MAX_LANE_WIDTH              	16
+
+#define SIZE_TAP_DELAY                (MAX_CAMERA_COUNT * MAX_LANE_WIDTH)
 
 const u32 REG_CONTROL                 = 0  << 2;
 const u32 REG_STATUS                  = 1  << 2;
-const u32 REG_TRIGGER_PULSE_WIDTH     = 2  << 2;
-const u32 REG_TRIGGER_PERIOD          = 3  << 2;
+const u32 REG_TRIG_EXP_WIDTH          = 2  << 2;
+const u32 REG_TRIG_CAP_PERIOD         = 3  << 2;
 const u32 REG_CAMERA_COUNT            = 4  << 2;
 const u32 REG_LANE_WIDTH              = 5  << 2;
 const u32 REG_ALIGNED_FLAG_LOW        = 6  << 2;
@@ -24,14 +26,16 @@ const u32 REG_POST_HORIZONTAL_BLANK   = 13 << 2;
 
 
 
-const u32 REG_TAP_DELAY_START         = 16 << 2;
-const u32 SIZE_TAP_DELAY              = 3 * 16;
-const u32 REG_VERSION                 = (16 << 2) + ((3 * 16) << 2);
+#define REG_TAP_DELAY_START         	(16 << 2)
+#define REG_TAP_ERROR_START         	(REG_TAP_DELAY_START + (SIZE_TAP_DELAY << 2))
+#define REG_VERSION                   (REG_TAP_ERROR_START + (SIZE_TAP_DELAY << 2))
 
 const u32 CTRL_BIT_CLEAR_EN           = 0;
 const u32 CTRL_BIT_TRIGGER_EN         = 1;
 const u32 CTRL_BIT_CAM_ASYNC_RST_EN   = 2;
 const u32 CTRL_BIT_CAM_SYNC_RST_EN    = 3;
+const u32 CTRL_BIT_DETECT_ERROR_EN    = 4;
+const u32 CTRL_BIT_LOAD_TAP_EN        = 5;
 
 const u32 CTRL_BIT_POWER_EN0          = 12;
 const u32 CTRL_BIT_POWER_EN1          = 13;
@@ -57,9 +61,9 @@ u32 imx_control_get_status(imx_control_t * ic){
 u32 imx_control_get_version(imx_control_t *ic){
   return imxc_read_register(ic, REG_VERSION);
 }
-void imx_control_setup_trigger(imx_control_t *ic, u32 period, u32 pulse_width){
-  imxc_write_register(ic, REG_TRIGGER_PULSE_WIDTH, pulse_width);
-  imxc_write_register(ic, REG_TRIGGER_PERIOD, period);
+void imx_control_setup_trigger(imx_control_t *ic, u32 capture_period, u32 exposure_period){
+  imxc_write_register(ic, REG_TRIG_EXP_WIDTH, exposure_period);
+  imxc_write_register(ic, REG_TRIG_CAP_PERIOD, capture_period);
 }
 u8 imx_control_get_camera_count(imx_control_t *ic){
   return (u8) imxc_read_register(ic, REG_CAMERA_COUNT);
@@ -94,10 +98,15 @@ void imx_control_reset_async_cam_clock_domain_enable(imx_control_t * ic, u8 enab
 }
 void imx_control_reset_sync_cam_clock_domain_enable(imx_control_t *ic, u8 enable){
   imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_CAM_SYNC_RST_EN, enable);
+  imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_LOAD_TAP_EN, enable);
 }
 void imx_control_reset_sensor_enable(imx_control_t *ic, u8 enable){
   imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_CLEAR_EN, enable);
 }
+void imx_control_enable_tap_error_read(imx_control_t *ic, u8 enable){
+  imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_DETECT_ERROR_EN, enable);
+}
+
 int imx_control_camera_power_enable(imx_control_t *ic, u8 cam_index,  u8 enable){
   if (cam_index >= MAX_CAMERA_COUNT)
     return XST_FAILURE;
@@ -134,6 +143,8 @@ int imx_control_set_tap_delay(imx_control_t *ic, u8 cam_index, u8 lane_index, u3
     return XST_FAILURE;
   tap_address = tap_address << 2;
   imxc_write_register(ic, REG_TAP_DELAY_START + tap_address, delay);
+  imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_LOAD_TAP_EN, 1);
+  imxc_enable_register_bit(ic, REG_CONTROL, CTRL_BIT_LOAD_TAP_EN, 0);
   return XST_SUCCESS;
 }
 u32 imx_control_get_tap_delay(imx_control_t *ic, u8 cam_index, u8 lane_index){
@@ -142,6 +153,14 @@ u32 imx_control_get_tap_delay(imx_control_t *ic, u8 cam_index, u8 lane_index){
     return 0xFFFFFFFF;
   tap_address = tap_address << 2;
   return imxc_read_register(ic, REG_TAP_DELAY_START + tap_address);
+}
+
+u32 imx_control_get_tap_error(imx_control_t *ic, u8 cam_index, u8 lane_index){
+  u32 error_address = (((u32) cam_index) * ((u32) MAX_LANE_WIDTH)) + ((u32) lane_index);
+  if (error_address > (MAX_CAMERA_COUNT * MAX_LANE_WIDTH))
+    return 0xFFFFFFFF;
+  error_address = error_address << 2;
+  return imxc_read_register(ic, REG_TAP_ERROR_START + error_address);
 }
 
 //**************** PRIVATE FUNCTIONS *****************************************

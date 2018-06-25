@@ -59,10 +59,12 @@ void imx_control_set_post_hsync_blank(imx_control_t *ic, u8 hblank);
 void imx_control_reset_sensor_enable(imx_control_t *ic, u8 enable);
 void imx_control_reset_sync_cam_clock_domain_enable(imx_control_t *ic, u8 enable);
 void imx_control_reset_async_cam_clock_domain_enable(imx_control_t * ic, u8 enable);
+void imx_control_enable_tap_error_read(imx_control_t *ic, u8 enable);
 
 int imx_control_set_tap_delay(imx_control_t *ic, u8 cam_index, u8 lane_index, u32 delay);
 u32 imx_control_get_tap_delay(imx_control_t *ic, u8 cam_index, u8 lane_index);
 
+u32 imx_control_get_tap_error(imx_control_t *ic, u8 cam_index, u8 lane_index);
 
 #ifdef __cplusplus
 } // extern "C"

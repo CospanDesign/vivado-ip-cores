@@ -136,6 +136,7 @@ module axi_sony_imx_control #(
   output      [(5 * LANE_WIDTH) - 1: 0]       o_cam_0_tap_data,
   output      [(5 * LANE_WIDTH) - 1: 0]       o_cam_1_tap_data,
   output      [(5 * LANE_WIDTH) - 1: 0]       o_cam_2_tap_data,
+  output  reg                                 o_load_tap_en,
 
 
   //Interface Directly to Camera
@@ -182,8 +183,8 @@ localparam                  MAX_LANE_WIDTH            = 16;
 //Address Map
 localparam                  REG_CONTROL               = 0;
 localparam                  REG_STATUS                = 1;
-localparam                  REG_TRIGGER_PULSE_WIDTH   = 2;
-localparam                  REG_TRIGGER_PERIOD        = 3;
+localparam                  REG_TRIG_EXP_WIDTH        = 2;
+localparam                  REG_TRIG_CAP_PERIOD       = 3;
 localparam                  REG_CAMERA_COUNT          = 4;
 localparam                  REG_LANE_WIDTH            = 5;
 localparam                  REG_ALIGNED_FLAG_LOW      = 6;
@@ -196,9 +197,10 @@ localparam                  REG_POST_VERTICAL_BLANK   = 12;
 localparam                  REG_POST_HORIZONTAL_BLANK = 13;
 
 localparam                  REG_TAP_DELAY_START       = 16;
-localparam                  SIZE_TAP_DELAY            = MAX_LANE_WIDTH * MAX_CAMERA_COUNT;
-localparam                  REG_VERSION               = REG_TAP_DELAY_START + SIZE_TAP_DELAY;  //Always Should be last
 
+localparam                  SIZE_TAP_DELAY            = MAX_LANE_WIDTH      * MAX_CAMERA_COUNT;
+localparam                  REG_TAP_ERROR_START       = REG_TAP_DELAY_START + SIZE_TAP_DELAY;
+localparam                  REG_VERSION               = REG_TAP_ERROR_START + SIZE_TAP_DELAY;  //Always Should be last
 
 
 
@@ -207,6 +209,8 @@ localparam                  CTRL_BIT_CLEAR_EN           = 0;
 localparam                  CTRL_BIT_TRIGGER_EN         = 1;
 localparam                  CTRL_BIT_CAM_ASYNC_RST_EN   = 2;
 localparam                  CTRL_BIT_CAM_SYNC_RST_EN    = 3;
+localparam                  CTRL_BIT_DETECT_ERRORS_EN   = 4;
+localparam                  CTRL_BIT_LOAD_TAP_EN        = 5;
 
 localparam                  CTRL_BIT_POWER_EN0          = 12;
 localparam                  CTRL_BIT_POWER_EN1          = 13;
@@ -216,20 +220,21 @@ localparam                  CTRL_BIT_POWER_EN2          = 14;
 wire                                w_cam_clk[0:2];
 wire                                w_cam_sync_rst[0:2];
 
+wire  [31:0]                        w_tap_delay_start = REG_TAP_DELAY_START;
+wire  [31:0]                        w_tap_error_start = REG_TAP_ERROR_START;
+wire  [31:0]                        w_version = REG_VERSION;
+
 reg                                 r_serdes_sync_rst_en;
 reg                                 r_cam_xclear;
 reg                                 r_serdes_async_rst_en;
 wire  [11:0]                        w_image_0_byte_count;
 wire  [11:0]                        w_image_1_byte_count;
 wire  [11:0]                        w_image_2_byte_count;
+wire  [31:0]                        r_tap_error_count [0:MAX_CAMERA_COUNT - 1][0:LANE_WIDTH - 1];
 
-
-
-
-
-assign  o_serdes_0_async_rst    = r_serdes_async_rst_en;
-assign  o_serdes_1_async_rst    = r_serdes_async_rst_en;
-assign  o_serdes_2_async_rst    = r_serdes_async_rst_en;
+assign  o_serdes_0_async_rst    =   r_serdes_async_rst_en;
+assign  o_serdes_1_async_rst    =   r_serdes_async_rst_en;
+assign  o_serdes_2_async_rst    =   r_serdes_async_rst_en;
 
 wire                                w_frame_fifo_ready[0: MAX_CAMERA_COUNT - 1];
 wire                                w_frame_fifo_next_stb[0: MAX_CAMERA_COUNT - 1];
@@ -286,6 +291,7 @@ wire  [BRAM_DATA_DEPTH - 1: 0]      w_bram_addr         [0: MAX_CAMERA_COUNT - 1
 wire  [BRAM_DATA_WIDTH - 1: 0]      w_bram_data         [0: MAX_CAMERA_COUNT - 1][0: LANE_WIDTH - 1];
 wire  [AXIS_DATA_WIDTH - 1: 0]      w_bram_cam_data     [0: MAX_CAMERA_COUNT - 1];
 wire                                w_bram_frame_start  [0: MAX_CAMERA_COUNT - 1][0: LANE_WIDTH - 1];
+wire  [11:0]                        w_tap_error_count   [0: MAX_CAMERA_COUNT - 1][0: MAX_LANE_WIDTH - 1];
 
 
 
@@ -306,16 +312,20 @@ wire  [7:0]                         w_aligned_data      [0: MAX_CAMERA_COUNT - 1
 wire  [(5 * LANE_WIDTH) - 1:0]      w_tap_lane_value    [0: MAX_CAMERA_COUNT - 1];
 reg   [4:0]                         r_tap_value         [0: MAX_CAMERA_COUNT - 1][0:MAX_LANE_WIDTH - 1];
 
-reg   [31:0]                        r_trigger_pulse_width;
-reg   [31:0]                        r_trigger_pulse_count[0:2];
+reg   [31:0]                        r_trig_cap_period;
+reg   [31:0]                        r_trig_cap_period_count;
+reg   [31:0]                        r_trig_exp_pulse_width;
+wire                                w_cam_trigger;
+//reg   [31:0]                        r_trigger_pulse_count[0:2];
+//reg   [31:0]                        r_trigger_pulse_count;
 
-reg   [31:0]                        r_trigger_period;
-reg   [31:0]                        r_trigger_period_count[0:2];
+//reg   [31:0]                        r_trig_cap_period_count[0:2];
+reg                                 r_detect_errors_en;
 wire  [MAX_CAMERA_COUNT - 1:0]      w_frame_start;
 
-assign  w_vsync[0]                  = i_cam_0_imx_vs;
-assign  w_vsync[1]                  = i_cam_1_imx_vs;
-assign  w_vsync[2]                  = i_cam_2_imx_vs;
+assign  w_vsync[0]                  = r_trigger_en ? w_cam_trigger : i_cam_0_imx_vs;
+assign  w_vsync[1]                  = r_trigger_en ? w_cam_trigger : i_cam_1_imx_vs;
+assign  w_vsync[2]                  = r_trigger_en ? w_cam_trigger : i_cam_2_imx_vs;
 
 assign  w_hsync[0]                  = i_cam_0_imx_hs;
 assign  w_hsync[1]                  = i_cam_1_imx_hs;
@@ -329,9 +339,28 @@ assign  w_vdma_0_addr               = w_bram_addr[0];
 assign  w_vdma_1_addr               = w_bram_addr[1];
 assign  w_vdma_2_addr               = w_bram_addr[2];
 
-integer lc;
+assign  w_cam_trigger               = ~((r_trigger_en) & (r_trig_cap_period_count < r_trig_exp_pulse_width));
+always @ (posedge w_cam_clk[0] or posedge w_axi_rst) begin
+  if (w_cam_sync_rst[0] || w_axi_rst) begin
+    r_trig_cap_period_count          <=  0;
+  end
+  else begin
+    if (r_trigger_en) begin
+      if (r_trig_cap_period_count < r_trig_cap_period) begin
+        r_trig_cap_period_count      <=  r_trig_cap_period_count + 1;
+      end
+      else begin
+        r_trig_cap_period_count      <=  0;
+      end
+    end
+    else begin
+      r_trig_cap_period_count        <=  0;
+    end
+  end
+end
 
 //Submodules
+integer lc;
 genvar cam_i;
 genvar lane_i;
 generate
@@ -351,7 +380,8 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
       assign w_cam_unaligned[0]     = i_cam_0_raw_data;
       assign o_cam_0_tap_data       = w_tap_lane_value[0];
       assign o_serdes_0_sync_rst    = w_cam_sync_rst[0];
-      assign o_cam_0_trigger        = ((r_trigger_en) & (r_trigger_pulse_count[0] < r_trigger_pulse_width));
+      //assign w_cam_trigger[0]       = ~((r_trigger_en) & (r_trigger_pulse_count[0] < r_trig_exp_pulse_width));
+      assign o_cam_0_trigger        = w_cam_trigger;
 
       assign  o_vdma_0_axis_user[0] = w_vdma_axis_user[0];
       assign  o_vdma_0_axis_data    = w_vdma_axis_data[0];
@@ -364,7 +394,8 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
       assign w_cam_unaligned[1]     = i_cam_1_raw_data;
       assign o_cam_1_tap_data       = w_tap_lane_value[1];
       assign o_serdes_1_sync_rst    = w_cam_sync_rst[1];
-      assign o_cam_1_trigger        = ((r_trigger_en) & (r_trigger_pulse_count[1] < r_trigger_pulse_width));
+      //assign w_cam_trigger[1]       = ~((r_trigger_en) & (r_trigger_pulse_count[1] < r_trig_exp_pulse_width));
+      assign o_cam_1_trigger        = w_cam_trigger;
 
       assign  o_vdma_1_axis_user[0] = w_vdma_axis_user[1];
       assign  o_vdma_1_axis_data    = w_vdma_axis_data[1];
@@ -377,7 +408,8 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
       assign w_cam_unaligned[2]     = i_cam_2_raw_data;
       assign o_cam_2_tap_data       = w_tap_lane_value[2];
       assign o_serdes_2_sync_rst    = w_cam_sync_rst[2];
-      assign o_cam_2_trigger        = ((r_trigger_en) & (r_trigger_pulse_count[2] < r_trigger_pulse_width));
+      //assign w_cam_trigger[2]       = ~((r_trigger_en) & (r_trigger_pulse_count[2] < r_trig_exp_pulse_width));
+      assign o_cam_2_trigger        = w_cam_trigger;
 
       assign  o_vdma_2_axis_user[0] = w_vdma_axis_user[2];
       assign  o_vdma_2_axis_data    = w_vdma_axis_data[2];
@@ -390,30 +422,32 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
 	assign w_cam_sync_rst[cam_i] = r_serdes_sync_rst_en;
 
   //Trigger Signals for the Cameras in Slave Trigger Mode
+/*
   always @ (posedge w_cam_clk[cam_i] or posedge w_axi_rst) begin
     if (w_cam_sync_rst[cam_i] || w_axi_rst)begin
-      r_trigger_pulse_count[cam_i]        <=  DEFAULT_TRIGGER_LEN;
-      r_trigger_period_count[cam_i] <=  DEFAULT_TRIGGER_PERIOD;
+      r_trigger_pulse_count[cam_i]          <=  DEFAULT_TRIGGER_LEN;
+      r_trig_cap_period_count[cam_i]         <=  DEFAULT_TRIGGER_PERIOD;
     end
     else begin
       if (r_trigger_en) begin
-        if (r_trigger_pulse_count[cam_i] < r_trigger_pulse_width) begin
+        if (r_trigger_pulse_count[cam_i] < r_trig_exp_pulse_width) begin
           r_trigger_pulse_count[cam_i]      <=  r_trigger_pulse_count[cam_i]  + 1;
         end
-        if (r_trigger_period_count[cam_i]   <   r_trigger_period) begin
-          r_trigger_pulse_count[cam_i]      <=  r_trigger_period;
+        if (r_trig_cap_period_count[cam_i]   <   r_trig_cap_period) begin
+          r_trigger_pulse_count[cam_i]      <=  r_trig_cap_period;
         end
         else begin
           r_trigger_pulse_count[cam_i]      <=  0;
-          r_trigger_period_count[cam_i]     <=  0;
+          r_trig_cap_period_count[cam_i]     <=  0;
         end
       end
       else begin
-        r_trigger_pulse_count[cam_i]        <=  r_trigger_pulse_width;
-        r_trigger_period_count[cam_i]       <=  r_trigger_period;
+        r_trigger_pulse_count[cam_i]        <=  r_trig_exp_pulse_width;
+        r_trig_cap_period_count[cam_i]       <=  r_trig_cap_period;
       end
     end
   end
+*/
 
   //XXX: IF ALL THE ROW DATA IS NOT SENT THEN CHECK TO SEE IF w_lane_data_valid[cam_i] are all high
   //  assign w_vdma_axis_valid[cam_i]   = (w_lane_data_valid[cam_i] == ((1 << LANE_WIDTH) - 1) && (w_bram_addr[cam_i] < w_bram_count[cam_i][0]));
@@ -499,13 +533,15 @@ for (cam_i = 0; cam_i < MAX_CAMERA_COUNT; cam_i = cam_i + 1) begin : CAMERA
       .i_xvs            (w_vsync[cam_i]                   ),
       .i_xhs            (w_hsync[cam_i]                   ),
       .i_lvds           (w_unaligned_data[cam_i][lane_i]  ),
+      .i_detect_errors  (r_detect_errors_en               ),
 //      .o_mode           (), //XXX
       .o_report_align   (w_report_align[cam_i][lane_i]    ),
       .o_data_valid     (w_lane_data_valid[cam_i][lane_i] ),
       .o_data_count     (w_bram_count[cam_i][lane_i]      ),
       .i_rbuf_addrb     (w_bram_addr[cam_i]               ),  //XXX
       .o_rbuf_doutb     (w_bram_data[cam_i][lane_i]       ),
-      .o_frame_start    (w_bram_frame_start[cam_i][lane_i])
+      .o_frame_start    (w_bram_frame_start[cam_i][lane_i]),
+      .o_tap_error_count(w_tap_error_count[cam_i][lane_i] )
     );
   end
 
@@ -620,7 +656,7 @@ integer j;
 always @ (posedge i_axi_clk) begin
   //De-assert Strobes
   r_reg_in_ack_stb                        <= 0;
-  r_reg_out_rdy_stb                       <= 0;
+  //r_reg_out_rdy_stb                       <= 0;
   r_reg_invalid_addr                      <= 0;
 
   if (w_axi_rst) begin
@@ -629,8 +665,8 @@ always @ (posedge i_axi_clk) begin
     r_serdes_sync_rst_en                  <= 0;
     r_cam_xclear                          <= 0;
 
-    r_trigger_pulse_width                 <= DEFAULT_TRIGGER_LEN;
-    r_trigger_period                      <= DEFAULT_TRIGGER_PERIOD;
+    r_trig_exp_pulse_width                 <= DEFAULT_TRIGGER_LEN;
+    r_trig_cap_period                      <= DEFAULT_TRIGGER_PERIOD;
 
     o_cam_0_power_en                      <= 0;
     o_cam_1_power_en                      <= 0;
@@ -644,6 +680,10 @@ always @ (posedge i_axi_clk) begin
     r_post_vblank                         <= 0;
     r_post_hblank                         <= 0;
 
+    r_detect_errors_en                    <= 0;
+    r_reg_out_rdy_stb                     <= 0;
+    o_load_tap_en                         <= 0;
+
     for (i = 0; i < MAX_CAMERA_COUNT; i = i + 1) begin
       for (j = 0; j < MAX_LANE_WIDTH; j = j + 1) begin
         r_tap_value[i][j] <= 0;
@@ -651,6 +691,9 @@ always @ (posedge i_axi_clk) begin
     end
   end
   else begin
+    if (!w_reg_out_req) begin
+      r_reg_out_rdy_stb                             <= 0;
+    end
     if (w_reg_in_rdy && !r_reg_in_ack_stb) begin
       //From master
       case (w_reg_32bit_address)
@@ -663,12 +706,14 @@ always @ (posedge i_axi_clk) begin
           r_serdes_async_rst_en                     <= w_reg_in_data[CTRL_BIT_CAM_ASYNC_RST_EN];
           r_serdes_sync_rst_en                      <= w_reg_in_data[CTRL_BIT_CAM_SYNC_RST_EN];
           r_cam_xclear                              <= w_reg_in_data[CTRL_BIT_CLEAR_EN];
+          r_detect_errors_en                        <= w_reg_in_data[CTRL_BIT_DETECT_ERRORS_EN];
+          o_load_tap_en                             <= w_reg_in_data[CTRL_BIT_LOAD_TAP_EN];
         end
-        REG_TRIGGER_PULSE_WIDTH: begin
-          r_trigger_pulse_width                     <= w_reg_in_data;
+        REG_TRIG_EXP_WIDTH: begin
+          r_trig_exp_pulse_width                    <= w_reg_in_data;
         end
-        REG_TRIGGER_PERIOD: begin
-          r_trigger_period                          <= w_reg_in_data;
+        REG_TRIG_CAP_PERIOD: begin
+          r_trig_cap_period                         <= w_reg_in_data;
         end
         REG_FRAME_WIDTH: begin
           r_frame_width                             <= w_reg_in_data[15:0];
@@ -692,8 +737,8 @@ always @ (posedge i_axi_clk) begin
           for (i = 0; i < MAX_CAMERA_COUNT; i = i + 1) begin
             for (j = 0; j < MAX_LANE_WIDTH; j = j + 1) begin
               if (w_reg_32bit_address == (REG_TAP_DELAY_START + (i  * MAX_LANE_WIDTH) + j))  begin
-                $display("Register Address (Write): %h", w_reg_32bit_address);
-                r_tap_value[i][j]         <= w_reg_in_data;
+                $display("Tap Delay Write to Addr: %h with Value: %h",  w_reg_32bit_address, w_reg_in_data[4:0]);
+                r_tap_value[i][j]         <= w_reg_in_data[4:0];
               end
             end
           end
@@ -714,15 +759,17 @@ always @ (posedge i_axi_clk) begin
           r_reg_out_data[CTRL_BIT_POWER_EN1]        <=  o_cam_1_power_en;
           r_reg_out_data[CTRL_BIT_POWER_EN2]        <=  o_cam_2_power_en;
           r_reg_out_data[CTRL_BIT_TRIGGER_EN]       <=  r_trigger_en;
+          r_reg_out_data[CTRL_BIT_DETECT_ERRORS_EN] <=  r_detect_errors_en;
+          r_reg_out_data[CTRL_BIT_LOAD_TAP_EN]      <=  o_load_tap_en;
         end
         REG_STATUS: begin
           r_reg_out_data                            <=  0;
         end
-        REG_TRIGGER_PULSE_WIDTH: begin
-          r_reg_out_data                            <=  r_trigger_pulse_width;
+        REG_TRIG_EXP_WIDTH: begin
+          r_reg_out_data                            <=  r_trig_exp_pulse_width;
         end
-        REG_TRIGGER_PERIOD: begin
-          r_reg_out_data                            <=  r_trigger_period;
+        REG_TRIG_CAP_PERIOD: begin
+          r_reg_out_data                            <=  r_trig_cap_period;
         end
         REG_CAMERA_COUNT: begin
           r_reg_out_data                            <=  MAX_CAMERA_COUNT;
@@ -762,11 +809,21 @@ always @ (posedge i_axi_clk) begin
         end
         default: begin
           r_reg_out_data                            <= 32'h00;
+          //$display ("Address: %h",  w_reg_32bit_address);
           for (i = 0; i < MAX_CAMERA_COUNT; i = i + 1) begin
             for (j = 0; j < MAX_LANE_WIDTH; j = j + 1) begin
               if (w_reg_32bit_address == (REG_TAP_DELAY_START + (i  * MAX_LANE_WIDTH) + j))  begin
-                $display("Register Address (Read): %h", w_reg_32bit_address);
-                r_reg_out_data            <=  r_tap_value[i][j];
+                $display("Tap Delay (Read)");
+                r_reg_out_data            <= {27'h0, r_tap_value[i][j]};
+              end
+              if (w_reg_32bit_address == (REG_TAP_ERROR_START + (i  * MAX_LANE_WIDTH) + j))  begin
+                $display("Tap Error Read (Read): %h", (REG_TAP_ERROR_START + (i  * MAX_LANE_WIDTH) + j));
+                if (j >= LANE_WIDTH) begin
+                  r_reg_out_data            <= 32'h0;
+                end
+                else begin
+                  r_reg_out_data            <= {20'h0, w_tap_error_count[i][j]};
+                end
               end
             end
           end
