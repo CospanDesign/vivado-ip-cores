@@ -33,6 +33,8 @@ typedef struct {
   void * rxf_user;
   void * txf_user;
   void * error_user;
+  
+  bool print_errors;
 } i2c_control_t;
 
 //Register Addresses
@@ -77,6 +79,8 @@ typedef struct {
 void setup_i2c_control(i2c_control_t *ic, uint32_t base_addr);
 uint32_t i2c_control_get_version(i2c_control_t *ic);
 
+void i2c_control_enable_print_errors(i2c_control_t *ic, bool enable); 
+bool i2c_control_is_print_errors(i2c_control_t *ic);
 uint32_t i2c_control_get_bus_speed(i2c_control_t *ic);
 void i2c_control_set_bus_speed_to_100khz(i2c_control_t *ic);
 void i2c_control_set_bus_speed_to_400khz(i2c_control_t *ic);

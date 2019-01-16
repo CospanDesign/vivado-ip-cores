@@ -37,7 +37,7 @@ void i2c_enable_register_bit(i2c_control_t *ic, uint32_t addr, uint32_t bit, boo
 bool i2c_is_register_bit_set(i2c_control_t *ic, uint32_t addr, uint32_t bit);
 uint32_t i2c_get_clock_rate(i2c_control_t *ic);
 uint32_t i2c_get_clock_divisor(i2c_control_t *ic);
-uint32_t i2c_check_for_errors(i2c_control_t *ic, bool print_errors);
+uint32_t i2c_check_for_errors(i2c_control_t *ic);
 
 /*****************************************************************************
  * Public Functions
@@ -58,6 +58,7 @@ void setup_i2c_control(i2c_control_t *ic, uint32_t base_addr){
   ic->buffer = NULL;
   ic->buffer_pos = 0;
   ic->buffer_len = 0;
+  ic->print_errors = false;
 
   ic->interrupt_enable = false;
   ic->rxf_cb = NULL;
@@ -71,7 +72,7 @@ void setup_i2c_control(i2c_control_t *ic, uint32_t base_addr){
 
 void i2c_control_interrupt(i2c_control_t *ic, void * callback_reg){
   uint32_t errors;
-  if (errors = i2c_check_for_errors(ic, (ic->error_cb == NULL)), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     //Cancel the rest of the transaction
     ic->state = IDLE;
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
@@ -209,7 +210,7 @@ uint8_t i2c_control_ll_bus_is_busy(i2c_control_t *ic){
   return i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP);
 }
 uint32_t i2c_control_ll_bus_errors(i2c_control_t *ic){
-  return i2c_check_for_errors(ic, true);
+  return i2c_check_for_errors(ic);
 }
 
 int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, uint32_t length){
@@ -228,7 +229,7 @@ int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t 
 
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
@@ -241,7 +242,7 @@ int i2c_control_write_to_i2c_no_stop(i2c_control_t *ic, uint8_t i2c_id, uint8_t 
     //Poll for I2C to be finished
     while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
     //Check for Errors
-    if (errors = i2c_check_for_errors(ic, true), errors > 0){
+    if (errors = i2c_check_for_errors(ic), errors > 0){
       if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
       i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
       return XST_FAILURE;
@@ -275,7 +276,7 @@ int i2c_control_write_to_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, u
   //Check for Errors
   //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //if (I2C_DEBUG) xil_printf("%s: Checking for errors\r\n", __func__);
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
@@ -294,7 +295,7 @@ int i2c_control_write_to_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, u
     //Check for Errors
     //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
     //if (I2C_DEBUG) xil_printf("%s: Checking for errors\r\n", __func__);
-    if (errors = i2c_check_for_errors(ic, true), errors > 0){
+    if (errors = i2c_check_for_errors(ic), errors > 0){
       if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
       i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
       return XST_FAILURE;
@@ -322,7 +323,7 @@ int i2c_control_read_from_i2c(i2c_control_t *ic, uint8_t i2c_id, uint8_t *data, 
   //Poll Mode
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return XST_FAILURE;
   }
@@ -364,7 +365,7 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
   //Poll for I2C to be finished
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return;
@@ -377,7 +378,7 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
   //Poll for I2C to be finished
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return;
@@ -390,7 +391,7 @@ void i2c_control_write_to_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t reg
   //Poll for I2C to be finished
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending data\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return;
@@ -426,7 +427,7 @@ uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t
   //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //Check for Errors
   //if (I2C_DEBUG) xil_printf("%s: Checking for errors\r\n", __func__);
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return 0xFF;
@@ -441,7 +442,7 @@ uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     if (I2C_DEBUG) xil_printf("I2C Error detected while sending Register Address\r\n");
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return 0xFF;
@@ -459,7 +460,7 @@ uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
   //Check for Errors
-  if (errors = i2c_check_for_errors(ic, true), errors > 0){
+  if (errors = i2c_check_for_errors(ic), errors > 0){
     i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
     return 0xFF;
   }
@@ -471,9 +472,17 @@ uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t
   while (i2c_is_register_bit_set(ic, REG_I2C_STATUS, STS_I2C_BIT_TIP)) {};
   ic->reg_data = i2c_read_register(ic, REG_I2C_RECEIVE);
   //if (I2C_DEBUG) xil_printf("%s: finish\r\n", __func__);
-	i2c_check_for_errors(ic, true);
+	i2c_check_for_errors(ic);
   i2c_write_register(ic, REG_I2C_COMMAND, CMD_I2C_BIT_STOP);
   return ic->reg_data;
+}
+
+void i2c_control_enable_print_errors(i2c_control *ic, bool enable){
+  ic->print_errors = enable;
+}
+
+bool i2c_control_is_print_errors(i2c_control_t *ic){
+  return ic->print_errors;
 }
 
 #if defined(XPAR_XINTC_NUM_INSTANCES)
@@ -572,16 +581,16 @@ uint32_t i2c_get_clock_divisor(i2c_control_t *ic){
   return i2c_read_register(ic, REG_I2C_CLOCK_DIVISOR);
 }
 
-uint32_t i2c_check_for_errors(i2c_control_t *ic, bool print_errors){
+uint32_t i2c_check_for_errors(i2c_control_t *ic){
   uint32_t i2c_status = i2c_read_register(ic, REG_I2C_STATUS);
   //if (I2C_DEBUG) xil_printf ("Status: 0x%08X\r\n", i2c_status);
   if (i2c_status & STS_I2C_ERROR_MASK){
     if (i2c_status & STS_I2C_BIT_ARB_LOST){
-      if (print_errors)
+      if (ic->print_errors)
         xil_printf("I2C: Arbitration lost\r\n");
     }
     if (i2c_status & STS_I2C_BIT_READ_ACK_N){
-      if (print_errors)
+      if (ic->print_errors)
         xil_printf("I2C: Data Not Acked!\r\n");
     }
   }
