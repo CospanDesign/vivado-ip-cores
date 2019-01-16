@@ -477,7 +477,7 @@ uint8_t i2c_control_read_from_i2c_reg(i2c_control_t *ic, uint8_t i2c_id, uint8_t
   return ic->reg_data;
 }
 
-void i2c_control_enable_print_errors(i2c_control *ic, bool enable){
+void i2c_control_enable_print_errors(i2c_control_t *ic, bool enable){
   ic->print_errors = enable;
 }
 
