@@ -64,8 +64,8 @@ module axi_sony_imx_control #(
   parameter INVERT_AXI_RESET    = 1,
   parameter INVERT_VDMA_RESET   = 1,
   parameter CAM0_LVDS_INVERT_MAP= 8'b00000000,
-  parameter CAM1_LVDS_INVERT_MAP= 8'b00001000,
-  parameter CAM2_LVDS_INVERT_MAP= 8'b00100000
+  parameter CAM1_LVDS_INVERT_MAP= 8'b00000000,
+  parameter CAM2_LVDS_INVERT_MAP= 8'b00000000
 )(
   input                                       i_axi_clk,
   input                                       i_axi_rst,

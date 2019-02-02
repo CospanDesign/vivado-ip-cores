@@ -327,7 +327,8 @@ always @(posedge camera_clk)
 
       ST_DATA8: begin // 03
         o_mode  <= r_mode;
-        if (r_count == 3) begin
+        //if (r_count == 3) begin 
+        if (r_count == 4) begin //Set to 4, we need to ignore the first byte to allow for color processing
           r_count <= 0;
           r_temp_dina[47:32] <= 0;
           if (r_mode == SYNC8_SHIFT0)   begin r_temp_dina[31:0] <= r_lvds_sr[31:0]; end
